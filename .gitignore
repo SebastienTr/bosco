@@ -1,0 +1,20 @@
+node_modules/
+.env
+.DS_Store
+.vercel
+.playwright-mcp
+
+# Large data files (raw GPX, Navionics exports)
+navionics_traces_goteborg_audierne
+navionics_traces_goteborg_audierne_light.gpx
+data/all-navionics-routes.json
+data/canal-des-deux-mers.json
+
+# Claude context files (auto-generated, not project code)
+**/CLAUDE.md
+
+# BMad
+.agents
+.claude
+.gemini
+_bmad

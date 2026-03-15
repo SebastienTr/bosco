@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bosco — Design Directions</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1B2D4F;
+    --ocean: #2563EB;
+    --coral: #E8614D;
+    --amber: #F59E0B;
+    --sand: #FDF6EC;
+    --slate: #334155;
+    --mist: #94A3B8;
+    --foam: #F1F5F9;
+    --white: #FFFFFF;
+    --success: #10B981;
+    --font-heading: 'DM Serif Display', Georgia, serif;
+    --font-body: 'Nunito', system-ui, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  /* === NAV === */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(27, 45, 79, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 24px;
+    display: flex; align-items: center; gap: 16px;
+    overflow-x: auto;
+  }
+  .nav h1 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: var(--coral);
+    white-space: nowrap;
+    margin-right: 16px;
+  }
+  .nav-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--white);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--ocean);
+    border-color: var(--ocean);
+  }
+
+  /* === SECTIONS === */
+  .direction {
+    display: none;
+    min-height: 100vh;
+    padding-top: 60px;
+  }
+  .direction.active { display: block; }
+
+  .direction-header {
+    padding: 32px 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .direction-header h2 {
+    font-family: var(--font-heading);
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  .direction-header p {
+    color: var(--mist);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .direction-header .tags {
+    display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .tag {
+    background: rgba(37, 99, 235, 0.15);
+    color: var(--ocean);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* === MOCKUP FRAMES === */
+  .mockups {
+    display: flex; flex-direction: column; gap: 48px;
+    padding: 0 24px 64px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .mockup-label {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: var(--amber);
+  }
+
+  /* Phone frame */
+  .phone-frame {
+    width: 375px;
+    height: 740px;
+    border-radius: 32px;
+    border: 3px solid rgba(255,255,255,0.15);
+    overflow: hidden;
+    position: relative;
+    background: #e8e0d4;
+    margin: 0 auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  /* Desktop frame */
+  .desktop-frame {
+    width: 100%;
+    max-width: 850px;
+    height: 520px;
+    border-radius: 12px;
+    border: 3px solid rgba(255,255,255,0.15);
+    overflow: hidden;
+    position: relative;
+    background: #e8e0d4;
+    margin: 0 auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  /* === MAP SIMULATION === */
+  .map-bg {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(135deg, #c8d8c4 0%, #d4c8a8 30%, #a8c4d4 60%, #b8d0e0 100%);
+  }
+  .map-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(148,163,184,0.15) 40px, rgba(148,163,184,0.15) 41px),
+      repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(148,163,184,0.15) 40px, rgba(148,163,184,0.15) 41px);
+  }
+  /* Water areas */
+  .map-bg::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 45%;
+    background: linear-gradient(180deg, #b8d4e8 0%, #a0c4d8 50%, #90b8d0 100%);
+    clip-path: polygon(0 30%, 15% 20%, 30% 35%, 50% 15%, 70% 25%, 85% 10%, 100% 20%, 100% 100%, 0 100%);
+  }
+
+  /* Track line */
+  .track-line {
+    position: absolute;
+    z-index: 2;
+  }
+  .track-line svg {
+    width: 100%; height: 100%;
+    position: absolute; inset: 0;
+  }
+  .track-line path {
+    fill: none;
+    stroke: var(--ocean);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 1px 3px rgba(37, 99, 235, 0.4));
+  }
+
+  /* Stopover dots */
+  .stopover {
+    position: absolute;
+    z-index: 5;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--coral);
+    border: 2px solid var(--white);
+    box-shadow: 0 2px 6px rgba(232, 97, 77, 0.4);
+  }
+
+  /* Boat icon */
+  .boat-icon {
+    position: absolute;
+    z-index: 6;
+    font-size: 22px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  }
+
+  /* === DIRECTION A: Classic Floating === */
+  .dir-a .boat-card {
+    position: absolute;
+    top: 16px; left: 16px;
+    background: var(--white);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: 0 2px 12px rgba(27, 45, 79, 0.15);
+    z-index: 10;
+  }
+  .dir-a .boat-card h3 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    color: var(--navy);
+  }
+  .dir-a .boat-card span {
+    font-size: 12px;
+    color: var(--mist);
+    font-weight: 500;
+  }
+
+  .dir-a .ports-btn {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: var(--white);
+    border-radius: 12px;
+    padding: 10px 16px;
+    box-shadow: 0 2px 12px rgba(27, 45, 79, 0.15);
+    z-index: 10;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--navy);
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .dir-a .stats-bar {
+    position: absolute;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--white);
+    border-radius: 16px;
+    padding: 12px 24px;
+    box-shadow: 0 4px 20px rgba(27, 45, 79, 0.15);
+    z-index: 10;
+    display: flex; gap: 20px;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-value {
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--mist);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* === DIRECTION B: Navy Bar === */
+  .dir-b .top-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: linear-gradient(180deg, var(--navy) 0%, rgba(27, 45, 79, 0.85) 100%);
+    padding: 16px 16px 12px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .dir-b .top-bar h3 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: var(--white);
+  }
+  .dir-b .top-bar span {
+    font-size: 12px;
+    color: var(--mist);
+    font-weight: 500;
+  }
+  .dir-b .top-bar-right {
+    display: flex; gap: 8px;
+  }
+  .dir-b .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: var(--white);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .dir-b .stats-bar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--navy);
+    padding: 14px 16px;
+    z-index: 10;
+    display: flex;
+    justify-content: space-around;
+  }
+  .dir-b .stat-value {
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--white);
+    line-height: 1;
+  }
+  .dir-b .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--mist);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* === DIRECTION C: Sand & Warm === */
+  .dir-c .boat-card {
+    position: absolute;
+    top: 16px; left: 16px; right: 16px;
+    background: var(--sand);
+    border-radius: 12px;
+    padding: 14px 16px;
+    box-shadow: 0 2px 12px rgba(27, 45, 79, 0.1);
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .dir-c .boat-card h3 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    color: var(--navy);
+  }
+  .dir-c .boat-card span {
+    font-size: 12px;
+    color: var(--slate);
+    font-weight: 500;
+  }
+  .dir-c .share-btn {
+    background: var(--coral);
+    border: none;
+    color: var(--white);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .dir-c .stats-bar {
+    position: absolute;
+    bottom: 24px; left: 16px; right: 16px;
+    background: var(--sand);
+    border-radius: 16px;
+    padding: 14px 20px;
+    box-shadow: 0 4px 20px rgba(27, 45, 79, 0.1);
+    z-index: 10;
+    display: flex;
+    justify-content: space-around;
+  }
+  .dir-c .stat-value {
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .dir-c .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--coral);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  /* === DIRECTION D: Immersive Minimal === */
+  .dir-d .boat-badge {
+    position: absolute;
+    top: 16px; left: 16px;
+    background: rgba(27, 45, 79, 0.75);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    padding: 8px 16px;
+    z-index: 10;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dir-d .boat-badge .dot {
+    width: 8px; height: 8px;
+    background: var(--success);
+    border-radius: 50%;
+  }
+  .dir-d .boat-badge span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .dir-d .stats-bar {
+    position: absolute;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(27, 45, 79, 0.75);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 14px 28px;
+    z-index: 10;
+    display: flex; gap: 24px;
+  }
+  .dir-d .stat-value {
+    font-family: var(--font-body);
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--white);
+    line-height: 1;
+  }
+  .dir-d .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  .dir-d .action-fab {
+    position: absolute;
+    bottom: 90px; right: 16px;
+    width: 48px; height: 48px;
+    background: var(--coral);
+    border-radius: 50%;
+    border: none;
+    color: var(--white);
+    font-size: 20px;
+    box-shadow: 0 4px 16px rgba(232, 97, 77, 0.4);
+    z-index: 10;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* === BOTTOM SHEET DEMO === */
+  .bottom-sheet {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    z-index: 20;
+    border-radius: 16px 16px 0 0;
+    padding: 16px 20px 24px;
+    box-shadow: 0 -4px 20px rgba(27, 45, 79, 0.12);
+  }
+  .sheet-handle {
+    width: 36px; height: 4px;
+    background: var(--mist);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+  .sheet-port-name {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .sheet-meta {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .sheet-dates {
+    display: flex; gap: 24px;
+    font-size: 12px;
+  }
+  .sheet-dates strong {
+    display: block;
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  /* === DASHBOARD MOCKUP === */
+  .dashboard-bg {
+    position: absolute; inset: 0;
+    background: var(--foam);
+  }
+  .dash-header {
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .dash-header h2 {
+    font-family: var(--font-heading);
+    font-size: 22px;
+  }
+  .dash-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--ocean);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--white);
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .voyage-card {
+    margin: 0 16px 12px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(27, 45, 79, 0.08);
+  }
+  .voyage-card-map {
+    height: 120px;
+    background: linear-gradient(135deg, #c8d8c4 0%, #b8d0e0 100%);
+    position: relative;
+  }
+  .voyage-card-map .mini-track {
+    position: absolute;
+    inset: 0;
+  }
+  .voyage-card-map .mini-track svg path {
+    fill: none;
+    stroke: var(--ocean);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .voyage-card-body {
+    padding: 12px 16px;
+  }
+  .voyage-card-body h3 {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .voyage-card-stats {
+    display: flex; gap: 16px;
+    font-size: 12px;
+  }
+  .voyage-card-stats span {
+    font-weight: 700;
+  }
+  .voyage-card-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .badge-public { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+  .badge-private { background: rgba(148, 163, 184, 0.15); color: var(--mist); }
+
+  .new-voyage-btn {
+    margin: 16px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 2px dashed var(--mist);
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: calc(100% - 32px);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+
+  /* Dashboard color variants */
+  .dash-warm .dashboard-bg { background: var(--sand); }
+  .dash-warm .voyage-card-body { background: var(--white); }
+  .dash-warm .dash-header h2 { color: var(--navy); }
+  .dash-warm .voyage-card-body h3 { color: var(--navy); }
+  .dash-warm .voyage-card-stats { color: var(--slate); }
+  .dash-warm .new-voyage-btn { color: var(--coral); border-color: var(--coral); }
+
+  .dash-clean .dashboard-bg { background: var(--foam); }
+  .dash-clean .voyage-card-body { background: var(--white); }
+  .dash-clean .dash-header h2 { color: var(--navy); }
+  .dash-clean .voyage-card-body h3 { color: var(--navy); }
+  .dash-clean .voyage-card-stats { color: var(--slate); }
+  .dash-clean .new-voyage-btn { color: var(--ocean); border-color: var(--ocean); }
+
+  /* === COMPARISON ROW === */
+  .comparison {
+    display: flex; gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 768px) {
+    .phone-frame { width: 320px; height: 640px; }
+    .comparison { gap: 24px; }
+    .mockups { padding: 0 16px 48px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <h1>Bosco</h1>
+  <button class="nav-btn active" onclick="show('overview')">Overview</button>
+  <button class="nav-btn" onclick="show('dir-a')">A — Classic</button>
+  <button class="nav-btn" onclick="show('dir-b')">B — Navy</button>
+  <button class="nav-btn" onclick="show('dir-c')">C — Sand</button>
+  <button class="nav-btn" onclick="show('dir-d')">D — Immersive</button>
+  <button class="nav-btn" onclick="show('dashboard')">Dashboard</button>
+  <button class="nav-btn" onclick="show('sheet')">Bottom Sheet</button>
+</nav>
+
+<!-- OVERVIEW -->
+<section id="overview" class="direction active">
+  <div class="direction-header">
+    <h2>Bosco — Design Directions</h2>
+    <p>Four visual directions for the public voyage page. Each applies the same Ocean & Sunset palette and DM Serif Display + Nunito typography, but with different approaches to how UI elements overlay the map.</p>
+    <div class="tags">
+      <span class="tag">Ocean & Sunset</span>
+      <span class="tag">DM Serif Display</span>
+      <span class="tag">Nunito</span>
+      <span class="tag">Map-first</span>
+      <span class="tag">Mobile 375px</span>
+    </div>
+  </div>
+  <div class="mockups">
+    <div class="comparison">
+      <!-- A mini -->
+      <div style="text-align:center">
+        <div class="mockup-label">A — Classic Floating</div>
+        <div class="phone-frame dir-a" style="transform:scale(0.7);transform-origin:top center;margin-bottom:-180px">
+          <div class="map-bg"></div>
+          <svg class="track-line" viewBox="0 0 375 740"><path d="M280,100 C270,150 250,180 240,220 C230,260 200,300 180,340 C160,380 140,400 120,440 C100,480 90,500 80,540" stroke-opacity="0.85"/></svg>
+          <div class="stopover" style="top:98px;left:274px"></div>
+          <div class="stopover" style="top:218px;left:234px"></div>
+          <div class="stopover" style="top:338px;left:174px"></div>
+          <div class="stopover" style="top:438px;left:114px"></div>
+          <div class="boat-icon" style="top:530px;left:70px">⛵</div>
+          <div class="boat-card"><h3>Laurine</h3><span>Laurin Koster 28</span></div>
+          <button class="ports-btn">☰ Ports</button>
+          <div class="stats-bar">
+            <div class="stat"><div class="stat-value">1,534</div><div class="stat-label">Sailed</div></div>
+            <div class="stat"><div class="stat-value">749</div><div class="stat-label">To go</div></div>
+            <div class="stat"><div class="stat-value">146</div><div class="stat-label">Days</div></div>
+            <div class="stat"><div class="stat-value">40</div><div class="stat-label">Ports</div></div>
+            <div class="stat"><div class="stat-value">7</div><div class="stat-label">Countries</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- B mini -->
+      <div style="text-align:center">
+        <div class="mockup-label">B — Navy Bars</div>
+        <div class="phone-frame dir-b" style="transform:scale(0.7);transform-origin:top center;margin-bottom:-180px">
+          <div class="map-bg"></div>
+          <svg class="track-line" viewBox="0 0 375 740"><path d="M280,100 C270,150 250,180 240,220 C230,260 200,300 180,340 C160,380 140,400 120,440 C100,480 90,500 80,540" stroke-opacity="0.85"/></svg>
+          <div class="stopover" style="top:98px;left:274px"></div>
+          <div class="stopover" style="top:218px;left:234px"></div>
+          <div class="stopover" style="top:338px;left:174px"></div>
+          <div class="stopover" style="top:438px;left:114px"></div>
+          <div class="boat-icon" style="top:530px;left:70px">⛵</div>
+          <div class="top-bar">
+            <div><h3>Laurine</h3><span>Laurin Koster 28</span></div>
+            <div class="top-bar-right"><button class="icon-btn">☰</button><button class="icon-btn">↗</button></div>
+          </div>
+          <div class="stats-bar">
+            <div class="stat"><div class="stat-value">1,534</div><div class="stat-label">Sailed</div></div>
+            <div class="stat"><div class="stat-value">749</div><div class="stat-label">To go</div></div>
+            <div class="stat"><div class="stat-value">146</div><div class="stat-label">Days</div></div>
+            <div class="stat"><div class="stat-value">40</div><div class="stat-label">Ports</div></div>
+            <div class="stat"><div class="stat-value">7</div><div class="stat-label">Countries</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- C mini -->
+      <div style="text-align:center">
+        <div class="mockup-label">C — Sand & Warm</div>
+        <div class="phone-frame dir-c" style="transform:scale(0.7);transform-origin:top center;margin-bottom:-180px">
+          <div class="map-bg"></div>
+          <svg class="track-line" viewBox="0 0 375 740"><path d="M280,100 C270,150 250,180 240,220 C230,260 200,300 180,340 C160,380 140,400 120,440 C100,480 90,500 80,540" stroke-opacity="0.85"/></svg>
+          <div class="stopover" style="top:98px;left:274px"></div>
+          <div class="stopover" style="top:218px;left:234px"></div>
+          <div class="stopover" style="top:338px;left:174px"></div>
+          <div class="stopover" style="top:438px;left:114px"></div>
+          <div class="boat-icon" style="top:530px;left:70px">⛵</div>
+          <div class="boat-card"><div><h3>Laurine</h3><span>Laurin Koster 28</span></div><button class="share-btn">Share</button></div>
+          <div class="stats-bar">
+            <div class="stat"><div class="stat-value">1,534</div><div class="stat-label">Sailed</div></div>
+            <div class="stat"><div class="stat-value">749</div><div class="stat-label">To go</div></div>
+            <div class="stat"><div class="stat-value">146</div><div class="stat-label">Days</div></div>
+            <div class="stat"><div class="stat-value">40</div><div class="stat-label">Ports</div></div>
+            <div class="stat"><div class="stat-value">7</div><div class="stat-label">Countries</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- D mini -->
+      <div style="text-align:center">
+        <div class="mockup-label">D — Immersive</div>
+        <div class="phone-frame dir-d" style="transform:scale(0.7);transform-origin:top center;margin-bottom:-180px">
+          <div class="map-bg"></div>
+          <svg class="track-line" viewBox="0 0 375 740"><path d="M280,100 C270,150 250,180 240,220 C230,260 200,300 180,340 C160,380 140,400 120,440 C100,480 90,500 80,540" stroke-opacity="0.85"/></svg>
+          <div class="stopover" style="top:98px;left:274px"></div>
+          <div class="stopover" style="top:218px;left:234px"></div>
+          <div class="stopover" style="top:338px;left:174px"></div>
+          <div class="stopover" style="top:438px;left:114px"></div>
+          <div class="boat-icon" style="top:530px;left:70px">⛵</div>
+          <div class="boat-badge"><div class="dot"></div><span>Laurine</span></div>
+          <button class="action-fab">☰</button>
+          <div class="stats-bar">
+            <div class="stat"><div class="stat-value">1,534</div><div class="stat-label">Sailed</div></div>
+            <div class="stat"><div class="stat-value">749</div><div class="stat-label">To go</div></div>
+            <div class="stat"><div class="stat-value">146</div><div class="stat-label">Days</div></div>
+            <div class="stat"><div class="stat-value">40</div><div class="stat-label">Ports</div></div>
+            <div class="stat"><div class="stat-value">7</div><div class="stat-label">Countries</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIRECTION A -->
+<section id="dir-a" class="direction">
+  <div class="direction-header">
+    <h2>A — Classic Floating</h2>
+    <p>White floating cards on the map. Clean, airy, Google Maps-inspired. The boat name card sits top-left, the ports button top-right, stats bar floats at the bottom. Maximum map visibility. Closest to the existing prototype's approach but refined.</p>
+    <div class="tags"><span class="tag">White overlays</span><span class="tag">Google Maps style</span><span class="tag">Maximum map</span><span class="tag">Proven pattern</span></div>
+  </div>
+  <div class="mockups">
+    <div class="mockup-label">Public Voyage Page — Mobile</div>
+    <div class="phone-frame dir-a">
+      <div class="map-bg"></div>
+      <svg class="track-line" viewBox="0 0 375 740"><path d="M280,100 C270,150 250,180 240,220 C230,260 200,300 180,340 C160,380 140,400 120,440 C100,480 90,500 80,540" stroke-opacity="0.85"/></svg>
+      <div class="stopover" style="top:98px;left:274px"></div>
+      <div class="stopover" style="top:218px;left:234px"></div>
+      <div class="stopover" style="top:338px;left:174px"></div>
+      <div class="stopover" style="top:438px;left:114px"></div>
+      <div class="boat-icon" style="top:530px;left:70px">⛵</div>
+      <div class="boat-card"><h3>Laurine</h3><span>Laurin Koster 28</span></div>
+      <button class="ports-btn">☰ Ports</button>
+      <div class="stats-bar">
+        <div class="stat"><div class="stat-value">1,534</div><div class="stat-label">Sailed</div></div>
+        <div class="stat"><div class="stat-value">749</div><div class="stat-label">To go</div></div>
+        <div class="stat"><div class="stat-value">146</div><div class="stat-label">Days</div></div>
+        <div class="stat"><div class="stat-value">40</div><div class="stat-label">Ports</div></div>
+        <div class="stat"><div class="stat-value">7</div><div class="stat-label">Countries</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIRECTION B -->
+<section id="dir-b" class="direction">
+  <div class="direction-header">
+    <h2>B — Navy Bars</h2>
+    <p>Dark navy bars top and bottom framing the map. Bold, nautical instrument feel. The map is framed like a porthole. Stats bar feels like a ship's instrument panel. More structured, more "maritime pro".</p>
+    <div class="tags"><span class="tag">Navy chrome</span><span class="tag">Instrument panel</span><span class="tag">Structured</span><span class="tag">Bold</span></div>
+  </div>
+  <div class="mockups">
+    <div class="mockup-label">Public Voyage Page — Mobile</div>
+    <div class="phone-frame dir-b">
+      <div class="map-bg"></div>
+      <svg class="track-line" viewBox="0 0 375 740"><path d="M280,120 C270,170 250,200 240,240 C230,280 200,320 180,360 C160,400 140,420 120,460 C100,500 90,520 80,560" stroke-opacity="0.85"/></svg>
+      <div class="stopover" style="top:118px;left:274px"></div>
+      <div class="stopover" style="top:238px;left:234px"></div>
+      <div class="stopover" style="top:358px;left:174px"></div>
+      <div class="stopover" style="top:458px;left:114px"></div>
+      <div class="boat-icon" style="top:550px;left:70px">⛵</div>
+      <div class="top-bar">
+        <div><h3>Laurine</h3><span>Laurin Koster 28</span></div>
+        <div class="top-bar-right"><button class="icon-btn">☰</button><button class="icon-btn">↗</button></div>
+      </div>
+      <div class="stats-bar">
+        <div class="stat"><div class="stat-value">1,534</div><div class="stat-label">Sailed</div></div>
+        <div class="stat"><div class="stat-value">749</div><div class="stat-label">To go</div></div>
+        <div class="stat"><div class="stat-value">146</div><div class="stat-label">Days</div></div>
+        <div class="stat"><div class="stat-value">40</div><div class="stat-label">Ports</div></div>
+        <div class="stat"><div class="stat-value">7</div><div class="stat-label">Countries</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIRECTION C -->
+<section id="dir-c" class="direction">
+  <div class="direction-header">
+    <h2>C — Sand & Warm</h2>
+    <p>Sand-colored overlays for a warm, logbook feel. The boat card spans the full width at top with an integrated Share button. Stats labels in coral for warmth. Feels like a vintage nautical chart with modern UI. The warmest, most "adventure journal" direction.</p>
+    <div class="tags"><span class="tag">Sand overlays</span><span class="tag">Warm tones</span><span class="tag">Logbook feel</span><span class="tag">Adventure</span></div>
+  </div>
+  <div class="mockups">
+    <div class="mockup-label">Public Voyage Page — Mobile</div>
+    <div class="phone-frame dir-c">
+      <div class="map-bg"></div>
+      <svg class="track-line" viewBox="0 0 375 740"><path d="M280,100 C270,150 250,180 240,220 C230,260 200,300 180,340 C160,380 140,400 120,440 C100,480 90,500 80,540" stroke-opacity="0.85"/></svg>
+      <div class="stopover" style="top:98px;left:274px"></div>
+      <div class="stopover" style="top:218px;left:234px"></div>
+      <div class="stopover" style="top:338px;left:174px"></div>
+      <div class="stopover" style="top:438px;left:114px"></div>
+      <div class="boat-icon" style="top:530px;left:70px">⛵</div>
+      <div class="boat-card"><div><h3>Laurine</h3><span>Laurin Koster 28</span></div><button class="share-btn">Share</button></div>
+      <div class="stats-bar">
+        <div class="stat"><div class="stat-value">1,534</div><div class="stat-label">Sailed</div></div>
+        <div class="stat"><div class="stat-value">749</div><div class="stat-label">To go</div></div>
+        <div class="stat"><div class="stat-value">146</div><div class="stat-label">Days</div></div>
+        <div class="stat"><div class="stat-value">40</div><div class="stat-label">Ports</div></div>
+        <div class="stat"><div class="stat-value">7</div><div class="stat-label">Countries</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIRECTION D -->
+<section id="dir-d" class="direction">
+  <div class="direction-header">
+    <h2>D — Immersive Minimal</h2>
+    <p>Translucent glass overlays with backdrop blur. Maximum immersion — the map dominates everything. Minimal boat badge top-left, floating action button for the port panel, translucent stats bar. The most modern and immersive direction. The map is truly king.</p>
+    <div class="tags"><span class="tag">Glass morphism</span><span class="tag">Translucent</span><span class="tag">Maximum immersion</span><span class="tag">Modern</span></div>
+  </div>
+  <div class="mockups">
+    <div class="mockup-label">Public Voyage Page — Mobile</div>
+    <div class="phone-frame dir-d">
+      <div class="map-bg"></div>
+      <svg class="track-line" viewBox="0 0 375 740"><path d="M280,100 C270,150 250,180 240,220 C230,260 200,300 180,340 C160,380 140,400 120,440 C100,480 90,500 80,540" stroke-opacity="0.85"/></svg>
+      <div class="stopover" style="top:98px;left:274px"></div>
+      <div class="stopover" style="top:218px;left:234px"></div>
+      <div class="stopover" style="top:338px;left:174px"></div>
+      <div class="stopover" style="top:438px;left:114px"></div>
+      <div class="boat-icon" style="top:530px;left:70px">⛵</div>
+      <div class="boat-badge"><div class="dot"></div><span>Laurine</span></div>
+      <button class="action-fab">☰</button>
+      <div class="stats-bar">
+        <div class="stat"><div class="stat-value">1,534</div><div class="stat-label">Sailed</div></div>
+        <div class="stat"><div class="stat-value">749</div><div class="stat-label">To go</div></div>
+        <div class="stat"><div class="stat-value">146</div><div class="stat-label">Days</div></div>
+        <div class="stat"><div class="stat-value">40</div><div class="stat-label">Ports</div></div>
+        <div class="stat"><div class="stat-value">7</div><div class="stat-label">Countries</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="direction">
+  <div class="direction-header">
+    <h2>Dashboard — Creator Experience</h2>
+    <p>Two dashboard style options: warm (Sand background) and clean (Foam background). Voyage cards show a mini map preview with track, stats summary, and public/private badge.</p>
+  </div>
+  <div class="mockups">
+    <div class="comparison">
+      <div style="text-align:center">
+        <div class="mockup-label">Warm — Sand Background</div>
+        <div class="phone-frame dash-warm">
+          <div class="dashboard-bg"></div>
+          <div style="position:relative;z-index:2">
+            <div class="dash-header"><h2>My Voyages</h2><div class="dash-avatar">S</div></div>
+            <div class="voyage-card">
+              <div class="voyage-card-map">
+                <svg class="mini-track" viewBox="0 0 375 120"><path d="M300,20 C280,40 250,30 220,50 C190,70 160,60 130,80 C100,90 80,85 60,100"/></svg>
+              </div>
+              <div class="voyage-card-body">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                  <h3>Göteborg → Nice</h3>
+                  <span class="voyage-card-badge badge-public">Public</span>
+                </div>
+                <div class="voyage-card-stats">
+                  <div><span>1,534</span> nm</div>
+                  <div><span>146</span> days</div>
+                  <div><span>40</span> ports</div>
+                  <div><span>7</span> countries</div>
+                </div>
+              </div>
+            </div>
+            <div class="voyage-card">
+              <div class="voyage-card-map" style="height:80px">
+                <svg class="mini-track" viewBox="0 0 375 80"><path d="M60,40 C100,30 150,50 200,35 C250,20 300,40 340,30"/></svg>
+              </div>
+              <div class="voyage-card-body">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                  <h3>Weekend Brehat</h3>
+                  <span class="voyage-card-badge badge-private">Private</span>
+                </div>
+                <div class="voyage-card-stats">
+                  <div><span>42</span> nm</div>
+                  <div><span>2</span> days</div>
+                  <div><span>3</span> ports</div>
+                </div>
+              </div>
+            </div>
+            <button class="new-voyage-btn">+ New Voyage</button>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center">
+        <div class="mockup-label">Clean — Foam Background</div>
+        <div class="phone-frame dash-clean">
+          <div class="dashboard-bg"></div>
+          <div style="position:relative;z-index:2">
+            <div class="dash-header"><h2>My Voyages</h2><div class="dash-avatar">S</div></div>
+            <div class="voyage-card">
+              <div class="voyage-card-map">
+                <svg class="mini-track" viewBox="0 0 375 120"><path d="M300,20 C280,40 250,30 220,50 C190,70 160,60 130,80 C100,90 80,85 60,100"/></svg>
+              </div>
+              <div class="voyage-card-body">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                  <h3>Göteborg → Nice</h3>
+                  <span class="voyage-card-badge badge-public">Public</span>
+                </div>
+                <div class="voyage-card-stats">
+                  <div><span>1,534</span> nm</div>
+                  <div><span>146</span> days</div>
+                  <div><span>40</span> ports</div>
+                  <div><span>7</span> countries</div>
+                </div>
+              </div>
+            </div>
+            <div class="voyage-card">
+              <div class="voyage-card-map" style="height:80px">
+                <svg class="mini-track" viewBox="0 0 375 80"><path d="M60,40 C100,30 150,50 200,35 C250,20 300,40 340,30"/></svg>
+              </div>
+              <div class="voyage-card-body">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+                  <h3>Weekend Brehat</h3>
+                  <span class="voyage-card-badge badge-private">Private</span>
+                </div>
+                <div class="voyage-card-stats">
+                  <div><span>42</span> nm</div>
+                  <div><span>2</span> days</div>
+                  <div><span>3</span> ports</div>
+                </div>
+              </div>
+            </div>
+            <button class="new-voyage-btn">+ New Voyage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTTOM SHEET -->
+<section id="sheet" class="direction">
+  <div class="direction-header">
+    <h2>Bottom Sheet — Stopover Detail</h2>
+    <p>Google Maps-style bottom sheet that slides up when tapping a stopover marker. Shows port name, country, arrival/departure dates. Discreet "Add a note" placeholder ready for journal feature activation.</p>
+  </div>
+  <div class="mockups">
+    <div class="comparison">
+      <div style="text-align:center">
+        <div class="mockup-label">White Sheet</div>
+        <div class="phone-frame dir-a">
+          <div class="map-bg"></div>
+          <svg class="track-line" viewBox="0 0 375 740"><path d="M200,100 C190,200 180,250 200,350" stroke-opacity="0.85"/></svg>
+          <div class="stopover" style="top:348px;left:194px;width:18px;height:18px;border-width:3px"></div>
+          <div class="boat-card"><h3>Laurine</h3><span>Laurin Koster 28</span></div>
+          <div class="bottom-sheet" style="background:var(--white)">
+            <div class="sheet-handle"></div>
+            <div class="sheet-port-name" style="color:var(--navy)">Audierne</div>
+            <div class="sheet-meta" style="color:var(--mist)">Finistère, France 🇫🇷</div>
+            <div class="sheet-dates" style="color:var(--slate)">
+              <div>Arrived<strong style="color:var(--navy)">Nov 28, 2025</strong></div>
+              <div>Departed<strong style="color:var(--navy)">Nov 30, 2025</strong></div>
+              <div style="color:var(--mist)">2 nights</div>
+            </div>
+            <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--foam)">
+              <button style="background:transparent;border:1px dashed var(--mist);color:var(--mist);padding:8px 16px;border-radius:8px;font-family:var(--font-body);font-size:13px;cursor:pointer;width:100%">+ Add a note</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center">
+        <div class="mockup-label">Sand Sheet</div>
+        <div class="phone-frame dir-c">
+          <div class="map-bg"></div>
+          <svg class="track-line" viewBox="0 0 375 740"><path d="M200,100 C190,200 180,250 200,350" stroke-opacity="0.85"/></svg>
+          <div class="stopover" style="top:348px;left:194px;width:18px;height:18px;border-width:3px"></div>
+          <div class="boat-card" style="right:16px"><div><h3>Laurine</h3><span>Laurin Koster 28</span></div><button class="share-btn">Share</button></div>
+          <div class="bottom-sheet" style="background:var(--sand)">
+            <div class="sheet-handle"></div>
+            <div class="sheet-port-name" style="color:var(--navy)">Audierne</div>
+            <div class="sheet-meta" style="color:var(--coral)">Finistère, France 🇫🇷</div>
+            <div class="sheet-dates" style="color:var(--slate)">
+              <div>Arrived<strong style="color:var(--navy)">Nov 28, 2025</strong></div>
+              <div>Departed<strong style="color:var(--navy)">Nov 30, 2025</strong></div>
+              <div style="color:var(--coral)">2 nights</div>
+            </div>
+            <div style="margin-top:16px;padding-top:12px;border-top:1px solid rgba(27,45,79,0.1)">
+              <button style="background:transparent;border:1px dashed var(--coral);color:var(--coral);padding:8px 16px;border-radius:8px;font-family:var(--font-body);font-size:13px;cursor:pointer;width:100%;font-weight:600">+ Add a note</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.direction').forEach(d => d.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+
+</body>
+</html>
