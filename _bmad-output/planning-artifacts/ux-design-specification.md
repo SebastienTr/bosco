@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 inputDocuments:
   - '_bmad-output/planning-artifacts/prd.md'
   - '_bmad-output/planning-artifacts/prd-validation-report.md'
@@ -480,3 +480,483 @@ This is a combination of an established OS pattern (share sheet) with a novel ou
 - Stats numbers (Navy on White): 12.5:1 (AAA)
 - All interactive elements minimum 44x44px touch target on mobile
 - Focus indicators: 2px Ocean outline with 2px offset — visible on all backgrounds
+
+## Design Direction Decision
+
+### Design Directions Explored
+
+Four visual directions were explored for the public voyage page, two dashboard variants, and two bottom sheet styles, all applying the Ocean & Sunset palette with DM Serif Display + Nunito typography. Interactive HTML showcase generated at `_bmad-output/planning-artifacts/ux-design-directions.html`.
+
+### Chosen Direction
+
+**Public voyage page:** Direction D — Immersive Minimal
+- Translucent glass overlays with backdrop blur (navy at 75% opacity)
+- Minimal boat badge top-left (pill-shaped, green dot + boat name)
+- Floating action button for ports panel access
+- Translucent stats bar at bottom center
+- Maximum map immersion — the map is truly king
+
+**Dashboard (creator):** Clean — Foam background
+- Light gray (#F1F5F9) background for functional clarity
+- White voyage cards with mini map preview and track
+- Clean typography, public/private badges, stats summary
+- "+ New Voyage" button with dashed border in Ocean blue
+
+**Bottom sheet (stopover detail):** Sand
+- Warm sand (#FDF6EC) background — logbook intimacy
+- Port name in DM Serif Display, country with flag emoji
+- Arrival/departure dates clearly displayed
+- Coral-accented "Add a note" placeholder — warm, inviting, not pushy
+- Duration shown ("2 nights") for context
+
+### Design Rationale
+
+The combination creates a deliberate emotional gradient:
+- **Impressive at macro level** (immersive glass overlays = modern, cinematic, shareable)
+- **Efficient for utility** (clean foam dashboard = functional, fast, no decoration)
+- **Warm at intimate level** (sand detail panels = personal, logbook feel, nostalgic)
+
+This serves all three audiences: the visitor gets immersion, the creator gets efficiency, and the memory gets warmth.
+
+### Implementation Approach
+
+- Glass morphism via CSS `backdrop-filter: blur(12px)` with navy rgba fallback for browsers without support
+- Stats bar and boat badge share the same translucent treatment for visual consistency
+- Dashboard uses shadcn/ui Card component with custom styling
+- Bottom sheet implemented as a draggable panel (touch-friendly, swipe to dismiss)
+- Sand color applied only to detail panels — never to the main map overlays, maintaining the immersive contrast
+
+## User Journey Flows
+
+### Journey 1: Onboarding + First Import
+
+**Trigger:** Sailor discovers Bosco (word of mouth, social media link, search)
+
+```mermaid
+flowchart TD
+    A[Landing page] --> B[Tap 'Get Started']
+    B --> C[Enter email]
+    C --> D[Magic link sent — check email screen]
+    D --> E[Tap magic link in email]
+    E --> F[Account created — Profile setup screen]
+    F --> G[Enter pseudo + boat name]
+    G --> H[Tap 'Create my first voyage']
+    H --> I[Enter voyage name]
+    I --> J[Voyage created — empty map]
+    J --> K{Has GPX file ready?}
+    K -->|Yes| L[Tap 'Import track']
+    K -->|No| M[See empty voyage with prompt: 'Export from Navionics and share to Bosco']
+    L --> N[File picker / share sheet]
+    N --> O[Processing: parse → simplify → detect stopovers]
+    O --> P[Preview screen: tracks + stopovers on map]
+    P --> Q[Edit stopover names if needed]
+    Q --> R[Tap 'Add to voyage']
+    R --> S[Voyage view with first track visible]
+    S --> T["Success toast + stats appear — FIRST PRIDE MOMENT"]
+```
+
+**Key decisions:**
+- Profile setup is ONE screen: pseudo + boat name. Nothing else required.
+- Voyage creation is immediate after profile — no dashboard detour for first-time users.
+- Empty voyage shows a clear prompt explaining the Navionics export flow.
+- First import success triggers the emotional hook — the sailor sees their track on the nautical map.
+
+**Error paths:**
+- Magic link expired → resend link with clear message
+- Pseudo already taken → suggest alternatives inline
+- GPX file invalid → clear error message with supported format info
+- Processing fails → retry option, never lose the selected file
+
+### Journey 2: Returning Import via Share Sheet
+
+**Trigger:** Sailor exports tracks from Navionics at port
+
+```mermaid
+flowchart TD
+    A[Navionics → Tracks → Export] --> B[OS share sheet opens]
+    B --> C[Tap 'Bosco']
+    C --> D{User authenticated?}
+    D -->|Yes| E{Has existing voyage?}
+    D -->|No| F[Redirect to login → magic link → return to import]
+    E -->|Yes| G[Auto-select last active voyage]
+    E -->|No| H[Inline voyage creation — name field pre-filled]
+    G --> I[Processing: parse → simplify → detect stopovers]
+    H --> I
+    I --> J[Preview screen]
+    J --> K[Map shows all tracks from file in distinct colors]
+    K --> L[Track list: name, distance, duration, date — checkboxes]
+    L --> M[Stopovers shown with proposed names — tap to edit]
+    M --> N{Satisfied with preview?}
+    N -->|Yes| O[Tap 'Add to voyage']
+    N -->|Deselect tracks| L
+    N -->|Edit stopover| M
+    O --> P[Upload simplified GeoJSON + stopovers]
+    P --> Q[Voyage view — new tracks visible alongside existing]
+    Q --> R["Stats update — toast: '2 tracks added to Göteborg → Nice'"]
+```
+
+**Key decisions:**
+- The share sheet is THE entry point — no manual file picking needed (though available as fallback in the app).
+- Auto-selects last active voyage — zero decisions for the common case.
+- All tracks selected by default — the sailor deselects if needed, not the other way.
+- Stopover editing is optional on this screen — can always fix later.
+
+**Timing target:** Under 2 minutes from Navionics export to seeing the updated voyage map.
+
+### Journey 3: Visitor Explores a Voyage
+
+**Trigger:** Visitor receives a shared link (WhatsApp, SMS, social media, email)
+
+```mermaid
+flowchart TD
+    A[Tap shared link] --> B[Public voyage page loads — SSR]
+    B --> C[Full-screen map with OpenSeaMap nautical tiles]
+    C --> D["Route animation begins — track draws itself on the map"]
+    D --> E[Animation completes — full voyage visible]
+    E --> F[Stats bar visible: distance, to go, days, ports, countries]
+    F --> G{Visitor interaction}
+    G -->|Pinch/zoom| H[Zoom into track detail — tacks visible]
+    G -->|Tap stopover marker| I[Sand bottom sheet slides up]
+    I --> J[Port name, country, arrival/departure dates]
+    J --> K[Swipe down to dismiss]
+    G -->|Tap Ports button| L[Ports panel slides in from right]
+    L --> M[Stopovers listed by country with flags]
+    M --> N[Tap a port → map centers on it + bottom sheet]
+    G -->|Tap boat badge| O[Boat info — name, type, sailor pseudo]
+    O --> P[Link to sailor's public profile]
+    K --> G
+    N --> G
+```
+
+**Key decisions:**
+- Page loads fast (SSR) — no loading spinner, map appears immediately.
+- Animation plays automatically on first visit — this is the wow moment.
+- No sign-up prompt, no cookie banner blocking the view, no interruptions.
+- All interaction is optional — the visitor can just watch the animation and leave impressed.
+- Bottom sheet (sand) provides warm detail when curiosity drives a tap.
+
+**Desktop adaptation:**
+- Same layout but with more map real estate.
+- Ports panel can be persistently open on the left side (>1024px screens).
+- Stats bar wider with more spacing between stats.
+
+### Journey 4: Share a Voyage
+
+**Trigger:** Sailor wants to share their voyage with others
+
+```mermaid
+flowchart TD
+    A[Voyage view — authenticated] --> B[Tap settings/share icon]
+    B --> C{Voyage currently public?}
+    C -->|No — Private| D[Toggle 'Make public']
+    C -->|Yes — Public| F
+    D --> E[Confirmation: 'Your voyage will be visible to anyone with the link']
+    E --> F[Public URL shown: bosco.app/pseudo/voyage-slug]
+    F --> G[Tap 'Copy link']
+    G --> H[Link copied — toast confirmation]
+    H --> I[Share via WhatsApp, SMS, social media, email — native OS share]
+```
+
+**Key decisions:**
+- Sharing is 2 taps: toggle public → copy link. No complex sharing wizard.
+- The public URL is human-readable and memorable (`/pseudo/voyage-slug`).
+- OS native share is available as a secondary action for direct social sharing.
+- Open Graph meta tags ensure rich link previews when shared (map image + voyage name + stats).
+
+### Journey Patterns
+
+**Navigation patterns across all journeys:**
+- **Map-as-home:** The voyage map is the central hub. All actions return to it. No deep navigation trees.
+- **Progressive disclosure:** Information appears on demand (tap for detail), never pre-loaded on screen.
+- **Contextual actions:** Buttons appear where they're needed, not in a distant menu.
+
+**Feedback patterns across all journeys:**
+- **Processing states:** Always show what's happening during async operations (parsing, uploading, geocoding). Never a generic spinner.
+- **Success confirmation:** Toast messages confirm completed actions with specific detail ("2 tracks added to...").
+- **Error recovery:** Every error state offers a clear next step. Never a dead end.
+
+**Decision patterns across all journeys:**
+- **Smart defaults:** The system proposes (auto-select voyage, auto-name stopovers, auto-select all tracks). The user validates or overrides.
+- **Non-blocking corrections:** Stopovers can be renamed before or after import. Nothing forces a decision at import time.
+- **One-tap actions:** Core actions (import, share, toggle public) are always one tap away.
+
+### Flow Optimization Principles
+
+1. **Minimize steps to value:** First import is 4 screens (profile → voyage → import → map). Returning import is 2 screens (preview → map). Visitor experience is 0 screens (direct to animated map).
+
+2. **Front-load automation, back-load correction:** Parse, simplify, detect stopovers, name ports — all automatic. The sailor corrects only what the system got wrong, and only when they want to.
+
+3. **Never interrupt the emotional moment:** After import, the sailor sees their voyage map. No modals, no "what next" prompts, no upsells. Let the pride sink in.
+
+4. **Dead ends don't exist:** Every screen has a clear path forward. Empty states explain what to do. Errors offer recovery. The sailor always knows their next action.
+
+## Component Strategy
+
+### Design System Components (shadcn/ui — Creator Side)
+
+| Component | Usage | Customization |
+|-----------|-------|---------------|
+| **Button** | CTAs, actions, submit forms | Coral primary, Ocean secondary, ghost for tertiary |
+| **Input** | Email, pseudo, boat name, voyage name, stopover rename | Navy border, Sand focus ring |
+| **Card** | Voyage cards on dashboard | White bg, mini map preview, 12px radius |
+| **Dialog** | Confirmations (make public, delete voyage) | Minimal, centered, clear actions |
+| **Toast** | Success/error feedback ("2 tracks added...") | Bottom-center on mobile, auto-dismiss |
+| **Toggle** | Public/private switch | Success green when public |
+| **Checkbox** | Track selection in import preview | Ocean blue checked state |
+| **DropdownMenu** | Voyage settings, profile menu | Standard shadcn styling |
+| **Form** | Profile setup, voyage creation | Nunito labels, inline validation |
+| **Skeleton** | Loading states for dashboard cards | Foam color pulse |
+
+### Custom Components (Tailwind — Public + Import)
+
+#### MapCanvas
+
+**Purpose:** Full-bleed Leaflet map wrapper with OpenSeaMap nautical layer
+**Usage:** Public voyage page, import preview, voyage view (creator)
+**Anatomy:** OpenStreetMap base tiles → OpenSeaMap overlay → track layers → stopover markers → boat icon
+**States:** Loading (skeleton) → Loaded (idle) → Animating (route draw) → Interactive (pan/zoom/tap)
+**Variants:** Full-screen (public page), contained (import preview), mini (dashboard card)
+**Accessibility:** Keyboard zoom (+/-), screen reader announces "Sailing voyage map"
+
+#### StatsBar
+
+**Purpose:** Floating achievement display showing voyage statistics
+**Usage:** Public voyage page (bottom center), voyage view (creator)
+**Anatomy:** Translucent navy pill → stat groups (value + label)
+**Content:** Distance sailed (nm) | To go (nm) | Days | Ports | Countries
+**States:** Default (translucent glass, Direction D) | Updating (number count animation on new import)
+**Variants:** Compact (5 stats, mobile) | Extended (additional stats on desktop)
+**Accessibility:** aria-label per stat: "1,534 nautical miles sailed"
+
+#### BoatBadge
+
+**Purpose:** Minimal boat identification overlay on public page
+**Usage:** Public voyage page (top-left)
+**Anatomy:** Translucent navy pill → green status dot → boat name
+**States:** Default | Tapped → expands to show boat type + sailor pseudo + link to profile
+**Accessibility:** Button role, expands/collapses detail
+
+#### StopoverMarker
+
+**Purpose:** Waypoint indicator on the map for detected stopovers
+**Usage:** All map views
+**Anatomy:** Coral circle (14px) with white 2px border
+**States:** Default (14px) | Hover/focus (16px, shadow) | Selected (18px, triggers bottom sheet) | Cluster (grouped markers at low zoom)
+**Accessibility:** Button role, aria-label: "Stopover: Audierne, France"
+
+#### StopoverSheet
+
+**Purpose:** Bottom sheet showing stopover detail on marker tap
+**Usage:** Public voyage page, voyage view (creator)
+**Anatomy:** Sand background → drag handle → port name (DM Serif) → country + flag → arrival/departure dates → duration → "Add a note" placeholder
+**States:** Hidden | Peek (summary visible) | Full (all detail + note placeholder) | Editing (creator can rename port)
+**Interaction:** Swipe up to expand, swipe down to dismiss, tap outside to dismiss
+**Accessibility:** Dialog role, focus trap when open, Escape to dismiss
+
+#### PortsPanel
+
+**Purpose:** Browsable list of all stopovers grouped by country
+**Usage:** Public voyage page (tap FAB), voyage view (creator)
+**Anatomy:** Sliding panel from right → country groups with flag → port names with arrival dates → tap to navigate map
+**States:** Hidden | Open (slide in from right, overlay on map) | Port selected (map centers + sheet opens)
+**Variants:** Mobile (full overlay panel) | Desktop >1024px (persistent sidebar)
+**Accessibility:** Navigation landmark, arrow keys between ports
+
+#### RouteAnimation
+
+**Purpose:** Animated track drawing on first page visit
+**Usage:** Public voyage page
+**Anatomy:** Invisible → progressive line drawing along track coordinates → boat icon follows tip
+**States:** Not started | Playing | Paused (tap to pause/resume) | Complete (static track)
+**Timing:** Adapts to track length — short tracks (<50nm) animate faster, long voyages (>1000nm) pace for ~8 seconds total
+**Accessibility:** prefers-reduced-motion → skip animation, show final state immediately
+
+#### ActionFAB
+
+**Purpose:** Floating action button for secondary actions
+**Usage:** Public voyage page (ports panel toggle)
+**Anatomy:** 48px coral circle → icon (hamburger for ports)
+**States:** Default | Pressed (scale 0.95) | Active (panel open, icon transitions to X)
+**Accessibility:** Button role, aria-label: "Open ports panel"
+
+#### ImportProgress
+
+**Purpose:** Processing feedback during GPX import
+**Usage:** Import flow (between file selection and preview)
+**Anatomy:** Full-screen overlay → step indicator → progress bar → current step label
+**Steps:** "Parsing tracks..." → "Simplifying..." → "Detecting stopovers..." → "Preparing preview..."
+**States:** Processing (animated) | Error (retry button) | Complete (auto-transition to preview)
+**Accessibility:** aria-live region, progress role with value
+
+#### VoyageCard
+
+**Purpose:** Voyage summary card on dashboard
+**Usage:** Dashboard
+**Anatomy:** Mini map preview (contained MapCanvas) → card body → voyage name (DM Serif) → stats row → public/private badge
+**States:** Default | Hover (slight lift shadow) | Empty (dashed border, "Import your first track" prompt)
+**Accessibility:** Link role to voyage view, stats as aria-label
+
+#### EmptyState
+
+**Purpose:** Guide user when no content exists yet
+**Usage:** Empty voyage (no tracks), empty dashboard (no voyages)
+**Anatomy:** Illustration/icon → title → description → CTA button
+**Variants:** Empty voyage: "Export from Navionics and share to Bosco" + illustration | Empty dashboard: "Create your first voyage" + CTA
+**Accessibility:** Descriptive heading, CTA is the primary focusable element
+
+### Component Implementation Strategy
+
+**Build order follows user journey priority:**
+
+**Phase 1 — Core import flow (Journey 2):**
+MapCanvas, ImportProgress, StopoverMarker, StatsBar, BoatBadge, Toast
+
+**Phase 2 — Public page (Journey 3):**
+RouteAnimation, StopoverSheet, PortsPanel, ActionFAB
+
+**Phase 3 — Creator management (Journeys 1 & 4):**
+VoyageCard, EmptyState, all shadcn/ui components (Form, Dialog, Toggle, etc.)
+
+**Shared patterns:**
+- All custom components use Tailwind design tokens from `tailwind.config.ts`
+- Glass morphism treatment (translucent navy + backdrop blur) applied consistently to StatsBar, BoatBadge, PortsPanel overlay
+- Sand treatment applied only to StopoverSheet
+- 44px minimum touch targets on all interactive elements
+- All transitions at 200ms ease-out for consistency
+
+## UX Consistency Patterns
+
+### Button Hierarchy
+
+| Level | Style | Color | Usage |
+|-------|-------|-------|-------|
+| Primary | Solid, filled | Coral (`#E8614D`) | Main CTA per screen: "Add to voyage", "Create voyage", "Get Started" |
+| Secondary | Solid, filled | Ocean (`#2563EB`) | Supporting actions: "Copy link", "Import track" |
+| Tertiary | Ghost, text only | Navy (`#1B2D4F`) | Minor actions: "Cancel", "Skip", "Back" |
+| Danger | Solid, filled | Error (`#EF4444`) | Destructive actions: "Delete voyage" (always behind a confirmation dialog) |
+
+**Rules:**
+- Maximum one primary button visible per screen
+- Destructive actions always require a confirmation Dialog
+- All buttons minimum 44px height on mobile
+
+### Feedback Patterns
+
+| Type | Component | Duration | Usage |
+|------|-----------|----------|-------|
+| Success | Toast (bottom-center) | 4s auto-dismiss | "2 tracks added", "Link copied", "Voyage created" |
+| Error (recoverable) | Toast (bottom-center) | Persistent until dismissed | "Import failed — tap to retry" |
+| Error (critical) | Dialog (centered modal) | User-dismissed | "Could not save — check your connection" |
+| Processing | ImportProgress (full overlay) | Until complete | GPX parsing, simplification, upload |
+| Loading | Skeleton | Until content loaded | Dashboard cards, voyage data |
+| Info | Inline text | Persistent | Empty state prompts, format hints |
+
+**Rules:**
+- Never use a generic spinner — always show what is happening
+- Toasts stack from bottom, max 2 visible at once
+- Error toasts include a clear recovery action (retry, dismiss, contact)
+
+### Form Patterns
+
+- Labels above inputs (Nunito SemiBold, 13px, Slate)
+- Inline validation on blur — error message appears below the field in Error red
+- Success state: green check icon appears when field is valid
+- Required fields marked with subtle dot, not asterisk
+- Pseudo field: real-time availability check with debounce
+
+### Navigation Patterns
+
+- **No hamburger menu for main navigation** — the map IS the main view, dashboard is one tap away
+- Creator navigation: bottom tab bar with 3 tabs (Dashboard, Voyage, Profile) — always visible
+- Public page: no navigation chrome — map is full-bleed, all interaction via floating overlays
+- Back navigation: always available via OS back gesture or explicit back arrow on sub-screens
+
+### Overlay Patterns
+
+- **Bottom sheet:** Sand background, drag handle, swipe to dismiss. Used for stopover detail.
+- **Side panel:** Slides from right, glass morphism background, full height. Used for ports list.
+- **Dialog:** Centered, dimmed backdrop, white card. Used for confirmations only — never for content.
+- **Toast:** Bottom-center, auto-dismiss, compact. Used for action feedback.
+
+**Rule:** Maximum one overlay visible at a time. Opening a new overlay dismisses the current one.
+
+## Responsive Design & Accessibility
+
+### Breakpoint Strategy
+
+| Breakpoint | Width | Target | Layout changes |
+|------------|-------|--------|----------------|
+| Mobile | 375px — 767px | Primary. Smartphone at port. | Single column, bottom tab nav, full-bleed map, stacked overlays |
+| Tablet | 768px — 1023px | Secondary. iPad browsing. | Same as mobile but with more map real estate, larger touch targets |
+| Desktop | 1024px+ | Visitor browsing, creator at home. | Ports panel persistent sidebar, wider stats bar, multi-column dashboard |
+
+### Mobile (375px — 767px) — Primary
+
+**Public page:**
+- Full-bleed map, zero chrome
+- BoatBadge top-left, ActionFAB bottom-right
+- StatsBar bottom-center (compact, 5 stats)
+- StopoverSheet slides up from bottom
+- PortsPanel full overlay from right
+
+**Creator (dashboard):**
+- Single column, 16px horizontal padding
+- VoyageCards full width, stacked
+- Bottom tab navigation (Dashboard, Voyage, Profile)
+
+**Import flow:**
+- Full-screen map preview
+- Track list as scrollable bottom overlay
+- "Add to voyage" button fixed at bottom
+
+### Desktop (1024px+)
+
+**Public page:**
+- Same full-bleed map with more space
+- PortsPanel as persistent sidebar on the left (280px width)
+- StatsBar wider, more breathing room between stats
+- StopoverSheet wider (max-width 400px)
+- BoatBadge can show more detail (boat name + type visible by default)
+
+**Creator (dashboard):**
+- Max-width 1200px centered
+- 2-column grid for VoyageCards
+- Side navigation replaces bottom tabs
+- Import preview: map takes 2/3, track list takes 1/3 side panel
+
+### Touch & Interaction
+
+- All interactive elements: 44x44px minimum touch target
+- Map gestures: pinch zoom, pan, tap markers (Leaflet defaults)
+- Bottom sheet: swipe up to expand, swipe down to dismiss
+- Ports panel: swipe left to dismiss on mobile
+- Pull-to-refresh on dashboard (native PWA behavior)
+
+### Accessibility (WCAG 2.1 AA)
+
+**Color & Contrast:**
+- All text meets AA contrast ratio (4.5:1 for body, 3:1 for large text)
+- Never rely on color alone to convey information — icons and labels supplement
+- Coral stopover markers have white border for visibility on any map background
+
+**Keyboard Navigation:**
+- Tab order follows visual hierarchy (top-left to bottom-right)
+- Map: +/- keys for zoom, arrow keys for pan
+- Bottom sheet: Escape to dismiss, Tab trapped while open
+- All custom components have visible focus indicators (2px Ocean outline)
+
+**Screen Readers:**
+- Map announces: "Sailing voyage map showing route from Göteborg to current position"
+- Stats bar: each stat has aria-label ("1,534 nautical miles sailed")
+- Stopover markers: "Stopover: Audierne, France. Tap for details"
+- Route animation: aria-live announces "Route animation playing" / "Route animation complete"
+
+**Motion:**
+- `prefers-reduced-motion`: skip route animation, show final state
+- All transitions respect this preference
+- No auto-playing content beyond the initial route animation
+
+**PWA Accessibility:**
+- Share target import works with Android TalkBack
+- Install prompt is accessible via keyboard
+- Service worker status communicated via aria-live region
