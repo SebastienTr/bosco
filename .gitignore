@@ -12,6 +12,7 @@ data/canal-des-deux-mers.json
 
 # Claude context files (auto-generated, not project code)
 **/CLAUDE.md
+!/CLAUDE.md
 
 # BMad
 .agents

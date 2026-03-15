@@ -1,5 +1,8 @@
 ---
-stepsCompleted: [1, 2, 3, 4, 5, 6, 7]
+stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8]
+lastStep: 8
+status: 'complete'
+completedAt: '2026-03-15'
 inputDocuments:
   - '_bmad-output/planning-artifacts/prd.md'
   - '_bmad-output/planning-artifacts/prd-validation-report.md'
@@ -818,3 +821,100 @@ npm run test                      # Vitest unit/integration
 npx playwright test               # E2E tests
 # Push to main → Vercel auto-deploys
 ```
+
+## Architecture Validation Results
+
+### Coherence Validation ✅
+
+**Decision Compatibility:**
+All technology choices are compatible and current as of March 2026. Next.js 16 + React 19.2 + TypeScript strict + Tailwind CSS 4 + shadcn/ui + Supabase + Leaflet + Zod 4 + Vitest 4 + Playwright 1.58 + Sentry 10. No version conflicts or incompatibilities detected.
+
+**Pattern Consistency:**
+3-tier containment rule is consistently reflected in directory structure, import patterns, and code examples. Naming conventions (PascalCase components, kebab-case utils, snake_case DB, camelCase functions) are non-contradictory and follow ecosystem standards. Server Action `{ data, error }` format is uniform. GeoJSON `[lng, lat]` convention properly documented with Leaflet conversion note.
+
+**Structure Alignment:**
+Project directory structure maps 1:1 to architectural boundaries (Tier 1–4). Feature-based component organization supports the FR mapping. Collocated tests align with Vitest config. E2E tests in `tests/e2e/` align with Playwright config.
+
+### Requirements Coverage ✅
+
+**Functional Requirements:** 9/9 FRs fully covered with explicit directory mappings and data access paths.
+
+**Non-Functional Requirements:** 18/18 NFRs covered.
+- Performance (NFR-1 to 4): SSR + CDN, Web Worker, Leaflet, simplified GeoJSON
+- Security (NFR-5 to 8): RLS + app-level auth, Zod validation, CSP headers
+- Mobile (NFR-9 to 12): Tailwind responsive, Leaflet touch, PWA share target, image compression
+- SEO (NFR-13 to 15): Server Components, OG image generation, JSON-LD
+- i18n (NFR-16 to 18): English default, collocated `messages.ts` pattern for string externalization, unit formatting abstracted in `format.ts`
+
+### Implementation Readiness ✅
+
+**Decision Completeness:** All critical decisions documented with verified versions and rationale. Technology stack fully specified. AI Agent Development Principles provide explicit coding constraints.
+
+**Structure Completeness:** Full project tree with every file and directory. FR → structure mapping table. External integrations table. Data flow diagrams. Development workflow commands.
+
+**Pattern Completeness:** Naming, structure, format, communication, process, and i18n patterns all defined with concrete good examples and anti-patterns.
+
+### Gap Analysis Results
+
+**Critical Gaps:** None.
+
+**Resolved Gaps:**
+- NFR-17 (string externalization): Resolved with collocated `messages.ts` pattern. Migration path to `next-intl` documented.
+
+**Deferred (acceptable):**
+- PWA implementation specifics (Serwist vs custom): Both options listed. Decision deferred to implementation — either works.
+- Geocode API route rate limiting implementation: Pattern described (cached, rate-limited), exact implementation deferred.
+
+### Architecture Completeness Checklist
+
+**✅ Requirements Analysis**
+- [x] Project context thoroughly analyzed
+- [x] Scale and complexity assessed (Moderate)
+- [x] Technical constraints identified (7 constraints)
+- [x] Cross-cutting concerns mapped (7 concerns)
+
+**✅ Vendor Strategy**
+- [x] Option B — Lightweight Abstractions over Supabase
+- [x] 3-tier containment rule defined and enforced
+- [x] Data access layer (`src/lib/data/`) isolates all queries
+- [x] Migration path documented (replace Tier 1 + Tier 2 only)
+
+**✅ Architectural Decisions**
+- [x] Critical decisions documented with versions
+- [x] Technology stack fully specified (Next.js 16, Zod 4, Vitest 4, Playwright 1.58, Sentry 10)
+- [x] Integration patterns defined
+- [x] Performance considerations addressed
+- [x] AI Agent Development Principles established
+
+**✅ Implementation Patterns**
+- [x] Naming conventions established (DB, code, API)
+- [x] Structure patterns defined (feature-based, collocated)
+- [x] Format patterns specified (return types, error codes, dates, GeoJSON)
+- [x] Communication patterns documented (Worker messages, state management)
+- [x] Process patterns complete (loading, forms, errors, i18n readiness)
+- [x] Good examples and anti-patterns provided
+
+**✅ Project Structure**
+- [x] Complete directory structure defined
+- [x] 3-tier component boundaries established
+- [x] Integration points mapped (internal + external)
+- [x] FR → structure mapping complete (9/9)
+- [x] Development workflow documented
+
+### Architecture Readiness Assessment
+
+**Overall Status:** READY FOR IMPLEMENTATION
+
+**Confidence Level:** High
+
+**Key Strengths:**
+- Complete vendor isolation via 3-tier containment — Supabase can be replaced without touching Server Actions or components
+- AI-first design — explicit coding principles, predictable naming, no magic, strict types
+- Full FR/NFR coverage with traceable mappings
+- Concrete code examples for every pattern
+
+**Areas for Future Enhancement:**
+- i18n: migrate from `messages.ts` to `next-intl` when French UI is needed
+- PWA: finalize Serwist vs custom service worker during implementation
+- Caching: introduce TanStack Query if client-side refetch patterns become complex
+- Global state: add Zustand if shared state need emerges
