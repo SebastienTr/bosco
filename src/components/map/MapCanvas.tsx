@@ -18,6 +18,7 @@ export interface MapCanvasProps {
   trackColors?: string[];
   className?: string;
   ariaLabel?: string;
+  children?: React.ReactNode;
 }
 
 const DEFAULT_CENTER: LatLngExpression = [43.3, 5.4]; // Mediterranean
@@ -52,6 +53,7 @@ export default function MapCanvas({
   trackColors,
   className,
   ariaLabel = DEFAULT_ARIA_LABEL,
+  children,
 }: MapCanvasProps) {
   return (
     <div className={className}>
@@ -68,6 +70,7 @@ export default function MapCanvas({
         {tracks.length > 0 && (
           <RouteLayer tracks={tracks} trackColors={trackColors} />
         )}
+        {children}
       </MapContainer>
     </div>
   );

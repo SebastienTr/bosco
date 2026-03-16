@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireAuth } from "@/lib/auth";
 import { getVoyageById } from "@/lib/data/voyages";
 import { insertLegs } from "@/lib/data/legs";
+import { persistStopovers } from "@/app/voyage/[id]/stopover/actions";
 import type { ActionResponse } from "@/types";
 import type { Leg } from "@/lib/data/legs";
 
@@ -20,9 +21,19 @@ const LegSchema = z.object({
   ended_at: z.string().nullable(),
 });
 
+const StopoverInputSchema = z.object({
+  longitude: z.number(),
+  latitude: z.number(),
+  type: z.enum(["departure", "arrival", "waypoint"]),
+  trackIndices: z.array(z.number()),
+  arrived_at: z.string().nullable(),
+  departed_at: z.string().nullable(),
+});
+
 const ImportTracksSchema = z.object({
   voyageId: z.string().uuid(),
   legs: z.array(LegSchema).min(1, "At least one track must be selected"),
+  stopovers: z.array(StopoverInputSchema).optional(),
 });
 
 export async function importTracks(
@@ -76,6 +87,14 @@ export async function importTracks(
       data: null,
       error: { code: "EXTERNAL_SERVICE_ERROR", message: error.message },
     };
+  }
+
+  // Persist stopovers if provided (non-blocking for geocoding)
+  if (parsed.data.stopovers && parsed.data.stopovers.length > 0) {
+    void persistStopovers({
+      voyageId: parsed.data.voyageId,
+      stopovers: parsed.data.stopovers,
+    });
   }
 
   return { data, error: null };

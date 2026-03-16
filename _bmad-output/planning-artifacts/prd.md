@@ -233,6 +233,7 @@ editHistory:
 - Users can import selected tracks as separate legs or as a merged leg
 - Imported tracks preserve visible tacks and course changes at zoom level 14
 - Users can view per-leg stats: distance (nm), duration, average speed (kts), max speed, start/end timestamps
+- Users can delete individual legs from a voyage
 
 ### FR-5: Stopovers
 

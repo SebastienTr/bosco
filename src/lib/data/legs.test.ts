@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { insertLegs, getLegsByVoyageId } from "./legs";
+import { insertLegs, getLegsByVoyageId, deleteLeg } from "./legs";
 
 // Mock supabase server client
 const mockOrder = vi.fn();
 const mockEq = vi.fn();
 const mockSelect = vi.fn();
 const mockInsert = vi.fn();
+const mockDelete = vi.fn();
 const mockFrom = vi.fn();
 
 vi.mock("@/lib/supabase/server", () => ({
@@ -22,6 +23,7 @@ beforeEach(() => {
   mockFrom.mockReturnValue({
     insert: mockInsert,
     select: mockSelect,
+    delete: mockDelete,
   });
   mockInsert.mockReturnValue({ select: mockSelect });
   mockSelect.mockReturnValue({
@@ -31,6 +33,7 @@ beforeEach(() => {
   mockEq.mockReturnValue({
     order: mockOrder,
   });
+  mockDelete.mockReturnValue({ eq: mockEq });
 });
 
 describe("insertLegs", () => {
@@ -107,6 +110,19 @@ describe("getLegsByVoyageId", () => {
     const result = await getLegsByVoyageId("v-1");
 
     expect(result.data).toEqual([]);
+    expect(result.error).toBeNull();
+  });
+});
+
+describe("deleteLeg", () => {
+  it("should delete a leg by id", async () => {
+    mockEq.mockReturnValue({ data: null, error: null });
+
+    const result = await deleteLeg("leg-123");
+
+    expect(mockFrom).toHaveBeenCalledWith("legs");
+    expect(mockDelete).toHaveBeenCalled();
+    expect(mockEq).toHaveBeenCalledWith("id", "leg-123");
     expect(result.error).toBeNull();
   });
 });

@@ -10,6 +10,6 @@ const MapCanvas = dynamic(() => import("./MapCanvas"), {
   ),
 });
 
-export default function MapLoader(props: MapCanvasProps) {
-  return <MapCanvas {...props} />;
+export default function MapLoader({ children, ...props }: MapCanvasProps) {
+  return <MapCanvas {...props}>{children}</MapCanvas>;
 }

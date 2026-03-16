@@ -4,8 +4,8 @@ import { redirect, notFound } from "next/navigation";
 import { getUser } from "@/lib/auth";
 import { getVoyageById } from "@/lib/data/voyages";
 import { getLegsByVoyageId } from "@/lib/data/legs";
-import { EmptyState } from "@/components/shared/EmptyState";
-import MapLoader from "@/components/map/MapLoader";
+import { getStopoversByVoyageId } from "@/lib/data/stopovers";
+import { VoyageContent } from "@/components/voyage/VoyageContent";
 import { messages } from "./messages";
 
 export const metadata: Metadata = {
@@ -42,9 +42,11 @@ export default async function VoyagePage({
     throw new Error(`Failed to load legs: ${legsError.message}`);
   }
 
-  const tracks: GeoJSON.LineString[] = (legs ?? []).map(
-    (leg) => leg.track_geojson as unknown as GeoJSON.LineString,
-  );
+  const { data: stopovers, error: stopoversError } =
+    await getStopoversByVoyageId(id);
+  if (stopoversError) {
+    throw new Error(`Failed to load stopovers: ${stopoversError.message}`);
+  }
 
   return (
     <div className="flex h-screen flex-col">
@@ -73,7 +75,7 @@ export default async function VoyagePage({
         <h1 className="flex-1 truncate font-heading text-h1 text-navy">
           {voyage.name}
         </h1>
-        {tracks.length > 0 && (
+        {(legs ?? []).length > 0 && (
           <Link
             href={`/voyage/${id}/import`}
             className="inline-flex min-h-[44px] items-center rounded-lg bg-ocean px-4 font-semibold text-white transition-colors hover:bg-ocean/80"
@@ -84,51 +86,11 @@ export default async function VoyagePage({
       </header>
 
       {/* Map area — fills remaining viewport */}
-      <div className="relative flex-1">
-        <MapLoader
-          tracks={tracks}
-          className="h-full w-full"
-          ariaLabel={messages.map.ariaLabel}
-        />
-
-        {/* EmptyState overlay when no tracks */}
-        {tracks.length === 0 && (
-          <div className="pointer-events-none absolute inset-0 z-[500] flex items-center justify-center">
-            <div className="pointer-events-auto rounded-[var(--radius-card)] bg-white/90 px-8 py-10 shadow-overlay backdrop-blur-sm">
-              <EmptyState
-                icon={
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="64"
-                    height="64"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="12" x2="12" y1="18" y2="12" />
-                    <line x1="9" x2="15" y1="15" y2="15" />
-                  </svg>
-                }
-                title={messages.emptyState.title}
-                description={messages.emptyState.description}
-                action={
-                  <Link
-                    href={`/voyage/${id}/import`}
-                    className="inline-flex min-h-[44px] items-center rounded-lg bg-ocean px-8 py-3 font-semibold text-white transition-colors hover:bg-ocean/80"
-                  >
-                    {messages.emptyState.cta}
-                  </Link>
-                }
-              />
-            </div>
-          </div>
-        )}
-      </div>
+      <VoyageContent
+        initialLegs={legs ?? []}
+        stopovers={stopovers ?? []}
+        voyageId={id}
+      />
     </div>
   );
 }

@@ -149,9 +149,42 @@ export function GpxImporter({ voyageId, voyageName }: GpxImporterProps) {
               ),
             );
 
+      // Map stopovers from ProcessingResult to import format with timing derivation
+      const stopoverInputs = state.result.stopovers.map((candidate) => {
+        let arrived_at: string | null = null;
+        let departed_at: string | null = null;
+
+        if (candidate.type === "departure") {
+          const idx = Math.min(...candidate.trackIndices);
+          departed_at = state.result.stats[idx]?.startTime ?? null;
+        } else if (candidate.type === "arrival") {
+          const idx = Math.max(...candidate.trackIndices);
+          arrived_at = state.result.stats[idx]?.endTime ?? null;
+        } else {
+          // waypoint: arriving track ends here, departing track starts here
+          const sorted = [...candidate.trackIndices].sort((a, b) => a - b);
+          if (sorted.length >= 2) {
+            arrived_at = state.result.stats[sorted[0]]?.endTime ?? null;
+            departed_at = state.result.stats[sorted[1]]?.startTime ?? null;
+          } else if (sorted.length === 1) {
+            arrived_at = state.result.stats[sorted[0]]?.endTime ?? null;
+          }
+        }
+
+        return {
+          longitude: candidate.position[0],
+          latitude: candidate.position[1],
+          type: candidate.type,
+          trackIndices: candidate.trackIndices,
+          arrived_at,
+          departed_at,
+        };
+      });
+
       const { error } = await importTracks({
         voyageId,
         legs,
+        stopovers: stopoverInputs,
       });
 
       if (error) {

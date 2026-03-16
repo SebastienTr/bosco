@@ -117,6 +117,50 @@ export type Database = {
         }
         Relationships: []
       }
+      stopovers: {
+        Row: {
+          arrived_at: string | null
+          country: string | null
+          created_at: string
+          departed_at: string | null
+          id: string
+          latitude: number
+          longitude: number
+          name: string
+          voyage_id: string
+        }
+        Insert: {
+          arrived_at?: string | null
+          country?: string | null
+          created_at?: string
+          departed_at?: string | null
+          id?: string
+          latitude: number
+          longitude: number
+          name?: string
+          voyage_id: string
+        }
+        Update: {
+          arrived_at?: string | null
+          country?: string | null
+          created_at?: string
+          departed_at?: string | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          name?: string
+          voyage_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stopovers_voyage_id_fkey"
+            columns: ["voyage_id"]
+            isOneToOne: false
+            referencedRelation: "voyages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       voyages: {
         Row: {
           cover_image_url: string | null

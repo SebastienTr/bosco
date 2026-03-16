@@ -25,7 +25,7 @@ This document provides the complete epic and story breakdown for Bosco, decompos
 FR-1: Users can sign up and sign in via email magic link; sessions persist across browser restarts until logout or expiry; no social login in MVP
 FR-2: Users can set a unique username (used in public URLs) and optionally add boat name, boat type, bio, profile photo, boat photo; public profile page at /{username} lists public voyages
 FR-3: Users can create, rename, and delete voyages; set name, description, slug, cover image, and public/private visibility; slug unique per account; dashboard shows all voyages with preview and stats
-FR-4: Users can import GPX 1.1 files (single or multi-track, up to 400 MB); preview track geometry, point count, distance, duration per track; select tracks and import as separate legs or merged; simplified tracks preserve tacks at zoom 14; per-leg stats (distance nm, duration, avg/max speed kts, timestamps)
+FR-4: Users can import GPX 1.1 files (single or multi-track, up to 400 MB); preview track geometry, point count, distance, duration per track; select tracks and import as separate legs or merged; simplified tracks preserve tacks at zoom 14; per-leg stats (distance nm, duration, avg/max speed kts, timestamps); users can delete individual legs from a voyage
 FR-5: System auto-associates leg endpoints with existing stopovers within configurable radius (default 2 km); creates new stopovers with reverse-geocoded place name and country; users can rename, reposition, delete, merge stopovers; configure detection radius; view as map markers; browse grouped by country
 FR-6: Users can create journal entries with free-form text and photo attachments; each entry has a date and belongs to a voyage; optional link to leg/stopover; photos reduced to web-friendly size; timeline view on voyage page
 FR-7: Public voyage page at /{username}/{voyage-slug} with full-screen map, nautical chart context, animated route on first load, stopover markers, latest boat position, stats bar (distance nm, days, ports, countries), stopovers list by country, log timeline, voyage/boat/sailor header info, shareable map view links
@@ -503,6 +503,40 @@ So that my voyage shows meaningful waypoints without manual data entry.
 **Given** the voyage view with stopovers
 **When** the sailor views the stopover list
 **Then** stopovers are browsable grouped by country
+
+### Story 2.4b: Leg Deletion
+
+As a sailor,
+I want to delete individual legs from my voyage,
+So that I can remove incorrect or duplicate tracks without deleting the entire voyage.
+
+**Acceptance Criteria:**
+
+**Given** an authenticated sailor viewing their voyage at `/voyage/[id]`
+**When** they see the list of imported legs on the map
+**Then** each leg displays a delete action
+
+**Given** a sailor initiates leg deletion
+**When** they tap the delete button
+**Then** a confirmation dialog asks: "Delete this leg? This cannot be undone."
+**And** the delete button is styled with Error red (UX-DR15 danger variant)
+
+**Given** the sailor confirms deletion
+**When** the Server Action executes
+**Then** the leg row is removed from the `legs` table
+**And** associated stopovers are NOT deleted (they belong to the voyage)
+**And** the map updates to reflect the remaining tracks
+**And** a success toast appears: "Leg deleted"
+
+**Given** a sailor deletes the last leg of a voyage
+**When** no legs remain
+**Then** the empty state overlay reappears with the import prompt
+
+**Technical Notes:**
+- Data layer: add `deleteLeg(legId, userId)` to `src/lib/data/legs.ts`
+- Server Action: add `deleteLeg` to voyage actions with auth + ownership check
+- RLS: existing policies cover DELETE via voyage ownership
+- No migration needed
 
 ### Story 2.5: PWA & Web Share Target
 

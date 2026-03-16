@@ -17,4 +17,12 @@ export const messages = {
     ariaLabel: "Sailing voyage map",
   },
   backToDashboard: "Dashboard",
+  legs: {
+    deleteConfirmTitle: "Delete this leg?",
+    deleteConfirmDescription: "This cannot be undone.",
+    deleteConfirmButton: "Delete",
+    cancelButton: "Cancel",
+    deletedToast: "Leg deleted",
+    deleteErrorToast: "Failed to delete leg",
+  },
 };

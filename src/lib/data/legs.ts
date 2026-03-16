@@ -9,6 +9,11 @@ export async function insertLegs(legs: LegInsert[]) {
   return supabase.from("legs").insert(legs).select();
 }
 
+export async function deleteLeg(id: string) {
+  const supabase = await createClient();
+  return supabase.from("legs").delete().eq("id", id);
+}
+
 export async function getLegsByVoyageId(voyageId: string) {
   const supabase = await createClient();
   return supabase
