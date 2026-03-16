@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getUser } from "@/lib/auth";
+import { getProfileByUserId } from "@/lib/data/profiles";
 import { messages } from "./messages";
 
 export const metadata: Metadata = {
@@ -14,6 +15,13 @@ export default async function DashboardPage() {
 
   if (!user) {
     redirect("/auth");
+  }
+
+  const { data: profile } = await getProfileByUserId(user.id);
+
+  // Redirect to profile setup if username is not set
+  if (!profile?.username) {
+    redirect("/dashboard/profile");
   }
 
   return (
@@ -35,27 +43,33 @@ export default async function DashboardPage() {
               {messages.account.label}
             </p>
             <p className="mt-2 text-body font-semibold text-navy">
-              {user.email ?? messages.account.fallbackEmail}
+              {profile.username}
             </p>
-            <p className="mt-3 text-body text-slate">
-              {messages.account.description}
+            <p className="mt-1 text-small text-mist">
+              {user.email ?? messages.account.fallbackEmail}
             </p>
           </section>
 
           <section className="rounded-[var(--radius-card)] border border-navy/10 bg-white p-6">
             <p className="text-small font-semibold uppercase tracking-[0.16em] text-mist">
-              {messages.nextStep.label}
+              {messages.boat.label}
             </p>
             <h2 className="mt-2 font-heading text-h2 text-navy">
-              {messages.nextStep.title}
+              {profile.boat_name ?? messages.boat.noBoat}
             </h2>
-            <p className="mt-3 text-body text-slate">
-              {messages.nextStep.description}
-            </p>
+            {profile.boat_type ? (
+              <p className="mt-1 text-body text-slate">{profile.boat_type}</p>
+            ) : null}
           </section>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 flex gap-3">
+          <Link
+            href="/dashboard/profile"
+            className="inline-flex min-h-[44px] items-center rounded-[var(--radius-button)] border border-navy/20 px-6 py-3 text-body font-semibold text-navy transition-colors hover:bg-foam"
+          >
+            {messages.actions.editProfile}
+          </Link>
           <Link
             href="/"
             className="inline-flex min-h-[44px] items-center rounded-[var(--radius-button)] bg-coral px-6 py-3 text-body font-semibold text-white transition-colors hover:bg-coral/90"

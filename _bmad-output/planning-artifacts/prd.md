@@ -47,7 +47,7 @@ editHistory:
 ### MVP
 
 - User authentication via email magic link
-- User profile (pseudo, boat name, bio, photos)
+- User profile (username, boat name, bio, photos)
 - Voyage CRUD (create, rename, delete, public/private toggle)
 - GPX import with track parsing, simplification, and preview
 - Single and multi-track support with merge option
@@ -118,7 +118,7 @@ editHistory:
 
 1. Land on homepage → see pitch, examples of shared voyages
 2. Sign up with email → receive magic link → authenticated
-3. Create profile: pseudo (required), boat name, photo (optional)
+3. Create profile: username (required), boat name, photo (optional)
 4. Redirected to dashboard
 
 **Related FRs:** FR-1 (Authentication), FR-2 (User Profile)
@@ -170,7 +170,7 @@ editHistory:
 **Flow:**
 
 1. From voyage page → toggle "Public"
-2. Get shareable URL: `bosco.sebastientreille.fr/{pseudo}/{voyage-slug}`
+2. Get shareable URL: `bosco.sebastientreille.fr/{username}/{voyage-slug}`
 3. Share link with friends and family
 
 **Related FRs:** FR-3 (Voyages), FR-7 (Public Voyage Page)
@@ -212,9 +212,9 @@ editHistory:
 
 ### FR-2: User Profile
 
-- Users can set a unique pseudo (used in public URLs)
+- Users can set a unique username (used in public URLs)
 - Users can optionally add: boat name, boat type, bio, profile photo, boat photo
-- Visitors can access a public profile page at `/{pseudo}` listing that sailor's public voyages
+- Visitors can access a public profile page at `/{username}` listing that sailor's public voyages
 
 ### FR-3: Voyages
 
@@ -253,20 +253,20 @@ editHistory:
 
 ### FR-7: Public Voyage Page
 
-- Visitors can access a public voyage page at `/{pseudo}/{voyage-slug}` when a voyage is public
+- Visitors can access a public voyage page at `/{username}/{voyage-slug}` when a voyage is public
 - Visitors can view the voyage on a full-screen map with nautical chart context
 - Visitors can watch completed tracks animate on initial page load
 - Visitors can view stopovers as waypoint markers and the latest known boat position
 - Visitors can view a stats bar showing distance sailed (nm), days, ports of call count, and countries count
 - Visitors can browse a stopovers list grouped by country and move the map to a selected stopover
 - Visitors can read log entries in a timeline associated with the voyage
-- Visitors can identify the voyage name, boat name, and sailor pseudo from the page header
+- Visitors can identify the voyage name, boat name, and sailor username from the page header
 - Visitors can share links that preserve a specific public voyage map view
 
 ### FR-8: Public Profile Page
 
-- Visitors can access a sailor profile page at `/{pseudo}`
-- Visitors can view pseudo, boat info, bio, and photos
+- Visitors can access a sailor profile page at `/{username}`
+- Visitors can view username, boat info, bio, and photos
 - Visitors can browse public voyages as cards with cover image, name, and stats summary
 
 ### FR-9: Dashboard

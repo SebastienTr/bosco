@@ -96,7 +96,7 @@ The creator loop drives content creation. The visitor loop drives sharing and en
 ### Effortless Interactions
 
 **Must be effortless (zero friction):**
-- Onboarding: email magic link → pseudo + boat name → create first voyage → import first track. Four steps, and the sailor has everything needed for a public profile and shareable URLs.
+- Onboarding: email magic link → username + boat name → create first voyage → import first track. Four steps, and the sailor has everything needed for a public profile and shareable URLs.
 - Adding a track to an existing voyage: open voyage → import → done. No re-configuration, no re-setup.
 - Sharing: toggle public → copy link. One gesture.
 
@@ -539,7 +539,7 @@ flowchart TD
     C --> D[Magic link sent — check email screen]
     D --> E[Tap magic link in email]
     E --> F[Account created — Profile setup screen]
-    F --> G[Enter pseudo + boat name]
+    F --> G[Enter username + boat name]
     G --> H[Tap 'Create my first voyage']
     H --> I[Enter voyage name]
     I --> J[Voyage created — empty map]
@@ -556,14 +556,14 @@ flowchart TD
 ```
 
 **Key decisions:**
-- Profile setup is ONE screen: pseudo + boat name. Nothing else required.
+- Profile setup is ONE screen: username + boat name. Nothing else required.
 - Voyage creation is immediate after profile — no dashboard detour for first-time users.
 - Empty voyage shows a clear prompt explaining the Navionics export flow.
 - First import success triggers the emotional hook — the sailor sees their track on the nautical map.
 
 **Error paths:**
 - Magic link expired → resend link with clear message
-- Pseudo already taken → suggest alternatives inline
+- Username already taken → suggest alternatives inline
 - GPX file invalid → clear error message with supported format info
 - Processing fails → retry option, never lose the selected file
 
@@ -622,7 +622,7 @@ flowchart TD
     G -->|Tap Ports button| L[Ports panel slides in from right]
     L --> M[Stopovers listed by country with flags]
     M --> N[Tap a port → map centers on it + bottom sheet]
-    G -->|Tap boat badge| O[Boat info — name, type, sailor pseudo]
+    G -->|Tap boat badge| O[Boat info — name, type, sailor username]
     O --> P[Link to sailor's public profile]
     K --> G
     N --> G
@@ -651,7 +651,7 @@ flowchart TD
     C -->|No — Private| D[Toggle 'Make public']
     C -->|Yes — Public| F
     D --> E[Confirmation: 'Your voyage will be visible to anyone with the link']
-    E --> F[Public URL shown: bosco.app/pseudo/voyage-slug]
+    E --> F[Public URL shown: bosco.app/username/voyage-slug]
     F --> G[Tap 'Copy link']
     G --> H[Link copied — toast confirmation]
     H --> I[Share via WhatsApp, SMS, social media, email — native OS share]
@@ -659,7 +659,7 @@ flowchart TD
 
 **Key decisions:**
 - Sharing is 2 taps: toggle public → copy link. No complex sharing wizard.
-- The public URL is human-readable and memorable (`/pseudo/voyage-slug`).
+- The public URL is human-readable and memorable (`/username/voyage-slug`).
 - OS native share is available as a secondary action for direct social sharing.
 - Open Graph meta tags ensure rich link previews when shared (map image + voyage name + stats).
 
@@ -697,7 +697,7 @@ flowchart TD
 | Component | Usage | Customization |
 |-----------|-------|---------------|
 | **Button** | CTAs, actions, submit forms | Coral primary, Ocean secondary, ghost for tertiary |
-| **Input** | Email, pseudo, boat name, voyage name, stopover rename | Navy border, Sand focus ring |
+| **Input** | Email, username, boat name, voyage name, stopover rename | Navy border, Sand focus ring |
 | **Card** | Voyage cards on dashboard | White bg, mini map preview, 12px radius |
 | **Dialog** | Confirmations (make public, delete voyage) | Minimal, centered, clear actions |
 | **Toast** | Success/error feedback ("2 tracks added...") | Bottom-center on mobile, auto-dismiss |
@@ -733,7 +733,7 @@ flowchart TD
 **Purpose:** Minimal boat identification overlay on public page
 **Usage:** Public voyage page (top-left)
 **Anatomy:** Translucent navy pill → green status dot → boat name
-**States:** Default | Tapped → expands to show boat type + sailor pseudo + link to profile
+**States:** Default | Tapped → expands to show boat type + sailor username + link to profile
 **Accessibility:** Button role, expands/collapses detail
 
 #### StopoverMarker
@@ -862,7 +862,7 @@ VoyageCard, EmptyState, all shadcn/ui components (Form, Dialog, Toggle, etc.)
 - Inline validation on blur — error message appears below the field in Error red
 - Success state: green check icon appears when field is valid
 - Required fields marked with subtle dot, not asterisk
-- Pseudo field: real-time availability check with debounce
+- Username field: real-time availability check with debounce
 
 ### Navigation Patterns
 

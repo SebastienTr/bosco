@@ -43,8 +43,8 @@ export type Database = {
           created_at: string
           id: string
           profile_photo_url: string | null
-          pseudo: string | null
           updated_at: string
+          username: string | null
         }
         Insert: {
           bio?: string | null
@@ -54,8 +54,8 @@ export type Database = {
           created_at?: string
           id: string
           profile_photo_url?: string | null
-          pseudo?: string | null
           updated_at?: string
+          username?: string | null
         }
         Update: {
           bio?: string | null
@@ -65,8 +65,8 @@ export type Database = {
           created_at?: string
           id?: string
           profile_photo_url?: string | null
-          pseudo?: string | null
           updated_at?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -75,7 +75,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_pseudo_availability: {
+        Args: { exclude_user_id?: string; input_pseudo: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

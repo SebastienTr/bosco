@@ -421,7 +421,7 @@ All code must be optimized for AI agent comprehension and debugging. These princ
 - Client-side validation (fast UX) + server-side validation (security) using the same Zod schema
 - shadcn/ui `Form` component + `react-hook-form` for creator forms
 - Inline validation on blur, error message below field in Error red
-- Pseudo field: real-time availability check with debounce
+- Username field: real-time availability check with debounce
 
 **i18n Readiness Pattern (NFR-17):**
 - No i18n library for MVP (English only)
@@ -603,7 +603,7 @@ bosco/
 │   │   │   ├── actions.test.ts
 │   │   │   └── profile/                  # FR-2: Profile management
 │   │   │       ├── page.tsx              # Edit profile form
-│   │   │       ├── actions.ts            # updateProfile, checkPseudo
+│   │   │       ├── actions.ts            # updateProfile, checkUsername
 │   │   │       └── actions.test.ts
 │   │   │
 │   │   ├── voyage/                       # FR-3: Voyage management
@@ -620,7 +620,7 @@ bosco/
 │   │   │       └── settings/
 │   │   │           └── page.tsx          # Voyage settings (slug, visibility)
 │   │   │
-│   │   ├── [pseudo]/                     # FR-8: Public profile
+│   │   ├── [username]/                     # FR-8: Public profile
 │   │   │   ├── page.tsx                  # Public profile (SSR)
 │   │   │   └── [slug]/                   # FR-7: Public voyage
 │   │   │       ├── page.tsx              # Public voyage page (SSR + animation)
@@ -747,7 +747,7 @@ Tier 4: src/components/       ← React components (UI only)
 **Migration path (quit Supabase):** Replace Tier 1 + Tier 2 only. Tiers 3 and 4 remain untouched.
 
 **SSR Boundary:**
-- `src/app/[pseudo]/` and `src/app/[pseudo]/[slug]/` → Server Components (SSR, SEO, OG)
+- `src/app/[username]/` and `src/app/[username]/[slug]/` → Server Components (SSR, SEO, OG)
 - `src/app/dashboard/`, `src/app/voyage/` → authenticated, server components with client islands
 
 **Client-Only Boundary:**
@@ -780,8 +780,8 @@ Image → Client compression (src/lib/utils/image.ts)
 | FR-4 GPX Import | `src/app/voyage/[id]/import/`, `src/components/gpx/`, `src/lib/gpx/` | Web Worker, `src/lib/data/legs.ts`, `src/lib/geo/` |
 | FR-5 Stopovers | `src/components/map/`, `src/lib/geo/` | `src/app/api/geocode/`, `src/lib/data/stopovers.ts` |
 | FR-6 Log Entries | `src/components/log/` | `src/lib/data/log-entries.ts`, `src/lib/storage.ts` |
-| FR-7 Public Voyage | `src/app/[pseudo]/[slug]/`, `src/components/map/`, `src/components/voyage/` | SSR, `src/lib/data/voyages.ts`, OG image |
-| FR-8 Public Profile | `src/app/[pseudo]/` | SSR, `src/lib/data/profiles.ts` |
+| FR-7 Public Voyage | `src/app/[username]/[slug]/`, `src/components/map/`, `src/components/voyage/` | SSR, `src/lib/data/voyages.ts`, OG image |
+| FR-8 Public Profile | `src/app/[username]/` | SSR, `src/lib/data/profiles.ts` |
 | FR-9 Dashboard | `src/app/dashboard/` | `src/lib/data/voyages.ts`, `src/components/voyage/VoyageCard.tsx` |
 
 ### External Integrations

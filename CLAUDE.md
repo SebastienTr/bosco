@@ -102,7 +102,7 @@ src/
 │   ├── auth/               # Magic link auth (FR-1)
 │   ├── dashboard/          # Voyage list + profile editing (FR-9, FR-2)
 │   ├── voyage/[id]/        # Voyage view/edit, GPX import, settings (FR-3, FR-4)
-│   ├── [pseudo]/           # Public profile SSR (FR-8)
+│   ├── [username]/           # Public profile SSR (FR-8)
 │   │   └── [slug]/         # Public voyage SSR + OG image (FR-7)
 │   └── api/geocode/        # Nominatim proxy (rate-limited, cached)
 ├── components/

@@ -86,10 +86,10 @@ overallStatus: 'Critical'
 
 **Format Violations:** 35
 - Line 165: `Session persists across browser sessions until explicit logout`
-- Line 172: `Profile page accessible at /{pseudo} listing all public voyages`
+- Line 172: `Profile page accessible at /{username} listing all public voyages`
 - Line 177: `Each voyage has: name, description, slug...`
 - Line 195: `Stopovers are auto-detected...`
-- Line 212: `Accessible at /{pseudo}/{voyage-slug} when voyage is public`
+- Line 212: `Accessible at /{username}/{voyage-slug} when voyage is public`
 
 **Subjective Adjectives Found:** 0
 

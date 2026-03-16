@@ -23,13 +23,13 @@ This document provides the complete epic and story breakdown for Bosco, decompos
 ### Functional Requirements
 
 FR-1: Users can sign up and sign in via email magic link; sessions persist across browser restarts until logout or expiry; no social login in MVP
-FR-2: Users can set a unique pseudo (used in public URLs) and optionally add boat name, boat type, bio, profile photo, boat photo; public profile page at /{pseudo} lists public voyages
+FR-2: Users can set a unique username (used in public URLs) and optionally add boat name, boat type, bio, profile photo, boat photo; public profile page at /{username} lists public voyages
 FR-3: Users can create, rename, and delete voyages; set name, description, slug, cover image, and public/private visibility; slug unique per account; dashboard shows all voyages with preview and stats
 FR-4: Users can import GPX 1.1 files (single or multi-track, up to 400 MB); preview track geometry, point count, distance, duration per track; select tracks and import as separate legs or merged; simplified tracks preserve tacks at zoom 14; per-leg stats (distance nm, duration, avg/max speed kts, timestamps)
 FR-5: System auto-associates leg endpoints with existing stopovers within configurable radius (default 2 km); creates new stopovers with reverse-geocoded place name and country; users can rename, reposition, delete, merge stopovers; configure detection radius; view as map markers; browse grouped by country
 FR-6: Users can create journal entries with free-form text and photo attachments; each entry has a date and belongs to a voyage; optional link to leg/stopover; photos reduced to web-friendly size; timeline view on voyage page
-FR-7: Public voyage page at /{pseudo}/{voyage-slug} with full-screen map, nautical chart context, animated route on first load, stopover markers, latest boat position, stats bar (distance nm, days, ports, countries), stopovers list by country, log timeline, voyage/boat/sailor header info, shareable map view links
-FR-8: Public profile page at /{pseudo} showing pseudo, boat info, bio, photos, and public voyages as cards with cover image, name, stats
+FR-7: Public voyage page at /{username}/{voyage-slug} with full-screen map, nautical chart context, animated route on first load, stopover markers, latest boat position, stats bar (distance nm, days, ports, countries), stopovers list by country, log timeline, voyage/boat/sailor header info, shareable map view links
+FR-8: Public profile page at /{username} showing username, boat info, bio, photos, and public voyages as cards with cover image, name, stats
 FR-9: Dashboard shows all owned voyages (public and private) with summary stats; create new voyage; navigate to profile editing
 
 ### NonFunctional Requirements
@@ -83,7 +83,7 @@ UX-DR2: Implement typography system with DM Serif Display (headings) + Nunito (b
 UX-DR3: Implement spacing system (4px base unit, scale 4-8-12-16-24-32-48-64-96); border radius (cards 12px, buttons 8px, markers circle, stats bar 16px pill); shadows (navy-tinted for floating overlays, cards, bottom sheet)
 UX-DR4: Build MapCanvas component — full-bleed Leaflet wrapper with OpenSeaMap nautical overlay; 3 variants (full-screen, contained, mini); dynamic import ssr:false; states: loading/loaded/animating/interactive; keyboard zoom +/- and screen reader announcement
 UX-DR5: Build StatsBar component — translucent floating display (distance nm, to go nm, days, ports, countries); glass morphism treatment; compact mobile / extended desktop variants; aria-label per stat
-UX-DR6: Build BoatBadge component — translucent pill (green dot + boat name), expandable to boat type + sailor pseudo + profile link; button role
+UX-DR6: Build BoatBadge component — translucent pill (green dot + boat name), expandable to boat type + sailor username + profile link; button role
 UX-DR7: Build StopoverMarker component — Coral circle 14px with white 2px border; states: default/hover 16px/selected 18px+sheet/cluster; button role with aria-label "Stopover: {name}, {country}"
 UX-DR8: Build StopoverSheet component — bottom sheet with Sand (#FDF6EC) background, drag handle, port name (DM Serif), country + flag emoji, arrival/departure dates, duration, "Add a note" placeholder; swipe-to-dismiss; dialog role with focus trap; states: hidden/peek/full/editing
 UX-DR9: Build PortsPanel component — sliding panel from right; stopovers grouped by country with flag emojis; tap port → map centers + sheet opens; mobile full overlay / desktop >1024px persistent sidebar; navigation landmark, arrow key navigation
@@ -94,7 +94,7 @@ UX-DR13: Build VoyageCard component — mini MapCanvas preview + card body + voy
 UX-DR14: Build EmptyState component — illustration/icon + title + description + CTA button; variants: empty voyage ("Export from Navionics and share to Bosco") and empty dashboard ("Create your first voyage")
 UX-DR15: Implement button hierarchy — Coral primary (max one per screen), Ocean secondary, Navy ghost tertiary, Error danger (always behind confirmation dialog); all buttons min 44px height on mobile
 UX-DR16: Implement feedback patterns — Toast bottom-center (success 4s auto-dismiss, error persistent with recovery action, max 2 visible, stacking); no generic spinners — always contextual messages
-UX-DR17: Implement form patterns — labels above inputs (Nunito SemiBold 13px Slate), inline validation on blur with error below field in Error red, success green check icon, required fields marked with subtle dot, pseudo real-time availability check with debounce
+UX-DR17: Implement form patterns — labels above inputs (Nunito SemiBold 13px Slate), inline validation on blur with error below field in Error red, success green check icon, required fields marked with subtle dot, username real-time availability check with debounce
 UX-DR18: Implement creator navigation — bottom tab bar (Dashboard, Voyage, Profile) on mobile always visible; side navigation on desktop >1024px; no hamburger menu
 UX-DR19: Implement 3 responsive breakpoints — mobile 375-767px (single column, bottom nav, full-bleed map), tablet 768-1023px (more map space, larger touch targets), desktop 1024px+ (PortsPanel persistent sidebar, multi-column dashboard, side nav)
 UX-DR20: Implement 44px minimum touch targets on all interactive elements; bottom sheet swipe gestures; ports panel swipe to dismiss; pull-to-refresh on dashboard
@@ -109,7 +109,7 @@ UX-DR25: Implement overlay management — maximum one overlay at a time; opening
 | FR | Epic | Description |
 |----|------|-------------|
 | FR-1 | Epic 1 | Authentication via email magic link |
-| FR-2 | Epic 1 | User Profile (pseudo, boat, bio, photos) |
+| FR-2 | Epic 1 | User Profile (username, boat, bio, photos) |
 | FR-3 | Epic 1 (create only) + Epic 2 (extended CRUD, slug, visibility, cover) | Voyages |
 | FR-4 | Epic 2 | GPX Import & Track Processing |
 | FR-5 | Epic 2 | Stopovers (auto-detection, naming, management) |
@@ -123,7 +123,7 @@ UX-DR25: Implement overlay management — maximum one overlay at a time; opening
 ## Epic List
 
 ### Epic 1: Sailor Onboarding & Profile
-Users can sign up via magic link, create their sailor profile (pseudo, boat name), create their first voyage, and access their personal dashboard. This epic establishes the project foundation, infrastructure, and user identity.
+Users can sign up via magic link, create their sailor profile (username, boat name), create their first voyage, and access their personal dashboard. This epic establishes the project foundation, infrastructure, and user identity.
 **FRs covered:** FR-1, FR-2, FR-3 (create only), FR-9 (basic)
 
 ### Epic 2: Track Import & Map Visualization
@@ -142,7 +142,7 @@ Sailors can enrich their voyages with journal entries containing free-form text 
 
 ## Epic 1: Sailor Onboarding & Profile
 
-Users can sign up via magic link, create their sailor profile (pseudo, boat name), create their first voyage, and access their personal dashboard. This epic establishes the project foundation, infrastructure, and user identity.
+Users can sign up via magic link, create their sailor profile (username, boat name), create their first voyage, and access their personal dashboard. This epic establishes the project foundation, infrastructure, and user identity.
 
 ### Story 1.1: Landing Page & Project Foundation
 
@@ -195,7 +195,7 @@ So that I can securely access my personal Bosco account without managing a passw
 
 **Given** the `profiles` table does not exist
 **When** the migration `001_profiles.sql` runs
-**Then** a `profiles` table is created with columns: `id` (uuid, FK to auth.users), `pseudo` (unique text), `boat_name` (text nullable), `boat_type` (text nullable), `bio` (text nullable), `profile_photo_url` (text nullable), `boat_photo_url` (text nullable), `created_at` (timestamptz), `updated_at` (timestamptz)
+**Then** a `profiles` table is created with columns: `id` (uuid, FK to auth.users), `username` (unique text), `boat_name` (text nullable), `boat_type` (text nullable), `bio` (text nullable), `profile_photo_url` (text nullable), `boat_photo_url` (text nullable), `created_at` (timestamptz), `updated_at` (timestamptz)
 **And** RLS policies allow users to read/update only their own profile
 **And** a trigger creates a profile row automatically when a new auth user is created
 
@@ -229,7 +229,7 @@ So that I can securely access my personal Bosco account without managing a passw
 ### Story 1.3: Sailor Profile Setup
 
 As a newly registered sailor,
-I want to set up my profile with a unique pseudo and boat information,
+I want to set up my profile with a unique username and boat information,
 So that I have a personal identity on Bosco and a public URL for my voyages.
 
 **Acceptance Criteria:**
@@ -240,15 +240,15 @@ So that I have a personal identity on Bosco and a public URL for my voyages.
 
 **Given** the profile setup form at `/dashboard/profile`
 **When** the user views the form
-**Then** fields are displayed: pseudo (required), boat name (optional), boat type (optional), bio (optional), profile photo (optional), boat photo (optional)
+**Then** fields are displayed: username (required), boat name (optional), boat type (optional), bio (optional), profile photo (optional), boat photo (optional)
 **And** labels are above inputs in Nunito SemiBold 13px Slate
 **And** required fields are marked with a subtle dot
 
-**Given** the user types a pseudo in the pseudo field
+**Given** the user types a username in the username field
 **When** they pause typing (debounce)
-**Then** a real-time availability check runs via a `checkPseudo` Server Action
-**And** a green check icon appears if the pseudo is available
-**And** an error message appears below the field in Error red if the pseudo is taken
+**Then** a real-time availability check runs via a `checkUsername` Server Action
+**And** a green check icon appears if the username is available
+**And** an error message appears below the field in Error red if the username is taken
 
 **Given** the user submits the profile form with valid data
 **When** the `updateProfile` Server Action processes the request
@@ -263,7 +263,7 @@ So that I have a personal identity on Bosco and a public URL for my voyages.
 **And** the image is uploaded via `src/lib/storage.ts` to Supabase Storage
 **And** the photo URL is saved to the profile
 
-**Given** the user submits invalid data (e.g., empty pseudo, pseudo with special characters)
+**Given** the user submits invalid data (e.g., empty username, username with special characters)
 **When** the form validates on blur
 **Then** inline error messages appear below the invalid fields in Error red
 **And** the form is not submitted until validation passes
@@ -599,7 +599,7 @@ So that I can experience the journey visually without needing an account.
 **Acceptance Criteria:**
 
 **Given** a public voyage exists for a sailor
-**When** a visitor navigates to `/{pseudo}/{voyage-slug}`
+**When** a visitor navigates to `/{username}/{voyage-slug}`
 **Then** the page is server-side rendered with complete HTML in the first response
 **And** first meaningful paint occurs in under 2 seconds on a 4G mobile connection
 
@@ -628,11 +628,11 @@ So that I can experience the journey visually without needing an account.
 **And** the StatsBar uses translucent glass morphism treatment (navy at 75% opacity, backdrop blur 12px)
 **And** each stat has an aria-label (e.g., "1,534 nautical miles sailed")
 **And** a BoatBadge is displayed at top-left as a translucent pill with green status dot and boat name
-**And** tapping the BoatBadge expands it to show boat type, sailor pseudo, and link to profile
+**And** tapping the BoatBadge expands it to show boat type, sailor username, and link to profile
 
 **Given** the public voyage page header
 **When** inspecting the page
-**Then** the voyage name, boat name, and sailor pseudo are identifiable from the page content
+**Then** the voyage name, boat name, and sailor username are identifiable from the page content
 
 **Given** the public voyage page with CSP headers
 **When** the response headers are inspected
@@ -694,7 +694,7 @@ So that sharing drives engagement and my profile serves as a portfolio of my sai
 
 **Acceptance Criteria:**
 
-**Given** a public voyage page at `/{pseudo}/{voyage-slug}`
+**Given** a public voyage page at `/{username}/{voyage-slug}`
 **When** a social media platform or messaging app fetches the URL
 **Then** Open Graph meta tags are present: `og:title` (voyage name), `og:description` (voyage stats summary), `og:image` (dynamic voyage map image), `og:url`, `og:type: website`
 **And** Twitter Card meta tags are also present for rich Twitter/X previews
@@ -709,9 +709,9 @@ So that sharing drives engagement and my profile serves as a portfolio of my sai
 **Then** JSON-LD structured data is present and passes schema.org validation
 **And** the structured data describes the voyage (name, description, creator, dates)
 
-**Given** a visitor navigates to `/{pseudo}`
+**Given** a visitor navigates to `/{username}`
 **When** the public profile page loads (SSR)
-**Then** it displays: the sailor's pseudo, boat name, boat type, bio, profile photo, and boat photo
+**Then** it displays: the sailor's username, boat name, boat type, bio, profile photo, and boat photo
 **And** all public voyages are listed as cards with cover image, voyage name, and stats summary (distance, ports, countries)
 **And** each card links to the public voyage page
 
@@ -720,7 +720,7 @@ So that sharing drives engagement and my profile serves as a portfolio of my sai
 **Then** they receive a 404 page (not a 403, to avoid revealing the existence of private voyages)
 
 **Given** an unauthenticated visitor
-**When** they navigate to `/{pseudo}` for a profile with no public voyages
+**When** they navigate to `/{username}` for a profile with no public voyages
 **Then** the profile page displays the sailor's public information but shows no voyage cards
 **And** no indication is given about the existence of private voyages
 

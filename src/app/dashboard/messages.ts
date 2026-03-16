@@ -1,25 +1,22 @@
 export const messages = {
   meta: {
     title: "Bosco — Dashboard",
-    description: "Your Bosco dashboard and authenticated account home.",
+    description: "Your Bosco dashboard and sailing voyages.",
   },
-  eyebrow: "Authenticated",
+  eyebrow: "Dashboard",
   title: "Dashboard",
   description:
-    "Your magic link worked. This protected route is now available as the post-sign-in destination.",
+    "Your personal sailing hub. Voyages and track imports are coming next.",
   account: {
-    label: "Signed in as",
+    label: "Sailor",
     fallbackEmail: "Email unavailable",
-    description:
-      "Profile setup, voyages, and creator workflows will build on top of this authenticated entry point.",
   },
-  nextStep: {
-    label: "Next step",
-    title: "Profile setup comes next",
-    description:
-      "Story 1.3 will replace this placeholder with the full onboarding continuation.",
+  boat: {
+    label: "Boat",
+    noBoat: "No boat yet",
   },
   actions: {
+    editProfile: "Edit profile",
     home: "Back to home",
   },
 };

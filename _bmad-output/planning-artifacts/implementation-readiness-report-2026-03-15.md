@@ -44,9 +44,9 @@ documentsIncluded:
 - FR-1.3: Users can access Bosco without a social login option in MVP
 
 **FR-2: User Profile**
-- FR-2.1: Users can set a unique pseudo (used in public URLs)
+- FR-2.1: Users can set a unique username (used in public URLs)
 - FR-2.2: Users can optionally add: boat name, boat type, bio, profile photo, boat photo
-- FR-2.3: Visitors can access a public profile page at `/{pseudo}` listing that sailor's public voyages
+- FR-2.3: Visitors can access a public profile page at `/{username}` listing that sailor's public voyages
 
 **FR-3: Voyages**
 - FR-3.1: Users can create, rename, and delete voyages
@@ -80,19 +80,19 @@ documentsIncluded:
 - FR-6.5: Users can view entries in a timeline on the voyage page
 
 **FR-7: Public Voyage Page**
-- FR-7.1: Visitors can access a public voyage page at `/{pseudo}/{voyage-slug}` when a voyage is public
+- FR-7.1: Visitors can access a public voyage page at `/{username}/{voyage-slug}` when a voyage is public
 - FR-7.2: Visitors can view the voyage on a full-screen map with nautical chart context
 - FR-7.3: Visitors can watch completed tracks animate on initial page load
 - FR-7.4: Visitors can view stopovers as waypoint markers and the latest known boat position
 - FR-7.5: Visitors can view a stats bar showing distance sailed (nm), days, ports of call count, and countries count
 - FR-7.6: Visitors can browse a stopovers list grouped by country and move the map to a selected stopover
 - FR-7.7: Visitors can read log entries in a timeline associated with the voyage
-- FR-7.8: Visitors can identify the voyage name, boat name, and sailor pseudo from the page header
+- FR-7.8: Visitors can identify the voyage name, boat name, and sailor username from the page header
 - FR-7.9: Visitors can share links that preserve a specific public voyage map view
 
 **FR-8: Public Profile Page**
-- FR-8.1: Visitors can access a sailor profile page at `/{pseudo}`
-- FR-8.2: Visitors can view pseudo, boat info, bio, and photos
+- FR-8.1: Visitors can access a sailor profile page at `/{username}`
+- FR-8.2: Visitors can view username, boat info, bio, and photos
 - FR-8.3: Visitors can browse public voyages as cards with cover image, name, and stats summary
 
 **FR-9: Dashboard**
@@ -169,13 +169,13 @@ The PRD is well-structured following BMAD standards. Requirements are clearly nu
 | FR | Sub-Requirements | Epic Coverage | Stories | Status |
 |----|-----------------|---------------|---------|--------|
 | FR-1 (Authentication) | FR-1.1, FR-1.2, FR-1.3 | Epic 1 | Story 1.2 (magic link, session persistence, auth wrapper, middleware redirect) | ✓ Covered |
-| FR-2 (User Profile) | FR-2.1, FR-2.2, FR-2.3 | Epic 1 + Epic 3 | Story 1.3 (pseudo, boat info, bio, photos), Story 3.3 (public profile page at /{pseudo}) | ✓ Covered |
+| FR-2 (User Profile) | FR-2.1, FR-2.2, FR-2.3 | Epic 1 + Epic 3 | Story 1.3 (username, boat info, bio, photos), Story 3.3 (public profile page at /{username}) | ✓ Covered |
 | FR-3 (Voyages) | FR-3.1, FR-3.2, FR-3.3, FR-3.4, FR-3.5 | Epic 1 + Epic 2 | Story 1.4 (create, slug uniqueness, empty dashboard), Story 2.6 (rename, delete, visibility toggle, cover image, voyage cards with stats) | ✓ Covered |
 | FR-4 (GPX Import) | FR-4.1, FR-4.2, FR-4.3, FR-4.4, FR-4.5, FR-4.6, FR-4.7 | Epic 2 | Story 2.2 (GPX processing pipeline, simplification, 400MB support, per-track stats), Story 2.3 (import flow, preview, multi-track selection, merge option, per-leg stats display) | ✓ Covered |
 | FR-5 (Stopovers) | FR-5.1, FR-5.2, FR-5.3, FR-5.4, FR-5.5, FR-5.6 | Epic 2 | Story 2.4 (auto-detection with radius, reverse geocoding, rename/reposition/delete/merge, configurable radius, map markers, grouped by country) | ✓ Covered |
 | FR-6 (Log Entries) | FR-6.1, FR-6.2, FR-6.3, FR-6.4, FR-6.5 | Epic 4 | Story 4.1 (journal creation, date, leg/stopover link, photo compression, CRUD), Story 4.2 (timeline display) | ✓ Covered |
 | FR-7 (Public Voyage Page) | FR-7.1–FR-7.9 | Epic 3 | Story 3.1 (SSR page, map, animation, stats bar, boat badge, voyage header), Story 3.2 (stopover interaction, ports panel by country), Story 3.3 (shareable map view links) | ✓ Covered |
-| FR-8 (Public Profile Page) | FR-8.1, FR-8.2, FR-8.3 | Epic 3 | Story 3.3 (public profile at /{pseudo}, sailor info, voyage cards with stats) | ✓ Covered |
+| FR-8 (Public Profile Page) | FR-8.1, FR-8.2, FR-8.3 | Epic 3 | Story 3.3 (public profile at /{username}, sailor info, voyage cards with stats) | ✓ Covered |
 | FR-9 (Dashboard) | FR-9.1, FR-9.2, FR-9.3, FR-9.4 | Epic 1 + Epic 2 | Story 1.4 (basic dashboard, create voyage, navigation to profile), Story 2.6 (extended dashboard with voyage cards, stats, management) | ✓ Covered |
 
 ### Sub-Requirement Detail Verification
@@ -185,9 +185,9 @@ The PRD is well-structured following BMAD standards. Requirements are clearly nu
 | FR-1.1: Magic link sign up/in | Story 1.2 | ✓ Explicit acceptance criteria |
 | FR-1.2: Session persistence | Story 1.2 | ✓ "closes and reopens browser → remains authenticated" |
 | FR-1.3: No social login in MVP | Story 1.2 | ✓ Only magic link implemented |
-| FR-2.1: Unique pseudo | Story 1.3 | ✓ Real-time availability check |
+| FR-2.1: Unique username | Story 1.3 | ✓ Real-time availability check |
 | FR-2.2: Optional boat/bio/photos | Story 1.3 | ✓ All optional fields in form |
-| FR-2.3: Public profile at /{pseudo} | Story 3.3 | ✓ SSR public profile page |
+| FR-2.3: Public profile at /{username} | Story 3.3 | ✓ SSR public profile page |
 | FR-3.1: Create, rename, delete voyages | Story 1.4 + Story 2.6 | ✓ Create in 1.4, rename/delete in 2.6 |
 | FR-3.2: Name, description, slug, cover, visibility | Story 1.4 + Story 2.6 | ✓ Basic in 1.4, cover/visibility in 2.6 |
 | FR-3.3: Slug unique per account | Story 1.4 + Story 2.6 | ✓ Unique constraint + inline validation |
@@ -211,17 +211,17 @@ The PRD is well-structured following BMAD standards. Requirements are clearly nu
 | FR-6.3: Optional leg/stopover link | Story 4.1 | ✓ Optional link fields |
 | FR-6.4: Photo size reduction | Story 4.1 | ✓ Client-side compression <1MB |
 | FR-6.5: Timeline view | Story 4.2 | ✓ Timeline ordered by date |
-| FR-7.1: Public page at /{pseudo}/{slug} | Story 3.1 | ✓ SSR route |
+| FR-7.1: Public page at /{username}/{slug} | Story 3.1 | ✓ SSR route |
 | FR-7.2: Full-screen map with nautical chart | Story 3.1 | ✓ MapCanvas + OpenSeaMap |
 | FR-7.3: Animated route on load | Story 3.1 | ✓ RouteAnimation component |
 | FR-7.4: Stopover markers + boat position | Story 3.1 | ✓ StopoverMarkers + boat icon |
 | FR-7.5: Stats bar | Story 3.1 | ✓ StatsBar component |
 | FR-7.6: Stopovers list by country | Story 3.2 | ✓ PortsPanel component |
 | FR-7.7: Log entries timeline | Story 4.2 | ✓ Public page timeline (read-only) |
-| FR-7.8: Voyage name, boat, pseudo header | Story 3.1 | ✓ BoatBadge + page header |
+| FR-7.8: Voyage name, boat, username header | Story 3.1 | ✓ BoatBadge + page header |
 | FR-7.9: Shareable map view links | Story 3.3 | ✓ URL-encoded center + zoom |
-| FR-8.1: Profile at /{pseudo} | Story 3.3 | ✓ SSR public profile |
-| FR-8.2: Pseudo, boat info, bio, photos | Story 3.3 | ✓ All profile fields displayed |
+| FR-8.1: Profile at /{username} | Story 3.3 | ✓ SSR public profile |
+| FR-8.2: Username, boat info, bio, photos | Story 3.3 | ✓ All profile fields displayed |
 | FR-8.3: Voyage cards with stats | Story 3.3 | ✓ Cards with cover + stats |
 | FR-9.1: All owned voyages | Story 1.4 + Story 2.6 | ✓ Dashboard lists all |
 | FR-9.2: Summary stats per voyage | Story 2.6 | ✓ Stats on VoyageCard |
@@ -253,13 +253,13 @@ No missing FR coverage detected. All 38 sub-requirements from the PRD are tracea
 |------|---------|-----|--------|
 | User journeys | Creator loop + visitor loop detailed | UJ-1 through UJ-7 | ✓ Aligned |
 | Authentication | Magic link, no social login | FR-1 | ✓ Aligned |
-| Profile setup | Pseudo, boat info, photos | FR-2 | ✓ Aligned |
+| Profile setup | Username, boat info, photos | FR-2 | ✓ Aligned |
 | Voyage management | CRUD with cards and stats | FR-3 | ✓ Aligned |
 | GPX import | Full import flow with preview, selection, merge | FR-4 | ✓ Aligned |
 | Stopovers | Auto-detection, map markers, grouped by country | FR-5 | ✓ Aligned |
 | Log entries | Journal with text/photos, timeline | FR-6 | ✓ Aligned |
 | Public voyage page | Animated route, stats, stopovers, map | FR-7 | ✓ Aligned |
-| Public profile | Cards with stats at /{pseudo} | FR-8 | ✓ Aligned |
+| Public profile | Cards with stats at /{username} | FR-8 | ✓ Aligned |
 | Dashboard | Voyage cards, stats, navigation | FR-9 | ✓ Aligned |
 | Mobile-first | 375px minimum, touch targets 44px | NFR-9, NFR-10 | ✓ Aligned |
 | Accessibility | WCAG 2.1 AA, keyboard, screen reader, motion | PRD accessibility section | ✓ Aligned |

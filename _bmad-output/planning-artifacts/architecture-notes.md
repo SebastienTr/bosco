@@ -36,7 +36,7 @@ bosco/
 │   │   │       ├── page.tsx                  # Voyage view/edit (map + legs + journal)
 │   │   │       ├── import/page.tsx           # GPX import flow
 │   │   │       └── settings/page.tsx         # Voyage settings (name, slug, visibility)
-│   │   └── [pseudo]/
+│   │   └── [username]/
 │   │       ├── page.tsx                      # Public profile page
 │   │       └── [slug]/
 │   │           └── page.tsx                  # Public voyage page (SSR)
@@ -92,7 +92,7 @@ bosco/
 ## Key Technical Decisions
 
 - **TypeScript everywhere**: types serve as documentation, critical for AI-assisted debugging
-- **SSR for public pages**: `/{pseudo}/{slug}` is server-rendered for SEO and fast first paint (Open Graph meta tags, shareable previews)
+- **SSR for public pages**: `/{username}/{slug}` is server-rendered for SEO and fast first paint (Open Graph meta tags, shareable previews)
 - **Client-side GPX processing**: raw GPX files can be 400+ MB; they are parsed, simplified, and converted to GeoJSON in the browser before uploading only the lightweight result
 - **Supabase RLS**: row-level security ensures users can only modify their own data; public pages read through anon key
 - **No raw GPX storage**: only the simplified GeoJSON is stored server-side (cost and performance)
@@ -109,7 +109,7 @@ Extends Supabase Auth user. Created on first login.
 | Column | Type | Notes |
 |--------|------|-------|
 | id | UUID | PK, references auth.users(id) |
-| pseudo | TEXT | UNIQUE, NOT NULL, used in URLs |
+| username | TEXT | UNIQUE, NOT NULL, used in URLs |
 | boat_name | TEXT | Optional |
 | boat_type | TEXT | Optional |
 | bio | TEXT | Optional |
@@ -259,8 +259,8 @@ UNIQUE(user_id, slug)
 | `/voyage/[id]` | Voyage view/edit | Authenticated (owner) |
 | `/voyage/[id]/import` | GPX import | Authenticated (owner) |
 | `/voyage/[id]/settings` | Voyage settings | Authenticated (owner) |
-| `/[pseudo]` | Public profile | Public |
-| `/[pseudo]/[slug]` | Public voyage | Public (if is_public) |
+| `/[username]` | Public profile | Public |
+| `/[username]/[slug]` | Public voyage | Public (if is_public) |
 
 ## GPX Format Reference
 

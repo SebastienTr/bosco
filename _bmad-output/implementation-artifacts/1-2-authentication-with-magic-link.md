@@ -13,7 +13,7 @@ so that I can securely access my personal Bosco account without managing a passw
 ### AC-1: Profiles Database Migration
 **Given** the `profiles` table does not exist
 **When** the migration `001_profiles.sql` runs
-**Then** a `profiles` table is created with columns: `id` (uuid, FK to auth.users, PK), `pseudo` (unique text, nullable), `boat_name` (text nullable), `boat_type` (text nullable), `bio` (text nullable), `profile_photo_url` (text nullable), `boat_photo_url` (text nullable), `created_at` (timestamptz default now()), `updated_at` (timestamptz default now())
+**Then** a `profiles` table is created with columns: `id` (uuid, FK to auth.users, PK), `username` (unique text, nullable), `boat_name` (text nullable), `boat_type` (text nullable), `bio` (text nullable), `profile_photo_url` (text nullable), `boat_photo_url` (text nullable), `created_at` (timestamptz default now()), `updated_at` (timestamptz default now())
 **And** RLS is enabled with policies: users SELECT/UPDATE only their own row (`auth.uid() = id`)
 **And** a trigger function creates a profile row automatically when a new auth user is created (`INSERT INTO profiles (id) VALUES (NEW.id)` on `auth.users` after insert)
 
@@ -60,7 +60,7 @@ so that I can securely access my personal Bosco account without managing a passw
 
 - [x] Task 1: Create profiles migration (AC: #1)
   - [x] Create `supabase/migrations/001_profiles.sql`
-  - [x] Define `profiles` table: id (uuid PK, references auth.users on delete cascade), pseudo (text unique nullable), boat_name, boat_type, bio, profile_photo_url, boat_photo_url (all text nullable), created_at (timestamptz default now()), updated_at (timestamptz default now())
+  - [x] Define `profiles` table: id (uuid PK, references auth.users on delete cascade), username (text unique nullable), boat_name, boat_type, bio, profile_photo_url, boat_photo_url (all text nullable), created_at (timestamptz default now()), updated_at (timestamptz default now())
   - [x] Enable RLS: `ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;`
   - [x] Policy `profiles_select_own`: `USING (auth.uid() = id)` on SELECT
   - [x] Policy `profiles_update_own`: `USING (auth.uid() = id)` on UPDATE
@@ -112,7 +112,7 @@ so that I can securely access my personal Bosco account without managing a passw
 - [x] Task 7: Update middleware for route protection (AC: #6)
   - [x] Update `src/middleware.ts` to check auth state on protected routes
   - [x] Protected routes: `/dashboard`, `/dashboard/*`, `/voyage`, `/voyage/*`
-  - [x] Public routes: `/`, `/auth`, `/auth/*`, `/api/*`, `/{pseudo}`, `/{pseudo}/{slug}`
+  - [x] Public routes: `/`, `/auth`, `/auth/*`, `/api/*`, `/{username}`, `/{username}/{slug}`
   - [x] If unauthenticated on protected route → redirect to `/auth`
   - [x] If authenticated on `/auth` → redirect to `/dashboard`
   - [x] Keep existing session refresh via `updateSession()`
@@ -226,7 +226,7 @@ const EmailSchema = z.email() // NOT z.string().email()
 
 CREATE TABLE profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  pseudo TEXT UNIQUE,
+  username TEXT UNIQUE,
   boat_name TEXT,
   boat_type TEXT,
   bio TEXT,
