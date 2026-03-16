@@ -23,15 +23,17 @@ CREATE POLICY profiles_update_own ON profiles
   FOR UPDATE USING (auth.uid() = id);
 
 -- Auto-create profile row when a new auth user signs up
-CREATE OR REPLACE FUNCTION handle_new_user()
+-- Must use schema-qualified name: the trigger runs as supabase_auth_admin
+-- which has a different search_path that does not include public by default.
+CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO profiles (id) VALUES (NEW.id);
+  INSERT INTO public.profiles (id) VALUES (NEW.id);
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW
-  EXECUTE FUNCTION handle_new_user();
+  EXECUTE FUNCTION public.handle_new_user();
