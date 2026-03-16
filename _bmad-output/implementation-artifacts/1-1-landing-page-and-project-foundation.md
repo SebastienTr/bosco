@@ -1,6 +1,6 @@
 # Story 1.1: Landing Page & Project Foundation
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -71,80 +71,80 @@ _This story also establishes the project foundation: Next.js initialization, des
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Initialize Next.js 16 project (AC: #1)
-  - [ ] Run `npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --turbopack --import-alias "@/*"`
-  - [ ] Verify Next.js 16 with React 19, TypeScript strict, Turbopack, App Router
-  - [ ] Update `package.json` lint script: `"lint": "eslint"` (NOT `"next lint"` — removed in Next.js 16)
-  - [ ] Confirm `next.config.ts` exists (TypeScript config, not `.mjs`)
-  - [ ] Add `.env.example` and `.env.local` (gitignored) with Supabase env vars placeholders
+- [x] Task 1: Initialize Next.js 16 project (AC: #1)
+  - [x] Run `npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --turbopack --import-alias "@/*"`
+  - [x] Verify Next.js 16 with React 19, TypeScript strict, Turbopack, App Router
+  - [x] Update `package.json` lint script: `"lint": "eslint"` (NOT `"next lint"` — removed in Next.js 16)
+  - [x] Confirm `next.config.ts` exists (TypeScript config, not `.mjs`)
+  - [x] Add `.env.example` and `.env.local` (gitignored) with Supabase env vars placeholders
 
-- [ ] Task 2: Configure Tailwind CSS 4 design tokens (AC: #2, #4)
-  - [ ] Verify `@tailwindcss/postcss` plugin is configured in `postcss.config.mjs`
-  - [ ] Replace default Tailwind imports in `globals.css` with `@import "tailwindcss";`
-  - [ ] Define Ocean & Sunset color palette via `@theme` directive in `globals.css`
-  - [ ] Define spacing scale, border radius, and shadow tokens in `@theme`
-  - [ ] Note: Tailwind 4 utility renames — `shadow-sm`→`shadow-xs`, `shadow`→`shadow-sm`, `rounded-sm`→`rounded-xs`, `rounded`→`rounded-sm`, `ring`→`ring-3`
+- [x] Task 2: Configure Tailwind CSS 4 design tokens (AC: #2, #4)
+  - [x] Verify `@tailwindcss/postcss` plugin is configured in `postcss.config.mjs`
+  - [x] Replace default Tailwind imports in `globals.css` with `@import "tailwindcss";`
+  - [x] Define Ocean & Sunset color palette via `@theme` directive in `globals.css`
+  - [x] Define spacing scale, border radius, and shadow tokens in `@theme`
+  - [x] Note: Tailwind 4 utility renames — `shadow-sm`→`shadow-xs`, `shadow`→`shadow-sm`, `rounded-sm`→`rounded-xs`, `rounded`→`rounded-sm`, `ring`→`ring-3`
 
-- [ ] Task 3: Configure typography via next/font (AC: #3)
-  - [ ] Import DM Serif Display and Nunito from `next/font/google` in root layout
-  - [ ] Apply font CSS variables to `<html>` element
-  - [ ] Define type scale CSS custom properties in `@theme` or `globals.css`
-  - [ ] DM Serif Display fallback: Georgia, serif
-  - [ ] Nunito fallback: system-ui, sans-serif
+- [x] Task 3: Configure typography via next/font (AC: #3)
+  - [x] Import DM Serif Display and Nunito from `next/font/google` in root layout
+  - [x] Apply font CSS variables to `<html>` element
+  - [x] Define type scale CSS custom properties in `@theme` or `globals.css`
+  - [x] DM Serif Display fallback: Georgia, serif
+  - [x] Nunito fallback: system-ui, sans-serif
 
-- [ ] Task 4: Initialize shadcn/ui (AC: #2)
-  - [ ] Run `npx shadcn@latest init` (NOT `shadcn-ui` — the CLI is `shadcn`)
-  - [ ] Configure `components.json` to use `@/components/ui/` path
-  - [ ] Add initial components: `npx shadcn@latest add button` (minimum for landing page CTA)
-  - [ ] Verify shadcn uses Tailwind CSS 4 `@theme inline` directive
+- [x] Task 4: Initialize shadcn/ui (AC: #2)
+  - [x] Run `npx shadcn@latest init` (NOT `shadcn-ui` — the CLI is `shadcn`)
+  - [x] Configure `components.json` to use `@/components/ui/` path
+  - [x] Add initial components: `npx shadcn@latest add button` (minimum for landing page CTA)
+  - [x] Verify shadcn uses Tailwind CSS 4 `@theme inline` directive
 
-- [ ] Task 5: Create Supabase Tier 1 placeholders (AC: #5)
-  - [ ] Install `@supabase/supabase-js` and `@supabase/ssr`
-  - [ ] Create `src/lib/supabase/client.ts` — browser Supabase client (placeholder with env var references)
-  - [ ] Create `src/lib/supabase/server.ts` — server Supabase client (placeholder with cookie handling)
-  - [ ] Create `src/lib/supabase/middleware.ts` — auth middleware helper (placeholder)
-  - [ ] Configure ESLint `no-restricted-imports` rule to block `@supabase/*` outside `src/lib/supabase/`
+- [x] Task 5: Create Supabase Tier 1 placeholders (AC: #5)
+  - [x] Install `@supabase/supabase-js` and `@supabase/ssr`
+  - [x] Create `src/lib/supabase/client.ts` — browser Supabase client (placeholder with env var references)
+  - [x] Create `src/lib/supabase/server.ts` — server Supabase client (placeholder with cookie handling)
+  - [x] Create `src/lib/supabase/middleware.ts` — auth middleware helper (placeholder)
+  - [x] Configure ESLint `no-restricted-imports` rule to block `@supabase/*` outside `src/lib/supabase/`
 
-- [ ] Task 6: Setup Supabase local dev (AC: #6)
-  - [ ] Run `supabase init` to generate `supabase/config.toml`
-  - [ ] Verify `supabase start` launches local Postgres + Auth + Storage
-  - [ ] Commit `supabase/config.toml` and `supabase/migrations/` directory
+- [x] Task 6: Setup Supabase local dev (AC: #6)
+  - [x] Run `supabase init` to generate `supabase/config.toml`
+  - [x] Verify `supabase start` launches local Postgres + Auth + Storage
+  - [x] Commit `supabase/config.toml` and `supabase/migrations/` directory
 
-- [ ] Task 7: Create landing page (AC: #1, #8)
-  - [ ] Implement `src/app/page.tsx` with value proposition content
-  - [ ] Headline: communicate "exact sailing track" differentiator
-  - [ ] "Get Started" CTA button (Coral primary, links to `/auth`)
-  - [ ] Create `src/app/messages.ts` for all landing page strings
-  - [ ] Responsive: mobile-first (375px+), centered max-width on desktop
+- [x] Task 7: Create landing page (AC: #1, #8)
+  - [x] Implement `src/app/page.tsx` with value proposition content
+  - [x] Headline: communicate "exact sailing track" differentiator
+  - [x] "Get Started" CTA button (Coral primary, links to `/auth`)
+  - [x] Create `src/app/messages.ts` for all landing page strings
+  - [x] Responsive: mobile-first (375px+), centered max-width on desktop
 
-- [ ] Task 8: Create root layout and app shell (AC: #1, #3, #7)
-  - [ ] Configure `src/app/layout.tsx` with fonts, metadata, and `<Analytics />`
-  - [ ] Create `src/app/not-found.tsx` (404 page)
-  - [ ] Create `src/app/error.tsx` (global error boundary)
-  - [ ] Create `src/app/loading.tsx` (global loading fallback)
+- [x] Task 8: Create root layout and app shell (AC: #1, #3, #7)
+  - [x] Configure `src/app/layout.tsx` with fonts, metadata, and `<Analytics />`
+  - [x] Create `src/app/not-found.tsx` (404 page)
+  - [x] Create `src/app/error.tsx` (global error boundary)
+  - [x] Create `src/app/loading.tsx` (global loading fallback)
 
-- [ ] Task 9: Setup Sentry (AC: #7)
-  - [ ] Install `@sentry/nextjs` v10.x
-  - [ ] Run `npx @sentry/wizard@latest -i nextjs` or create config files manually
-  - [ ] Create `sentry.client.config.ts` and `sentry.server.config.ts` at project root
-  - [ ] Initialize Sentry in root layout
+- [x] Task 9: Setup Sentry (AC: #7)
+  - [x] Install `@sentry/nextjs` v10.x
+  - [x] Run `npx @sentry/wizard@latest -i nextjs` or create config files manually
+  - [x] Create `sentry.client.config.ts` and `sentry.server.config.ts` at project root
+  - [x] Initialize Sentry in root layout
 
-- [ ] Task 10: Setup CI/CD pipeline (AC: #7)
-  - [ ] Create `.github/workflows/ci.yml` with lint + type-check + Vitest jobs
-  - [ ] Ensure CI runs on pull requests to main
-  - [ ] Vitest should pass with zero tests (trivial pass)
+- [x] Task 10: Setup CI/CD pipeline (AC: #7)
+  - [x] Create `.github/workflows/ci.yml` with lint + type-check + Vitest jobs
+  - [x] Ensure CI runs on pull requests to main
+  - [x] Vitest should pass with zero tests (trivial pass)
 
-- [ ] Task 11: Setup testing infrastructure (AC: #7)
-  - [ ] Install and configure Vitest 4.x with `vitest.config.ts`
-  - [ ] Install `@vitejs/plugin-react` and `jsdom` for React 19 testing
-  - [ ] Install and configure Playwright with `playwright.config.ts`
-  - [ ] Create `tests/e2e/` directory
+- [x] Task 11: Setup testing infrastructure (AC: #7)
+  - [x] Install and configure Vitest 4.x with `vitest.config.ts`
+  - [x] Install `@vitejs/plugin-react` and `jsdom` for React 19 testing
+  - [x] Install and configure Playwright with `playwright.config.ts`
+  - [x] Create `tests/e2e/` directory
 
-- [ ] Task 12: Create foundational directory structure (AC: #5)
-  - [ ] Create stub directories: `src/components/{ui,map,voyage,gpx,log,shared}`
-  - [ ] Create `src/lib/{data,gpx,geo,utils}` directories
-  - [ ] Create `src/types/index.ts` placeholder
-  - [ ] Create `src/middleware.ts` for route protection (placeholder — note: Next.js 16 deprecates middleware.ts in favor of proxy.ts, but continue using middleware.ts for now as it still works)
+- [x] Task 12: Create foundational directory structure (AC: #5)
+  - [x] Create stub directories: `src/components/{ui,map,voyage,gpx,log,shared}`
+  - [x] Create `src/lib/{data,gpx,geo,utils}` directories
+  - [x] Create `src/types/index.ts` placeholder
+  - [x] Create `src/middleware.ts` for route protection (placeholder — note: Next.js 16 deprecates middleware.ts in favor of proxy.ts, but continue using middleware.ts for now as it still works)
 
 ## Dev Notes
 
@@ -355,10 +355,76 @@ playwright.config.ts            # Playwright E2E config
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+Claude Opus 4.6 (1M context)
 
 ### Debug Log References
 
+- Created via temp dir approach since `create-next-app` doesn't support non-empty directories
+- shadcn init modified globals.css and layout.tsx — merged with Ocean & Sunset tokens
+- Mapped shadcn semantic tokens (--primary, --foreground, etc.) to Ocean & Sunset palette
+- Supabase CLI installed via Homebrew, `supabase init` generated config.toml
+- ESLint flat config required `globalIgnores` for _bmad/ directory
+- Vitest `passWithNoTests: true` needed for zero-test pass
+
 ### Completion Notes List
 
+- Next.js 16.1.6 with React 19.2.3, TypeScript strict, Turbopack
+- Tailwind CSS 4 with @theme inline directive — all Ocean & Sunset design tokens defined
+- DM Serif Display + Nunito fonts loaded via next/font/google
+- shadcn/ui v4.0.8 initialized with Button component, branded with Ocean & Sunset palette
+- Supabase Tier 1 containment: client.ts, server.ts, middleware.ts with ESLint enforcement
+- Supabase CLI initialized with config.toml and migrations/ directory
+- Landing page with hero section, 3 feature cards, i18n-ready messages.ts
+- Root layout with Analytics, error.tsx, not-found.tsx, loading.tsx
+- Sentry v10 client + server configs at project root
+- CI pipeline: GitHub Actions for lint + typecheck + vitest on PRs
+- Vitest 4.1 + Playwright 1.58 configured
+- Full directory structure: components/{ui,map,voyage,gpx,log,shared}, lib/{supabase,data,gpx,geo,utils}, types/
+- ActionResponse type and ErrorCode enum defined in src/types/index.ts
+- Landing page and `/auth` placeholder route render before Supabase local env is fully populated
+- Remaining app-shell strings are externalized into collocated `messages.ts` files
+- All checks pass: lint ✓, typecheck ✓, test ✓, build ✓
+
+### Change Log
+
+- 2026-03-15: Story 1.1 implemented — full project foundation scaffolded
+- 2026-03-15: Review fixes applied — Supabase env guard, string externalization, `/auth` placeholder route
+
 ### File List
+
+- .env.example (new)
+- .env.local (new, gitignored)
+- .github/workflows/ci.yml (new)
+- .gitignore (modified)
+- components.json (new, shadcn config)
+- eslint.config.mjs (modified)
+- next.config.ts (new)
+- package.json (new)
+- package-lock.json (new)
+- playwright.config.ts (new)
+- postcss.config.mjs (new)
+- sentry.client.config.ts (new)
+- sentry.server.config.ts (new)
+- src/app/auth/messages.ts (new)
+- src/app/auth/page.tsx (new)
+- src/app/error.tsx (new)
+- src/app/favicon.ico (new)
+- src/app/globals.css (new)
+- src/app/layout.tsx (new)
+- src/app/loading.tsx (new)
+- src/app/messages.ts (new)
+- src/app/not-found.tsx (new)
+- src/app/page.tsx (new)
+- src/components/ui/button.tsx (new, shadcn)
+- src/lib/supabase/config.test.ts (new)
+- src/lib/supabase/config.ts (new)
+- src/lib/supabase/client.ts (new)
+- src/lib/supabase/middleware.ts (new)
+- src/lib/supabase/server.ts (new)
+- src/lib/utils.ts (new, shadcn)
+- src/middleware.ts (new)
+- src/types/index.ts (new)
+- supabase/.gitignore (new)
+- supabase/config.toml (new)
+- tsconfig.json (new)
+- vitest.config.ts (new)
