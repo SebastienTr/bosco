@@ -70,6 +70,50 @@ export type Database = {
         }
         Relationships: []
       }
+      voyages: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          description: string | null
+          slug: string
+          cover_image_url: string | null
+          is_public: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          description?: string | null
+          slug: string
+          cover_image_url?: string | null
+          is_public?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          description?: string | null
+          slug?: string
+          cover_image_url?: string | null
+          is_public?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voyages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -214,4 +258,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
