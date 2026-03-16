@@ -27,10 +27,12 @@ export function speedKts(distanceNm: number, durationSeconds: number): number {
 /** Compute full stats for a simplified track */
 export function computeTrackStats(
   simplifiedPoints: GpxTrackPoint[],
-  originalPointCount: number
+  originalPointCount: number,
+  name: string | null = null
 ): TrackStats {
   if (simplifiedPoints.length === 0) {
     return {
+      name,
       distanceNm: 0,
       durationSeconds: null,
       avgSpeedKts: null,
@@ -78,6 +80,7 @@ export function computeTrackStats(
   }
 
   return {
+    name,
     distanceNm: Math.round(totalDistance * 100) / 100,
     durationSeconds,
     avgSpeedKts:

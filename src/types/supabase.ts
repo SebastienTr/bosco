@@ -34,6 +34,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      legs: {
+        Row: {
+          avg_speed_kts: number | null
+          created_at: string
+          distance_nm: number | null
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          max_speed_kts: number | null
+          started_at: string | null
+          track_geojson: Json
+          voyage_id: string
+        }
+        Insert: {
+          avg_speed_kts?: number | null
+          created_at?: string
+          distance_nm?: number | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          max_speed_kts?: number | null
+          started_at?: string | null
+          track_geojson: Json
+          voyage_id: string
+        }
+        Update: {
+          avg_speed_kts?: number | null
+          created_at?: string
+          distance_nm?: number | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          max_speed_kts?: number | null
+          started_at?: string | null
+          track_geojson?: Json
+          voyage_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legs_voyage_id_fkey"
+            columns: ["voyage_id"]
+            isOneToOne: false
+            referencedRelation: "voyages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           bio: string | null
@@ -72,37 +119,37 @@ export type Database = {
       }
       voyages: {
         Row: {
-          id: string
-          user_id: string
-          name: string
-          description: string | null
-          slug: string
           cover_image_url: string | null
-          is_public: boolean
           created_at: string
+          description: string | null
+          id: string
+          is_public: boolean
+          name: string
+          slug: string
           updated_at: string
+          user_id: string
         }
         Insert: {
-          id?: string
-          user_id: string
-          name: string
-          description?: string | null
-          slug: string
           cover_image_url?: string | null
-          is_public?: boolean
           created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          name: string
+          slug: string
           updated_at?: string
+          user_id: string
         }
         Update: {
-          id?: string
-          user_id?: string
-          name?: string
-          description?: string | null
-          slug?: string
           cover_image_url?: string | null
-          is_public?: boolean
           created_at?: string
+          description?: string | null
+          id?: string
+          is_public?: boolean
+          name?: string
+          slug?: string
           updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -258,3 +305,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
+

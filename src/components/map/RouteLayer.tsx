@@ -7,6 +7,7 @@ import { useEffect, useMemo } from "react";
 
 interface RouteLayerProps {
   tracks: GeoJSON.LineString[];
+  trackColors?: string[];
 }
 
 const TRACK_STYLE = {
@@ -27,7 +28,7 @@ export function toLatLngs(
   );
 }
 
-export function RouteLayer({ tracks }: RouteLayerProps) {
+export function RouteLayer({ tracks, trackColors }: RouteLayerProps) {
   const map = useMap();
 
   const allPositions = useMemo(() => {
@@ -48,7 +49,11 @@ export function RouteLayer({ tracks }: RouteLayerProps) {
         <Polyline
           key={index}
           positions={toLatLngs(track.coordinates)}
-          pathOptions={TRACK_STYLE}
+          pathOptions={
+            trackColors?.[index]
+              ? { ...TRACK_STYLE, color: trackColors[index] }
+              : TRACK_STYLE
+          }
         />
       ))}
     </>

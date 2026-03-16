@@ -1,9 +1,9 @@
 import type {
+  GpxTrack,
   WorkerInMessage,
   WorkerOutMessage,
   ProcessingResult,
 } from "@/types/gpx";
-import { INVALID_GPX_FORMAT_MESSAGE, parseGpx } from "./parser";
 import { simplifyTrack } from "./simplify";
 import { toGeoJsonLineString } from "./to-geojson";
 import { computeTrackStats } from "@/lib/geo/distance";
@@ -24,32 +24,24 @@ function postMsg(scope: WorkerScope, msg: WorkerOutMessage) {
 }
 
 function toProcessingError(error: unknown): WorkerError {
-  if (
-    error instanceof Error &&
-    error.message.startsWith(INVALID_GPX_FORMAT_MESSAGE)
-  ) {
-    return {
-      code: "PROCESSING_ERROR",
-      message: INVALID_GPX_FORMAT_MESSAGE,
-    };
-  }
-
+  const message =
+    error instanceof Error ? error.message : "Unknown processing error";
   return {
     code: "PROCESSING_ERROR",
-    message: "Unknown processing error",
+    message,
   };
 }
 
-export async function processGpxFile(
-  file: File,
-  onProgress?: (step: ProgressStep) => void
-): Promise<ProcessingResult> {
-  // Step 1: Parse
-  onProgress?.("parsing");
-  const xmlString = await file.text();
-  const tracks = parseGpx(xmlString);
-
-  // Step 2: Simplify
+/**
+ * Process pre-parsed GPX tracks through the heavy computation pipeline.
+ * XML parsing (DOMParser) runs on the main thread; this function handles
+ * simplification, stopover detection, stats, and GeoJSON conversion.
+ */
+export function processTracks(
+  tracks: GpxTrack[],
+  onProgress?: (step: ProgressStep) => void,
+): ProcessingResult {
+  // Step 1: Simplify
   onProgress?.("simplifying");
   const simplified = tracks.map((track) => ({
     ...track,
@@ -57,19 +49,23 @@ export async function processGpxFile(
     originalPointCount: track.points.length,
   }));
 
-  // Step 3: Detect stopovers
+  // Step 2: Detect stopovers
   onProgress?.("detecting");
   const stopovers = detectStopovers(
-    simplified.map((track) => ({ points: track.simplifiedPoints }))
+    simplified.map((track) => ({ points: track.simplifiedPoints })),
   );
 
-  // Step 4: Convert to GeoJSON + compute stats
+  // Step 3: Convert to GeoJSON + compute stats
   onProgress?.("ready");
   const geojsonTracks = simplified.map((track) =>
-    toGeoJsonLineString(track.simplifiedPoints)
+    toGeoJsonLineString(track.simplifiedPoints),
   );
   const stats = simplified.map((track) =>
-    computeTrackStats(track.simplifiedPoints, track.originalPointCount)
+    computeTrackStats(
+      track.simplifiedPoints,
+      track.originalPointCount,
+      track.name,
+    ),
   );
 
   return {
@@ -79,13 +75,15 @@ export async function processGpxFile(
   };
 }
 
-export function registerWorker(scope: WorkerScope = self as unknown as WorkerScope) {
+export function registerWorker(
+  scope: WorkerScope = self as unknown as WorkerScope,
+) {
   scope.onmessage = async (event: MessageEvent<WorkerInMessage>) => {
-    const { type, file } = event.data;
+    const { type, tracks } = event.data;
     if (type !== "process") return;
 
     try {
-      const result = await processGpxFile(file, (step) => {
+      const result = processTracks(tracks, (step) => {
         postMsg(scope, { type: "progress", step });
       });
 

@@ -14,6 +14,7 @@ export interface GpxTrack {
 
 /** Stats computed per track after simplification */
 export interface TrackStats {
+  name: string | null;
   distanceNm: number;
   durationSeconds: number | null; // null if no timestamps in GPX
   avgSpeedKts: number | null;
@@ -41,7 +42,7 @@ export interface ProcessingResult {
 /** Messages: Main thread → Worker */
 export type WorkerInMessage = {
   type: "process";
-  file: File;
+  tracks: GpxTrack[];
 };
 
 /** Messages: Worker → Main thread */

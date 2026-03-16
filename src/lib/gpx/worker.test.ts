@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { WorkerInMessage, WorkerOutMessage } from "@/types/gpx";
-import { processGpxFile, registerWorker, type WorkerScope } from "./worker";
+import type { WorkerInMessage, WorkerOutMessage, GpxTrack } from "@/types/gpx";
+import { processTracks, registerWorker, type WorkerScope } from "./worker";
+import { parseGpx } from "./parser";
 
 const MULTI_TRACK_GPX = `<?xml version="1.0"?>
 <gpx version="1.1">
@@ -29,15 +30,15 @@ const PREFIXED_NAMESPACE_GPX = `<?xml version="1.0"?>
   </gpx:trk>
 </gpx:gpx>`;
 
-function createFile(contents: string) {
-  return new File([contents], "track.gpx", { type: "application/gpx+xml" });
+function parsedTracks(gpxXml: string): GpxTrack[] {
+  return parseGpx(gpxXml);
 }
 
-function createWorkerEvent(contents: string): MessageEvent<WorkerInMessage> {
+function createWorkerEvent(tracks: GpxTrack[]): MessageEvent<WorkerInMessage> {
   return {
     data: {
       type: "process",
-      file: createFile(contents),
+      tracks,
     },
   } as MessageEvent<WorkerInMessage>;
 }
@@ -55,14 +56,17 @@ function createMockWorkerScope() {
 }
 
 describe("worker", () => {
-  it("processes GPX through the full pipeline", async () => {
-    const result = await processGpxFile(createFile(MULTI_TRACK_GPX));
+  it("processes parsed tracks through the full pipeline", () => {
+    const tracks = parsedTracks(MULTI_TRACK_GPX);
+    const result = processTracks(tracks);
 
     expect(result.tracks).toHaveLength(2);
     expect(result.stats).toHaveLength(2);
     expect(result.stopovers.length).toBeGreaterThan(0);
     expect(result.tracks[0].type).toBe("LineString");
     expect(result.tracks[0].coordinates[0]).toEqual([5.3698, 43.2965]);
+    expect(result.stats[0].name).toBe("Day 1");
+    expect(result.stats[1].name).toBe("Day 2");
     expect(result.stats[0].distanceNm).toBeGreaterThan(0);
     expect(result.stats[0].startTime).toBe("2026-03-10T08:00:00Z");
   });
@@ -71,17 +75,17 @@ describe("worker", () => {
     const { scope, messages } = createMockWorkerScope();
     registerWorker(scope);
 
-    await scope.onmessage?.(createWorkerEvent(MULTI_TRACK_GPX));
+    const tracks = parsedTracks(MULTI_TRACK_GPX);
+    await scope.onmessage?.(createWorkerEvent(tracks));
 
-    expect(messages).toHaveLength(5);
-    expect(messages.slice(0, 4)).toEqual([
-      { type: "progress", step: "parsing" },
+    expect(messages).toHaveLength(4);
+    expect(messages.slice(0, 3)).toEqual([
       { type: "progress", step: "simplifying" },
       { type: "progress", step: "detecting" },
       { type: "progress", step: "ready" },
     ]);
 
-    const resultMessage = messages[4];
+    const resultMessage = messages[3];
     expect(resultMessage.type).toBe("result");
     if (resultMessage.type === "result") {
       expect(resultMessage.data.tracks).toHaveLength(2);
@@ -89,32 +93,16 @@ describe("worker", () => {
     }
   });
 
-  it("normalizes invalid GPX parsing failures for the main thread", async () => {
-    const { scope, messages } = createMockWorkerScope();
-    registerWorker(scope);
-
-    await scope.onmessage?.(createWorkerEvent("<not valid xml>>>"));
-
-    expect(messages).toEqual([
-      { type: "progress", step: "parsing" },
-      {
-        type: "error",
-        error: {
-          code: "PROCESSING_ERROR",
-          message: "Invalid GPX format",
-        },
-      },
-    ]);
-  });
-
-  it("supports namespaced GPX input end-to-end", async () => {
-    const result = await processGpxFile(createFile(PREFIXED_NAMESPACE_GPX));
+  it("supports namespaced GPX input end-to-end", () => {
+    const tracks = parsedTracks(PREFIXED_NAMESPACE_GPX);
+    const result = processTracks(tracks);
 
     expect(result.tracks).toHaveLength(1);
     expect(result.tracks[0].coordinates).toEqual([
       [5, 43],
       [5.1, 43.1],
     ]);
+    expect(result.stats[0].name).toBe("Namespaced Track");
     expect(result.stats[0].pointCount).toBe(2);
   });
 });

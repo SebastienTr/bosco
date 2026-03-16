@@ -15,6 +15,7 @@ export interface MapCanvasProps {
   center?: LatLngExpression;
   zoom?: number;
   tracks?: GeoJSON.LineString[];
+  trackColors?: string[];
   className?: string;
   ariaLabel?: string;
 }
@@ -48,6 +49,7 @@ export default function MapCanvas({
   center = DEFAULT_CENTER,
   zoom = DEFAULT_ZOOM,
   tracks = [],
+  trackColors,
   className,
   ariaLabel = DEFAULT_ARIA_LABEL,
 }: MapCanvasProps) {
@@ -63,7 +65,9 @@ export default function MapCanvas({
         <MapAccessibility ariaLabel={ariaLabel} />
         <TileLayer url={OSM_URL} attribution={OSM_ATTRIBUTION} />
         <TileLayer url={OPENSEAMAP_URL} attribution={OPENSEAMAP_ATTRIBUTION} />
-        {tracks.length > 0 && <RouteLayer tracks={tracks} />}
+        {tracks.length > 0 && (
+          <RouteLayer tracks={tracks} trackColors={trackColors} />
+        )}
       </MapContainer>
     </div>
   );

@@ -44,6 +44,7 @@ describe("speedKts", () => {
 describe("computeTrackStats", () => {
   it("returns empty stats for empty input", () => {
     const stats = computeTrackStats([], 0);
+    expect(stats.name).toBeNull();
     expect(stats.distanceNm).toBe(0);
     expect(stats.durationSeconds).toBeNull();
     expect(stats.avgSpeedKts).toBeNull();
@@ -56,7 +57,8 @@ describe("computeTrackStats", () => {
       { lat: 43.2965, lon: 5.3698, ele: null, time: "2026-03-10T08:00:00Z" },
       { lat: 43.1242, lon: 5.928, ele: null, time: "2026-03-10T12:00:00Z" },
     ];
-    const stats = computeTrackStats(points, 100);
+    const stats = computeTrackStats(points, 100, "Day 1");
+    expect(stats.name).toBe("Day 1");
     expect(stats.distanceNm).toBeGreaterThan(24);
     expect(stats.distanceNm).toBeLessThan(28);
     expect(stats.durationSeconds).toBe(4 * 3600);

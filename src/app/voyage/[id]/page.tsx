@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { getUser } from "@/lib/auth";
 import { getVoyageById } from "@/lib/data/voyages";
-import { Button } from "@/components/ui/button";
+import { getLegsByVoyageId } from "@/lib/data/legs";
 import { EmptyState } from "@/components/shared/EmptyState";
 import MapLoader from "@/components/map/MapLoader";
 import { messages } from "./messages";
@@ -37,8 +37,14 @@ export default async function VoyagePage({
     notFound();
   }
 
-  // No legs table yet — tracks will be fetched in Story 2.3
-  const tracks: GeoJSON.LineString[] = [];
+  const { data: legs, error: legsError } = await getLegsByVoyageId(id);
+  if (legsError) {
+    throw new Error(`Failed to load legs: ${legsError.message}`);
+  }
+
+  const tracks: GeoJSON.LineString[] = (legs ?? []).map(
+    (leg) => leg.track_geojson as unknown as GeoJSON.LineString,
+  );
 
   return (
     <div className="flex h-screen flex-col">
@@ -67,6 +73,14 @@ export default async function VoyagePage({
         <h1 className="flex-1 truncate font-heading text-h1 text-navy">
           {voyage.name}
         </h1>
+        {tracks.length > 0 && (
+          <Link
+            href={`/voyage/${id}/import`}
+            className="inline-flex min-h-[44px] items-center rounded-lg bg-ocean px-4 font-semibold text-white transition-colors hover:bg-ocean/80"
+          >
+            {messages.emptyState.cta}
+          </Link>
+        )}
       </header>
 
       {/* Map area — fills remaining viewport */}
@@ -103,12 +117,12 @@ export default async function VoyagePage({
                 title={messages.emptyState.title}
                 description={messages.emptyState.description}
                 action={
-                  <Button
-                    disabled
-                    className="min-h-[44px] bg-ocean px-8 text-white opacity-50"
+                  <Link
+                    href={`/voyage/${id}/import`}
+                    className="inline-flex min-h-[44px] items-center rounded-lg bg-ocean px-8 py-3 font-semibold text-white transition-colors hover:bg-ocean/80"
                   >
                     {messages.emptyState.cta}
-                  </Button>
+                  </Link>
                 }
               />
             </div>

@@ -21,7 +21,7 @@ import { createVoyage } from "./actions";
 import { messages } from "./messages";
 
 interface CreateVoyageDialogProps {
-  trigger: React.ReactNode;
+  trigger: React.ReactElement;
 }
 
 export function CreateVoyageDialog({ trigger }: CreateVoyageDialogProps) {
@@ -91,7 +91,7 @@ export function CreateVoyageDialog({ trigger }: CreateVoyageDialogProps) {
         if (!nextOpen) resetForm();
       }}
     >
-      <DialogTrigger render={<button type="button" />}>{trigger}</DialogTrigger>
+      <DialogTrigger render={trigger} />
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading text-h2 text-navy">

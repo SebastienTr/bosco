@@ -1,5 +1,5 @@
 # generated: 2026-03-15
-# last_updated: 2026-03-16T12:07:00
+# last_updated: 2026-03-16T12:53:56Z
 # project: bosco
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-15
-last_updated: 2026-03-16T12:46:23
+last_updated: 2026-03-16T12:53:56Z
 project: bosco
 project_key: NOKEY
 tracking_system: file-system
@@ -54,7 +54,7 @@ development_status:
   epic-2: in-progress
   2-1-map-integration-and-voyage-view: done
   2-2-gpx-processing-pipeline: done
-  2-3-gpx-import-flow: backlog
+  2-3-gpx-import-flow: done
   2-4-automatic-stopover-detection-and-management: backlog
   2-5-pwa-and-web-share-target: backlog
   2-6-extended-dashboard-with-voyage-cards: backlog
