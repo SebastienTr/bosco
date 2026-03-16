@@ -149,3 +149,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .bosco-map .leaflet-bar a {
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+  }
+
+  .bosco-map .leaflet-control-zoom-in,
+  .bosco-map .leaflet-control-zoom-out {
+    font-size: 24px;
+  }
+
+  .bosco-map .leaflet-bar a:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+}

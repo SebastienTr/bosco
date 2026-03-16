@@ -91,7 +91,7 @@ export function CreateVoyageDialog({ trigger }: CreateVoyageDialogProps) {
         if (!nextOpen) resetForm();
       }}
     >
-      <DialogTrigger render={<span />}>{trigger}</DialogTrigger>
+      <DialogTrigger render={<button type="button" />}>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading text-h2 text-navy">

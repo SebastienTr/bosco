@@ -4,14 +4,17 @@ export const messages = {
   },
   notFound: {
     title: "Voyage not found",
-    description: "This voyage does not exist or you do not have access to it.",
+    description:
+      "This voyage does not exist or you do not have access to it.",
     backToDashboard: "Back to dashboard",
   },
   emptyState: {
-    title: "No tracks yet",
-    description:
-      "Export your tracks from Navionics and import them here to see your sailing route on the map.",
+    title: "Export from Navionics and share to Bosco",
+    description: "Your sailing tracks will appear here once imported.",
     cta: "Import track",
+  },
+  map: {
+    ariaLabel: "Sailing voyage map",
   },
   backToDashboard: "Dashboard",
 };
