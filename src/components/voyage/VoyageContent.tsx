@@ -102,14 +102,7 @@ export function VoyageContent({
 
       {/* Leg list panel */}
       {legs.length > 0 && (
-        <div className="absolute bottom-3 left-3 z-[500] w-64 max-w-[calc(100vw-24px)] max-h-[50vh] overflow-y-auto rounded-lg bg-white/95 shadow-overlay backdrop-blur-sm">
-          <div className="border-b px-3 py-2">
-            <h2 className="font-heading text-sm font-semibold text-navy">
-              Legs ({legs.length})
-            </h2>
-          </div>
-          <LegList legs={legs} onDelete={handleDeleteLeg} />
-        </div>
+        <LegList legs={legs} onDelete={handleDeleteLeg} />
       )}
 
       {/* EmptyState overlay when no tracks */}
