@@ -11,8 +11,10 @@ export const metadata: Metadata = {
 
 export default async function ImportPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const user = await getUser();
   if (!user) {
@@ -30,9 +32,15 @@ export default async function ImportPage({
     notFound(); // Don't reveal existence
   }
 
+  const { shared } = await searchParams;
+
   return (
     <div className="h-screen">
-      <GpxImporter voyageId={id} voyageName={voyage.name} />
+      <GpxImporter
+        voyageId={id}
+        voyageName={voyage.name}
+        autoImportFromShare={shared === "1"}
+      />
     </div>
   );
 }

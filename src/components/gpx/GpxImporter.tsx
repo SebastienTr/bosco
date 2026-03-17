@@ -56,9 +56,10 @@ function reducer(_state: ImportState, action: ImportAction): ImportState {
 interface GpxImporterProps {
   voyageId: string;
   voyageName: string;
+  autoImportFromShare?: boolean;
 }
 
-export function GpxImporter({ voyageId, voyageName }: GpxImporterProps) {
+export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxImporterProps) {
   const [state, dispatch] = useReducer(reducer, { step: "idle" });
   const workerRef = useRef<Worker | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -101,6 +102,41 @@ export function GpxImporter({ voyageId, voyageName }: GpxImporterProps) {
 
     return () => workerRef.current?.terminate();
   }, []);
+
+  // Auto-import from Web Share Target Cache API
+  // NOTE: Do NOT delete the cache entry here — React Strict Mode double-mounts
+  // in development, so the second mount would find an empty cache. Cleanup
+  // happens after successful import in handleConfirm.
+  useEffect(() => {
+    if (!autoImportFromShare) return;
+    let cancelled = false;
+
+    async function loadSharedFile() {
+      if (!workerRef.current) return;
+      if (!("caches" in window)) return;
+
+      try {
+        const cache = await caches.open("bosco-share-target");
+        const response = await cache.match("shared-gpx");
+        if (!response || cancelled) return;
+        const blob = await response.blob();
+        const file = new File([blob], "shared.gpx", { type: "application/gpx+xml" });
+
+        if (cancelled) return;
+        dispatch({ type: "FILE_SELECTED" });
+        const xmlString = await file.text();
+        const tracks = parseGpx(xmlString);
+        workerRef.current?.postMessage({ type: "process", tracks });
+      } catch (error) {
+        if (cancelled) return;
+        const message = error instanceof Error ? error.message : "Failed to load shared file";
+        dispatch({ type: "PROCESSING_ERROR", message });
+      }
+    }
+
+    loadSharedFile();
+    return () => { cancelled = true; };
+  }, [autoImportFromShare]);
 
   const handleFileSelect = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,6 +230,10 @@ export function GpxImporter({ voyageId, voyageName }: GpxImporterProps) {
       }
 
       dispatch({ type: "IMPORT_COMPLETE" });
+      // Clean up share cache after successful import
+      if ("caches" in window) {
+        caches.open("bosco-share-target").then(c => c.delete("shared-gpx")).catch(() => {});
+      }
       toast.success(
         `${legs.length} track(s) added to ${voyageName}`,
       );

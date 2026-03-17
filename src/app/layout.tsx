@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Serif_Display, Nunito } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Toaster } from "@/components/ui/sonner";
+import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
 import "./globals.css";
 import { messages } from "./messages";
 
@@ -21,6 +22,13 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: messages.meta.title,
   description: messages.meta.description,
+  other: {
+    "apple-mobile-web-app-capable": "yes",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1B2D4F",
 };
 
 export default function RootLayout({
@@ -35,6 +43,7 @@ export default function RootLayout({
       >
         {children}
         <Toaster richColors position="bottom-center" />
+        <ServiceWorkerRegistrar />
         <Analytics />
       </body>
     </html>

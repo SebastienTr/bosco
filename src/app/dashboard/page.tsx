@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { VoyageCard } from "@/components/voyage/VoyageCard";
 import { CreateVoyageDialog } from "./CreateVoyageDialog";
+import { SharePendingRedirect } from "./SharePendingRedirect";
 import { messages } from "./messages";
 
 export const metadata: Metadata = {
@@ -43,6 +44,7 @@ export default async function DashboardPage() {
 
   return (
     <div>
+      <SharePendingRedirect />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
