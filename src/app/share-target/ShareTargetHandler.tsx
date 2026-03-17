@@ -11,8 +11,9 @@ import { createVoyage } from "@/app/dashboard/actions";
 import { messages } from "./messages";
 
 const SHARE_CACHE = "bosco-share-target";
-const SHARE_KEY = "shared-gpx";
+const SHARE_KEY = "/shared-gpx";
 const SHARE_PENDING_KEY = "bosco-share-pending";
+const SHARE_RETURN_PATH = "/share-target?shared=1";
 
 async function hasSharedFile(): Promise<boolean> {
   if (!("caches" in window)) return false;
@@ -48,6 +49,10 @@ export function ShareTargetHandler({
 
   useEffect(() => {
     async function resolve() {
+      if (isAuthenticated) {
+        localStorage.removeItem(SHARE_PENDING_KEY);
+      }
+
       const fileExists = await hasSharedFile();
 
       if (!fileExists) {
@@ -140,7 +145,11 @@ export function ShareTargetHandler({
             {messages.notAuthenticated.description}
           </p>
           <Button
-            onClick={() => router.push("/auth")}
+            onClick={() =>
+              router.push(
+                `/auth?next=${encodeURIComponent(SHARE_RETURN_PATH)}`,
+              )
+            }
             className="mt-6 min-h-[44px] bg-coral text-white hover:bg-coral/90"
           >
             {messages.notAuthenticated.cta}

@@ -76,7 +76,7 @@ describe("GpxImporter autoImportFromShare", () => {
   });
 
   it("reads file from Cache API and auto-processes when autoImportFromShare is true", async () => {
-    mockCaches(true);
+    const { mockCache } = mockCaches(true);
 
     render(
       <GpxImporter
@@ -86,7 +86,11 @@ describe("GpxImporter autoImportFromShare", () => {
       />,
     );
 
-    // Worker should have received a message (cache cleanup happens after import, not here)
+    await vi.waitFor(() => {
+      expect(mockCache.match).toHaveBeenCalledWith("/shared-gpx");
+    });
+
+    // Worker should have received a message
     await vi.waitFor(() => {
       expect(mockPostMessage).toHaveBeenCalledWith(
         expect.objectContaining({ type: "process" }),

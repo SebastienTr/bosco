@@ -73,4 +73,22 @@ describe("sendMagicLink", () => {
       error: { code: "EXTERNAL_SERVICE_ERROR", message: "Rate limit" },
     });
   });
+
+  it("passes next through to signIn when provided", async () => {
+    mockSignIn.mockResolvedValue({
+      data: { email: "test@example.com" },
+      error: null,
+    });
+
+    const formData = new FormData();
+    formData.set("email", "test@example.com");
+    formData.set("next", "/share-target?shared=1");
+
+    await sendMagicLink(formData);
+
+    expect(mockSignIn).toHaveBeenCalledWith(
+      "test@example.com",
+      "/share-target?shared=1",
+    );
+  });
 });

@@ -2,6 +2,7 @@
 // No caching, no offline support — purely for share target interception
 
 const SHARE_CACHE = "bosco-share-target";
+const SHARE_KEY = "/shared-gpx";
 
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
@@ -21,7 +22,7 @@ async function handleShareTarget(request) {
     if (file) {
       const cache = await caches.open(SHARE_CACHE);
       // Store the file as a Response in Cache API
-      await cache.put("shared-gpx", new Response(file));
+      await cache.put(SHARE_KEY, new Response(file));
     }
   } catch (e) {
     // If file extraction fails, still redirect — the page will handle the error

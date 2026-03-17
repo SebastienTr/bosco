@@ -12,6 +12,7 @@ const EmailSchema = z.object({
 export async function sendMagicLink(
   formData: FormData,
 ): Promise<ActionResponse<{ email: string }>> {
+  const next = formData.get("next");
   const parsed = EmailSchema.safeParse({
     email: formData.get("email"),
   });
@@ -26,7 +27,12 @@ export async function sendMagicLink(
     };
   }
 
-  return signIn(parsed.data.email);
+  const nextPath =
+    typeof next === "string" && next.length > 0 ? next : undefined;
+
+  return nextPath
+    ? signIn(parsed.data.email, nextPath)
+    : signIn(parsed.data.email);
 }
 
 export async function signOutAction(): Promise<never> {

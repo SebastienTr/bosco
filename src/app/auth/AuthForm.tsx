@@ -38,7 +38,13 @@ function useCountdown(seconds: number): [number, () => void] {
   return [remaining, start];
 }
 
-export function AuthForm({ initialError }: { initialError?: string }) {
+export function AuthForm({
+  initialError,
+  initialNext,
+}: {
+  initialError?: string;
+  initialNext?: string;
+}) {
   const [countdown, startCountdown] = useCountdown(RESEND_COOLDOWN_SECONDS);
   const [isResending, setIsResending] = useState(false);
   const [resendError, setResendError] = useState<string | null>(null);
@@ -62,6 +68,9 @@ export function AuthForm({ initialError }: { initialError?: string }) {
 
     const formData = new FormData();
     formData.set("email", emailSent);
+    if (initialNext) {
+      formData.set("next", initialNext);
+    }
 
     setIsResending(true);
     setResendError(null);
@@ -80,7 +89,7 @@ export function AuthForm({ initialError }: { initialError?: string }) {
     } finally {
       setIsResending(false);
     }
-  }, [countdown, emailSent, isResending, startCountdown]);
+  }, [countdown, emailSent, initialNext, isResending, startCountdown]);
 
   const errorMessage =
     initialError === "auth_callback_error"
@@ -166,6 +175,9 @@ export function AuthForm({ initialError }: { initialError?: string }) {
       </p>
 
       <form action={formAction} className="mt-8 space-y-4">
+        {initialNext ? (
+          <input type="hidden" name="next" value={initialNext} />
+        ) : null}
         <div>
           <label
             htmlFor="email"

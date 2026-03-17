@@ -10,14 +10,14 @@ export const metadata: Metadata = {
 export default async function AuthPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; next?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, next } = await searchParams;
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-16 sm:px-6 lg:px-8">
       <div className="w-full max-w-[400px] rounded-[var(--radius-card)] bg-sand p-8 shadow-card">
-        <AuthForm initialError={error} />
+        <AuthForm initialError={error} initialNext={next} />
       </div>
     </main>
   );

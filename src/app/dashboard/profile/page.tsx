@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth";
 import { getProfileByUserId } from "@/lib/data/profiles";
+import { SharePendingRedirect } from "../SharePendingRedirect";
 import { ProfileForm } from "./ProfileForm";
 import { messages } from "./messages";
 
@@ -22,6 +23,7 @@ export default async function ProfilePage() {
 
   return (
     <main className="min-h-screen bg-foam px-4 py-16 sm:px-6 lg:px-8">
+      <SharePendingRedirect />
       <div className="mx-auto max-w-xl rounded-[var(--radius-card)] bg-white p-8 shadow-card">
         <p className="text-small font-semibold uppercase tracking-[0.2em] text-ocean">
           {messages.eyebrow}

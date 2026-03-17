@@ -39,6 +39,21 @@ describe("signIn", () => {
     });
   });
 
+  it("includes next in the OTP redirect URL when provided", async () => {
+    mockSignInWithOtp.mockResolvedValue({ data: {}, error: null });
+
+    await signIn("test@example.com", "/share-target?shared=1");
+
+    expect(mockSignInWithOtp).toHaveBeenCalledWith({
+      email: "test@example.com",
+      options: expect.objectContaining({
+        emailRedirectTo: expect.stringContaining(
+          "/auth/confirm?next=%2Fshare-target%3Fshared%3D1",
+        ),
+      }),
+    });
+  });
+
   it("returns error when OTP send fails", async () => {
     mockSignInWithOtp.mockResolvedValue({
       data: null,

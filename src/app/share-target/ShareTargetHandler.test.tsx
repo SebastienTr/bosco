@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ShareTargetHandler } from "./ShareTargetHandler";
 import { messages } from "./messages";
@@ -54,7 +54,7 @@ describe("ShareTargetHandler", () => {
   });
 
   it("shows no-file state when Cache API has no file", async () => {
-    mockCaches(false);
+    const mockCache = mockCaches(false);
 
     render(
       <ShareTargetHandler isAuthenticated={true} voyages={[]} />,
@@ -64,10 +64,11 @@ describe("ShareTargetHandler", () => {
     expect(
       await screen.findByText(messages.noFile.title),
     ).toBeTruthy();
+    expect(mockCache.match).toHaveBeenCalledWith("/shared-gpx");
   });
 
   it("redirects to auth when not authenticated and file exists", async () => {
-    mockCaches(true);
+    const mockCache = mockCaches(true);
 
     render(
       <ShareTargetHandler isAuthenticated={false} voyages={[]} />,
@@ -77,6 +78,12 @@ describe("ShareTargetHandler", () => {
       await screen.findByText(messages.notAuthenticated.title),
     ).toBeTruthy();
     expect(localStorage.getItem("bosco-share-pending")).toBe("true");
+    expect(mockCache.match).toHaveBeenCalledWith("/shared-gpx");
+
+    fireEvent.click(screen.getByRole("button", { name: messages.notAuthenticated.cta }));
+    expect(mockPush).toHaveBeenCalledWith(
+      "/auth?next=%2Fshare-target%3Fshared%3D1",
+    );
   });
 
   it("redirects to most recent voyage import when authenticated with voyages", async () => {

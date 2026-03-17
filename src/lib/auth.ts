@@ -5,13 +5,22 @@ import { createClient, type User } from "@/lib/supabase/server";
 
 export async function signIn(
   email: string,
+  next?: string,
 ): Promise<ActionResponse<{ email: string }>> {
   const supabase = await createClient();
+  const redirectUrl = new URL(
+    "/auth/confirm",
+    process.env.SITE_URL ?? "http://localhost:3000",
+  );
+
+  if (next) {
+    redirectUrl.searchParams.set("next", next);
+  }
 
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `${process.env.SITE_URL ?? "http://localhost:3000"}/auth/confirm`,
+      emailRedirectTo: redirectUrl.toString(),
     },
   });
 

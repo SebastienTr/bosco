@@ -59,6 +59,9 @@ interface GpxImporterProps {
   autoImportFromShare?: boolean;
 }
 
+const SHARE_CACHE = "bosco-share-target";
+const SHARE_KEY = "/shared-gpx";
+
 export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxImporterProps) {
   const [state, dispatch] = useReducer(reducer, { step: "idle" });
   const workerRef = useRef<Worker | null>(null);
@@ -116,8 +119,8 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
       if (!("caches" in window)) return;
 
       try {
-        const cache = await caches.open("bosco-share-target");
-        const response = await cache.match("shared-gpx");
+        const cache = await caches.open(SHARE_CACHE);
+        const response = await cache.match(SHARE_KEY);
         if (!response || cancelled) return;
         const blob = await response.blob();
         const file = new File([blob], "shared.gpx", { type: "application/gpx+xml" });
@@ -232,7 +235,10 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
       dispatch({ type: "IMPORT_COMPLETE" });
       // Clean up share cache after successful import
       if ("caches" in window) {
-        caches.open("bosco-share-target").then(c => c.delete("shared-gpx")).catch(() => {});
+        caches
+          .open(SHARE_CACHE)
+          .then((cache) => cache.delete(SHARE_KEY))
+          .catch(() => {});
       }
       toast.success(
         `${legs.length} track(s) added to ${voyageName}`,
