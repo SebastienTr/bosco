@@ -35,7 +35,7 @@ export default async function ImportPage({
   const { shared } = await searchParams;
 
   return (
-    <div className="h-screen">
+    <div className="h-dvh">
       <GpxImporter
         voyageId={id}
         voyageName={voyage.name}

@@ -49,7 +49,7 @@ export default async function VoyagePage({
   }
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-dvh flex-col">
       {/* Header bar */}
       <header className="flex items-center gap-4 bg-white px-4 py-3 shadow-card">
         <Link
