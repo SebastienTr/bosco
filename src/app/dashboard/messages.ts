@@ -6,6 +6,18 @@ export const messages = {
   eyebrow: "Dashboard",
   title: "My Voyages",
   newVoyage: "New voyage",
+  voyageCard: {
+    coverImageAltSuffix: "cover",
+    emptyPrompt: "Import your first track",
+    publicBadge: "Public",
+    privateBadge: "Private",
+    legSingular: "leg",
+    legPlural: "legs",
+    portSingular: "port",
+    portPlural: "ports",
+    stopoverSingular: "stopover",
+    stopoverPlural: "stopovers",
+  },
   emptyState: {
     title: "Create your first voyage",
     description:

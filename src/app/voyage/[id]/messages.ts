@@ -17,6 +17,7 @@ export const messages = {
     ariaLabel: "Sailing voyage map",
   },
   backToDashboard: "Dashboard",
+  settingsLink: "Voyage settings",
   legs: {
     deleteConfirmTitle: "Delete this leg?",
     deleteConfirmDescription: "This cannot be undone.",

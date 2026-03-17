@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getUser } from "@/lib/auth";
 import { getProfileByUserId } from "@/lib/data/profiles";
-import { getVoyagesByUserId } from "@/lib/data/voyages";
+import { getVoyagesWithStats } from "@/lib/data/voyages";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { VoyageCard } from "@/components/voyage/VoyageCard";
@@ -33,7 +33,7 @@ export default async function DashboardPage() {
     redirect("/dashboard/profile");
   }
 
-  const { data: voyages, error: voyagesError } = await getVoyagesByUserId(user.id);
+  const { data: voyages, error: voyagesError } = await getVoyagesWithStats(user.id);
 
   if (voyagesError) {
     throw new Error(`Failed to load voyages: ${voyagesError.message}`);
@@ -70,7 +70,13 @@ export default async function DashboardPage() {
       {hasVoyages ? (
         <div className="mt-8 grid gap-4 lg:grid-cols-2">
           {voyageList.map((voyage) => (
-            <VoyageCard key={voyage.id} voyage={voyage} />
+            <VoyageCard
+              key={voyage.id}
+              voyage={voyage}
+              legs={voyage.legs ?? []}
+              stopoverCount={(voyage.stopovers ?? []).length}
+              labels={messages.voyageCard}
+            />
           ))}
         </div>
       ) : (
