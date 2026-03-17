@@ -36,6 +36,7 @@ import {
   updateStopover,
   deleteStopover,
 } from "@/lib/data/stopovers";
+import { reverseGeocodeBatchServer } from "@/lib/geo/reverse-geocode";
 
 const mockRequireAuth = vi.mocked(requireAuth);
 const mockGetVoyageById = vi.mocked(getVoyageById);
@@ -43,6 +44,7 @@ const mockInsertStopovers = vi.mocked(insertStopovers);
 const mockGetStopovers = vi.mocked(getStopoversByVoyageId);
 const mockUpdateStopover = vi.mocked(updateStopover);
 const mockDeleteStopover = vi.mocked(deleteStopover);
+const mockBatchGeocode = vi.mocked(reverseGeocodeBatchServer);
 
 const mockUser = { id: "u-1", email: "test@test.com" } as never;
 const voyageId = "550e8400-e29b-41d4-a716-446655440000";
@@ -142,6 +144,167 @@ describe("persistStopovers", () => {
     });
 
     expect(result.error?.code).toBe("FORBIDDEN");
+  });
+
+  it("should merge stopovers with the same geocoded name", async () => {
+    const inserted = [
+      {
+        id: "s-1",
+        voyage_id: voyageId,
+        name: "",
+        country: null,
+        latitude: 49.48,
+        longitude: 0.11,
+        arrived_at: "2026-03-15T08:00:00Z",
+        departed_at: "2026-03-15T10:00:00Z",
+        created_at: "2026-03-15T00:00:00Z",
+      },
+      {
+        id: "s-2",
+        voyage_id: voyageId,
+        name: "",
+        country: null,
+        latitude: 49.50,
+        longitude: 0.12,
+        arrived_at: "2026-03-15T14:00:00Z",
+        departed_at: "2026-03-15T16:00:00Z",
+        created_at: "2026-03-15T00:00:00Z",
+      },
+    ];
+    mockInsertStopovers.mockResolvedValue({ data: inserted, error: null } as never);
+
+    // Both stopovers geocode to "Le Havre"
+    mockBatchGeocode.mockResolvedValue([
+      { name: "Le Havre", country: "France" },
+      { name: "Le Havre", country: "France" },
+    ]);
+
+    // updateStopover is called for geocoding each, then for the merge
+    mockUpdateStopover
+      // First geocode update (s-1)
+      .mockResolvedValueOnce({
+        data: { ...inserted[0], name: "Le Havre", country: "France" },
+        error: null,
+      } as never)
+      // Second geocode update (s-2)
+      .mockResolvedValueOnce({
+        data: { ...inserted[1], name: "Le Havre", country: "France" },
+        error: null,
+      } as never)
+      // Merge update (keep s-1, merge s-2 into it)
+      .mockResolvedValueOnce({
+        data: {
+          ...inserted[0],
+          name: "Le Havre",
+          country: "France",
+          latitude: (49.48 + 49.50) / 2,
+          longitude: (0.11 + 0.12) / 2,
+          arrived_at: "2026-03-15T08:00:00Z",
+          departed_at: "2026-03-15T16:00:00Z",
+        },
+        error: null,
+      } as never);
+
+    mockDeleteStopover.mockResolvedValue({ data: null, error: null } as never);
+
+    const result = await persistStopovers({
+      voyageId,
+      stopovers: [
+        {
+          latitude: 49.48,
+          longitude: 0.11,
+          type: "waypoint",
+          trackIndices: [0],
+          arrived_at: "2026-03-15T08:00:00Z",
+          departed_at: "2026-03-15T10:00:00Z",
+        },
+        {
+          latitude: 49.50,
+          longitude: 0.12,
+          type: "waypoint",
+          trackIndices: [1],
+          arrived_at: "2026-03-15T14:00:00Z",
+          departed_at: "2026-03-15T16:00:00Z",
+        },
+      ],
+    });
+
+    // Should have merged into one stopover
+    expect(result.data).toHaveLength(1);
+    expect(result.error).toBeNull();
+    // The duplicate (s-2) should have been deleted
+    expect(mockDeleteStopover).toHaveBeenCalledWith("s-2");
+  });
+
+  it("should keep stopovers with different geocoded names separate", async () => {
+    const inserted = [
+      {
+        id: "s-1",
+        voyage_id: voyageId,
+        name: "",
+        country: null,
+        latitude: 49.48,
+        longitude: 0.11,
+        arrived_at: "2026-03-15T08:00:00Z",
+        departed_at: "2026-03-15T10:00:00Z",
+        created_at: "2026-03-15T00:00:00Z",
+      },
+      {
+        id: "s-2",
+        voyage_id: voyageId,
+        name: "",
+        country: null,
+        latitude: 49.50,
+        longitude: 0.12,
+        arrived_at: "2026-03-15T14:00:00Z",
+        departed_at: "2026-03-15T16:00:00Z",
+        created_at: "2026-03-15T00:00:00Z",
+      },
+    ];
+    mockInsertStopovers.mockResolvedValue({ data: inserted, error: null } as never);
+
+    // Different names: Le Havre vs Honfleur
+    mockBatchGeocode.mockResolvedValue([
+      { name: "Le Havre", country: "France" },
+      { name: "Honfleur", country: "France" },
+    ]);
+
+    mockUpdateStopover
+      .mockResolvedValueOnce({
+        data: { ...inserted[0], name: "Le Havre", country: "France" },
+        error: null,
+      } as never)
+      .mockResolvedValueOnce({
+        data: { ...inserted[1], name: "Honfleur", country: "France" },
+        error: null,
+      } as never);
+
+    const result = await persistStopovers({
+      voyageId,
+      stopovers: [
+        {
+          latitude: 49.48,
+          longitude: 0.11,
+          type: "waypoint",
+          trackIndices: [0],
+          arrived_at: "2026-03-15T08:00:00Z",
+          departed_at: "2026-03-15T10:00:00Z",
+        },
+        {
+          latitude: 49.50,
+          longitude: 0.12,
+          type: "waypoint",
+          trackIndices: [1],
+          arrived_at: "2026-03-15T14:00:00Z",
+          departed_at: "2026-03-15T16:00:00Z",
+        },
+      ],
+    });
+
+    // Both should be kept (different names)
+    expect(result.data).toHaveLength(2);
+    expect(result.error).toBeNull();
+    expect(mockDeleteStopover).not.toHaveBeenCalled();
   });
 });
 

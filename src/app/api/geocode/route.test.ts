@@ -1,6 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { GET } from "./route";
 import { NextRequest } from "next/server";
+
+// Mock geocode cache before importing route
+vi.mock("@/lib/data/geocode-cache", () => ({
+  getCachedGeocode: vi.fn(() => Promise.resolve(null)),
+  upsertGeocode: vi.fn(() => Promise.resolve()),
+}));
+
+import { GET } from "./route";
+import { getCachedGeocode } from "@/lib/data/geocode-cache";
+
+const mockGetCachedGeocode = vi.mocked(getCachedGeocode);
 
 // Mock global fetch for Nominatim calls
 const mockFetch = vi.fn();
@@ -12,6 +22,7 @@ function makeRequest(params: string): NextRequest {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockGetCachedGeocode.mockResolvedValue(null);
 });
 
 describe("GET /api/geocode", () => {

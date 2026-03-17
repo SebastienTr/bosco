@@ -17,7 +17,7 @@ import {
 } from "@/lib/geo/reverse-geocode";
 import type { ActionResponse } from "@/types";
 
-const DEFAULT_MERGE_RADIUS_NM = 1.08; // ~2 km
+const DEFAULT_MERGE_RADIUS_NM = 2.7; // ~5 km
 
 // --- Schemas ---
 
@@ -151,7 +151,80 @@ export async function persistStopovers(
     }),
   );
 
-  return { data: [...existingStopovers, ...geocoded], error: null };
+  // Post-geocode name-based deduplication (with distance guard)
+  const NAME_MERGE_MAX_NM = 25; // ~46km — prevent merging same-name cities far apart
+  const allStopovers = [...existingStopovers, ...geocoded];
+  const byName = new Map<string, Stopover[]>();
+  for (const s of allStopovers) {
+    const normalizedName = s.name?.toLowerCase().trim();
+    if (!normalizedName) continue;
+    const group = byName.get(normalizedName) ?? [];
+    group.push(s);
+    byName.set(normalizedName, group);
+  }
+
+  const deletedIds = new Set<string>();
+  for (const [, group] of byName) {
+    if (group.length < 2) continue;
+    // Sort by arrived_at ascending — keep the earliest
+    const sorted = group.sort((a, b) => {
+      if (!a.arrived_at && !b.arrived_at) return 0;
+      if (!a.arrived_at) return 1;
+      if (!b.arrived_at) return -1;
+      return a.arrived_at.localeCompare(b.arrived_at);
+    });
+    const [keep, ...duplicates] = sorted;
+    // Collect all positions for centroid calculation
+    const positions = [{ lat: Number(keep.latitude), lon: Number(keep.longitude) }];
+    const mergedDups: Stopover[] = [];
+    for (const dup of duplicates) {
+      // Only merge if within distance guard
+      const dist = haversineDistanceNm(
+        { lat: Number(keep.latitude), lon: Number(keep.longitude) },
+        { lat: Number(dup.latitude), lon: Number(dup.longitude) },
+      );
+      if (dist > NAME_MERGE_MAX_NM) continue;
+      positions.push({ lat: Number(dup.latitude), lon: Number(dup.longitude) });
+      mergedDups.push(dup);
+    }
+    if (mergedDups.length === 0) continue;
+
+    // True centroid of all merged positions
+    const centroidLat = positions.reduce((sum, p) => sum + p.lat, 0) / positions.length;
+    const centroidLon = positions.reduce((sum, p) => sum + p.lon, 0) / positions.length;
+
+    // Earliest arrival, latest departure across all
+    const allArrivals = [keep, ...mergedDups]
+      .map((s) => s.arrived_at)
+      .filter(Boolean)
+      .sort() as string[];
+    const allDepartures = [keep, ...mergedDups]
+      .map((s) => s.departed_at)
+      .filter(Boolean)
+      .sort()
+      .reverse() as string[];
+
+    const { data: updated } = await updateStopoverDb(keep.id, {
+      latitude: centroidLat,
+      longitude: centroidLon,
+      arrived_at: allArrivals[0] ?? null,
+      departed_at: allDepartures[0] ?? null,
+      name: keep.name || mergedDups[0].name,
+      country: keep.country || mergedDups[0].country,
+    });
+    if (updated) {
+      Object.assign(keep, updated);
+    }
+    for (const dup of mergedDups) {
+      const { error: delError } = await deleteStopoverDb(dup.id);
+      if (!delError) {
+        deletedIds.add(dup.id);
+      }
+    }
+  }
+
+  const finalStopovers = allStopovers.filter((s) => !deletedIds.has(s.id));
+  return { data: finalStopovers, error: null };
 }
 
 export async function renameStopover(

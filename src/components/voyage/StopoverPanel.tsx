@@ -52,8 +52,8 @@ export function StopoverPanel({ stopovers }: StopoverPanelProps) {
 
       {/* Panel */}
       {open && (
-        <div className="absolute right-3 top-16 z-[500] w-64 rounded-lg bg-white shadow-overlay lg:top-3 lg:right-3 lg:h-[calc(100%-24px)] lg:w-72">
-          <div className="flex items-center justify-between border-b px-3 py-2">
+        <div className="absolute right-3 top-16 z-[500] flex w-64 max-h-[calc(100dvh-80px)] flex-col rounded-lg bg-white shadow-overlay lg:top-3 lg:right-3 lg:h-[calc(100%-24px)] lg:w-72">
+          <div className="flex shrink-0 items-center justify-between border-b px-3 py-2">
             <h2 className="font-heading text-sm font-semibold text-navy">
               Stopovers
             </h2>
@@ -78,7 +78,9 @@ export function StopoverPanel({ stopovers }: StopoverPanelProps) {
               </svg>
             </button>
           </div>
-          <StopoverList stopovers={stopovers} onSelect={handleSelect} />
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <StopoverList stopovers={stopovers} onSelect={handleSelect} />
+          </div>
         </div>
       )}
     </>

@@ -69,4 +69,36 @@ describe("detectStopovers", () => {
     // All 4 endpoints are far apart → 4 separate stopovers
     expect(stopovers).toHaveLength(4);
   });
+
+  it("merges endpoints within 5km (~2.7nm) radius", () => {
+    // Two points ~3km apart (within the 2.7nm / ~5km merge radius)
+    const tracks = [
+      {
+        points: [point(43.0, 5.0), point(43.3, 5.02)],
+      },
+      {
+        points: [point(43.302, 5.022), point(44.0, 6.0)],
+      },
+    ];
+    const stopovers = detectStopovers(tracks);
+    // Track 1 end and Track 2 start are ~3km apart → merged into a waypoint
+    expect(stopovers).toHaveLength(3);
+    const waypoint = stopovers.find((s) => s.type === "waypoint");
+    expect(waypoint).toBeDefined();
+  });
+
+  it("keeps endpoints separate beyond 5km radius", () => {
+    // Two points ~10km apart (beyond the 2.7nm / ~5km merge radius)
+    const tracks = [
+      {
+        points: [point(43.0, 5.0), point(43.3, 5.02)],
+      },
+      {
+        points: [point(43.39, 5.1), point(44.0, 6.0)],
+      },
+    ];
+    const stopovers = detectStopovers(tracks);
+    // Track 1 end and Track 2 start are ~10km apart → NOT merged
+    expect(stopovers).toHaveLength(4);
+  });
 });

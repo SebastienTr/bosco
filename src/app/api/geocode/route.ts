@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getCachedGeocode, upsertGeocode } from "@/lib/data/geocode-cache";
 
-// In-memory cache: key = "lat,lon" rounded to 3 decimals (~111m precision)
-const cache = new Map<string, { name: string; country: string | null }>();
 let lastRequestTime = 0;
 const MIN_INTERVAL_MS = 1100; // >1 second between Nominatim requests
 
-function cacheKey(lat: number, lon: number): string {
-  return `${lat.toFixed(3)},${lon.toFixed(3)}`;
+function cacheKey(lat: number, lon: number): { latKey: string; lonKey: string } {
+  return { latKey: lat.toFixed(3), lonKey: lon.toFixed(3) };
 }
 
 export async function GET(request: NextRequest) {
@@ -21,9 +20,12 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const key = cacheKey(lat, lon);
-  if (cache.has(key)) {
-    return NextResponse.json(cache.get(key));
+  const { latKey, lonKey } = cacheKey(lat, lon);
+
+  // Check DB cache first
+  const cached = await getCachedGeocode(latKey, lonKey);
+  if (cached) {
+    return NextResponse.json(cached);
   }
 
   // Rate limiting
@@ -57,7 +59,12 @@ export async function GET(request: NextRequest) {
     const country = data.address?.country ?? null;
 
     const result = { name, country };
-    cache.set(key, result);
+
+    // Only cache successful results (non-empty name) to allow retries on failure
+    if (name) {
+      void upsertGeocode(latKey, lonKey, name, country);
+    }
+
     return NextResponse.json(result);
   } catch {
     return NextResponse.json({ name: "", country: null });

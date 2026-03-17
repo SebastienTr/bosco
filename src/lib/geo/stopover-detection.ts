@@ -1,7 +1,7 @@
 import type { GpxTrackPoint, StopoverCandidate } from "@/types/gpx";
 import { haversineDistanceNm } from "./distance";
 
-const DEFAULT_MERGE_RADIUS_NM = 1.08; // ~2 km in nautical miles
+const DEFAULT_MERGE_RADIUS_NM = 2.7; // ~5 km in nautical miles
 
 /** Detect stopover candidates from track start/end points */
 export function detectStopovers(

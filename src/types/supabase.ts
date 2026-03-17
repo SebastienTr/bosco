@@ -34,6 +34,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      geocode_cache: {
+        Row: {
+          lat_key: string
+          lon_key: string
+          name: string
+          country: string | null
+          created_at: string
+        }
+        Insert: {
+          lat_key: string
+          lon_key: string
+          name: string
+          country?: string | null
+          created_at?: string
+        }
+        Update: {
+          lat_key?: string
+          lon_key?: string
+          name?: string
+          country?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       legs: {
         Row: {
           avg_speed_kts: number | null

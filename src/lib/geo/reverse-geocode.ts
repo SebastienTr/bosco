@@ -1,3 +1,8 @@
+import {
+  getCachedGeocode,
+  upsertGeocode,
+} from "@/lib/data/geocode-cache";
+
 /** Client-side helper to call the /api/geocode proxy */
 export async function reverseGeocode(
   lat: number,
@@ -15,14 +20,24 @@ export async function reverseGeocode(
 /**
  * Server-side reverse geocode — calls Nominatim directly.
  * Used by Server Actions that can't call their own API route.
+ *
+ * Uses a two-level cache:
+ * - L1: in-memory Map for same-request dedup within batch calls
+ * - L2: Supabase `geocode_cache` table for cross-request / cold-start persistence
  */
 
-const serverCache = new Map<string, { name: string; country: string | null }>();
+const l1Cache = new Map<string, { name: string; country: string | null }>();
 let serverLastRequestTime = 0;
 const MIN_INTERVAL_MS = 1100;
 
 function cacheKey(lat: number, lon: number): string {
   return `${lat.toFixed(3)},${lon.toFixed(3)}`;
+}
+
+/** Split a cache key into lat_key and lon_key for DB storage */
+function splitCacheKey(key: string): { latKey: string; lonKey: string } {
+  const [latKey, lonKey] = key.split(",");
+  return { latKey, lonKey };
 }
 
 type GeoResult = { name: string; country: string | null };
@@ -59,10 +74,21 @@ export async function reverseGeocodeServer(
   lon: number,
 ): Promise<GeoResult> {
   const key = cacheKey(lat, lon);
-  if (serverCache.has(key)) {
-    return serverCache.get(key)!;
+  const { latKey, lonKey } = splitCacheKey(key);
+
+  // L1: in-memory cache
+  if (l1Cache.has(key)) {
+    return l1Cache.get(key)!;
   }
 
+  // L2: DB cache
+  const cached = await getCachedGeocode(latKey, lonKey);
+  if (cached) {
+    l1Cache.set(key, cached);
+    return cached;
+  }
+
+  // Rate limit before calling Nominatim
   const now = Date.now();
   const elapsed = now - serverLastRequestTime;
   if (elapsed < MIN_INTERVAL_MS) {
@@ -71,13 +97,19 @@ export async function reverseGeocodeServer(
   serverLastRequestTime = Date.now();
 
   const result = await fetchNominatim(lat, lon);
-  serverCache.set(key, result);
+  l1Cache.set(key, result);
+
+  // Only cache successful results (non-empty name) to allow retries on failure
+  if (result.name) {
+    void upsertGeocode(latKey, lonKey, result.name, result.country);
+  }
+
   return result;
 }
 
 /**
  * Batch reverse geocode — deduplicates by cache key, fetches unique
- * locations in parallel. Safe for small batches (< 15 stopovers).
+ * locations sequentially with rate limiting. Safe for small batches (< 15 stopovers).
  */
 export async function reverseGeocodeBatchServer(
   points: { lat: number; lon: number }[],
@@ -91,22 +123,56 @@ export async function reverseGeocodeBatchServer(
     keyToIndex.set(key, indices);
   }
 
-  // Fetch unique locations in parallel, using cache when available
-  const uniqueResults = await Promise.all(
-    Array.from(keyToIndex.entries()).map(async ([key, indices]) => {
-      const cached = serverCache.get(key);
-      if (cached) return { key, indices, result: cached };
+  // Check L1 and L2 caches for each unique key, collect misses
+  const uniqueEntries = Array.from(keyToIndex.entries());
+  const resolvedResults = new Map<string, GeoResult>();
+  const misses: { key: string; indices: number[] }[] = [];
 
-      const { lat, lon } = points[indices[0]];
-      const result = await fetchNominatim(lat, lon);
-      serverCache.set(key, result);
-      return { key, indices, result };
-    }),
-  );
+  for (const [key, indices] of uniqueEntries) {
+    // L1 check
+    const l1 = l1Cache.get(key);
+    if (l1) {
+      resolvedResults.set(key, l1);
+      continue;
+    }
+
+    // L2 check
+    const { latKey, lonKey } = splitCacheKey(key);
+    const cached = await getCachedGeocode(latKey, lonKey);
+    if (cached) {
+      l1Cache.set(key, cached);
+      resolvedResults.set(key, cached);
+      continue;
+    }
+
+    misses.push({ key, indices });
+  }
+
+  // Fetch misses sequentially with rate limiting
+  for (const { key, indices } of misses) {
+    const now = Date.now();
+    const elapsed = now - serverLastRequestTime;
+    if (elapsed < MIN_INTERVAL_MS) {
+      await new Promise((r) => setTimeout(r, MIN_INTERVAL_MS - elapsed));
+    }
+    serverLastRequestTime = Date.now();
+
+    const { lat, lon } = points[indices[0]];
+    const result = await fetchNominatim(lat, lon);
+    l1Cache.set(key, result);
+    resolvedResults.set(key, result);
+
+    // Only cache successful results (non-empty name)
+    if (result.name) {
+      const { latKey, lonKey } = splitCacheKey(key);
+      void upsertGeocode(latKey, lonKey, result.name, result.country);
+    }
+  }
 
   // Map results back to original order
   const results: GeoResult[] = points.map(() => ({ name: "", country: null }));
-  for (const { indices, result } of uniqueResults) {
+  for (const [key, indices] of uniqueEntries) {
+    const result = resolvedResults.get(key) ?? { name: "", country: null };
     for (const i of indices) {
       results[i] = result;
     }
