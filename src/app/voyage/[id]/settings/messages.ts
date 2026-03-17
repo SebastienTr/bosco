@@ -41,7 +41,7 @@ export const messages = {
     errorToast: "Failed to upload cover image",
     noFileError: "No file provided",
     invalidTypeError: "Only JPEG, PNG, and WebP images are accepted",
-    tooLargeError: "Image must be under 10 MB",
+    tooLargeError: "Image must be under 18 MB",
   },
   danger: {
     title: "Danger Zone",

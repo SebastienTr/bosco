@@ -241,7 +241,7 @@ export function ProfileForm({ profile, isEdit }: ProfileFormProps) {
           required
           minLength={3}
           maxLength={20}
-          pattern="^[a-z][a-z0-9-]*$"
+          pattern="^[a-zA-Z][a-zA-Z0-9-]*$"
           placeholder={messages.fields.username.placeholder}
           value={usernameValue}
           className="min-h-[44px]"

@@ -14,7 +14,7 @@ export const messages = {
     username: {
       label: "Username",
       placeholder: "your-username",
-      hint: "3–20 characters. Lowercase letters, numbers, and hyphens. Used in your public URL.",
+      hint: "3–20 characters. Letters, numbers, and hyphens. Used in your public URL.",
       available: "Available",
       taken: "This username is already taken",
       checking: "Checking availability...",
@@ -60,12 +60,12 @@ export const messages = {
     usernameTooShort: "Username must be at least 3 characters",
     usernameTooLong: "Username must be at most 20 characters",
     invalidFormat:
-      "Username must start with a letter and contain only lowercase letters, numbers, and hyphens",
+      "Username must start with a letter and contain only letters, numbers, and hyphens",
     boatNameTooLong: "Boat name must be at most 100 characters",
     boatTypeTooLong: "Boat type must be at most 100 characters",
     bioTooLong: "Bio must be at most 500 characters",
     noFileProvided: "No file provided",
     invalidPhotoField: "Invalid photo field",
-    imageTooLarge: "Image must be under 10 MB",
+    imageTooLarge: "Image must be under 18 MB",
   },
 };

@@ -258,7 +258,7 @@ describe("profile actions", () => {
       const file = new File(["x".repeat(10)], "photo.jpg", { type: "image/jpeg" });
       Object.defineProperty(file, "size", {
         configurable: true,
-        value: 10 * 1024 * 1024 + 1,
+        value: 18 * 1024 * 1024 + 1,
       });
 
       const formData = new FormData();

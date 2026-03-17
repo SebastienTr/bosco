@@ -16,7 +16,7 @@ import { messages } from "./messages";
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_ORIGINAL_IMAGE_SIZE_BYTES = 10 * 1024 * 1024;
+const MAX_ORIGINAL_IMAGE_SIZE_BYTES = 18 * 1024 * 1024;
 
 const UpdateVoyageSchema = z.object({
   voyageId: z.string().regex(UUID_REGEX, "Invalid voyage ID"),

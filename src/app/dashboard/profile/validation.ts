@@ -3,9 +3,9 @@ import { messages } from "./messages";
 
 export const USERNAME_MIN_LENGTH = 3;
 export const USERNAME_MAX_LENGTH = 20;
-export const MAX_ORIGINAL_IMAGE_SIZE_BYTES = 10 * 1024 * 1024;
+export const MAX_ORIGINAL_IMAGE_SIZE_BYTES = 18 * 1024 * 1024;
 
-const USERNAME_PATTERN = /^[a-z][a-z0-9-]*$/;
+const USERNAME_PATTERN = /^[a-zA-Z][a-zA-Z0-9-]*$/;
 
 const OptionalTextField = (max: number, tooLongMessage: string) =>
   z.string().trim().max(max, tooLongMessage).optional().or(z.literal(""));

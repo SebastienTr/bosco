@@ -242,7 +242,7 @@ describe("uploadCoverImage", () => {
 
   it("should return VALIDATION_ERROR for files larger than 10 MB", async () => {
     const oversizedFile = new File(
-      [new Uint8Array(10 * 1024 * 1024 + 1)],
+      [new Uint8Array(18 * 1024 * 1024 + 1)],
       "photo.jpg",
       { type: "image/jpeg" },
     );
@@ -255,7 +255,7 @@ describe("uploadCoverImage", () => {
     expect(result.data).toBeNull();
     expect(result.error).toEqual({
       code: "VALIDATION_ERROR",
-      message: "Image must be under 10 MB",
+      message: "Image must be under 18 MB",
     });
   });
 });
