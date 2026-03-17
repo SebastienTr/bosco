@@ -127,20 +127,26 @@ export async function persistStopovers(
     };
   }
 
-  // Fire reverse geocode for new stopovers (non-blocking)
-  void Promise.allSettled(
-    inserted.map(async (stopover) => {
-      const geo = await reverseGeocodeServer(
-        Number(stopover.latitude),
-        Number(stopover.longitude),
-      );
-      if (geo.name) {
-        await updateStopoverDb(stopover.id, { name: geo.name, country: geo.country });
+  // Reverse geocode new stopovers sequentially (Nominatim rate limit: 1 req/s)
+  const geocoded = [...inserted];
+  for (let i = 0; i < geocoded.length; i++) {
+    const stopover = geocoded[i];
+    const geo = await reverseGeocodeServer(
+      Number(stopover.latitude),
+      Number(stopover.longitude),
+    );
+    if (geo.name) {
+      const { data: updated } = await updateStopoverDb(stopover.id, {
+        name: geo.name,
+        country: geo.country,
+      });
+      if (updated) {
+        geocoded[i] = updated;
       }
-    }),
-  );
+    }
+  }
 
-  return { data: [...existingStopovers, ...inserted], error: null };
+  return { data: [...existingStopovers, ...geocoded], error: null };
 }
 
 export async function renameStopover(
