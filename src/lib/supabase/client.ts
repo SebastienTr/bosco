@@ -3,7 +3,7 @@ import type { Database } from "@/types/supabase";
 import { requireSupabaseEnv } from "./config";
 
 export function createClient() {
-  const { anonKey, url } = requireSupabaseEnv();
+  const { publishableKey, url } = requireSupabaseEnv();
 
-  return createBrowserClient<Database>(url, anonKey);
+  return createBrowserClient<Database>(url, publishableKey);
 }

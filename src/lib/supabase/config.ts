@@ -1,7 +1,7 @@
-const SUPABASE_ANON_KEY_PLACEHOLDER = "your-anon-key-here";
+const PUBLISHABLE_KEY_PLACEHOLDER = "your-publishable-key-here";
 
 type SupabaseEnv = {
-  anonKey: string;
+  publishableKey: string;
   url: string;
 };
 
@@ -13,14 +13,14 @@ function normalizeEnvValue(value: string | undefined) {
 export function getSupabaseEnv(
   env: NodeJS.ProcessEnv = process.env,
 ): SupabaseEnv | null {
-  const url = normalizeEnvValue(env.NEXT_PUBLIC_SUPABASE_URL);
-  const anonKey = normalizeEnvValue(env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  const url = normalizeEnvValue(env.NEXT_PUBLIC_SUPABASE_DB_URL);
+  const publishableKey = normalizeEnvValue(env.NEXT_PUBLIC_SUPABASE_DB_PUBLISHABLE_KEY);
 
-  if (!url || !anonKey || anonKey === SUPABASE_ANON_KEY_PLACEHOLDER) {
+  if (!url || !publishableKey || publishableKey === PUBLISHABLE_KEY_PLACEHOLDER) {
     return null;
   }
 
-  return { anonKey, url };
+  return { publishableKey, url };
 }
 
 export function requireSupabaseEnv(env: NodeJS.ProcessEnv = process.env) {
@@ -28,7 +28,7 @@ export function requireSupabaseEnv(env: NodeJS.ProcessEnv = process.env) {
 
   if (!supabaseEnv) {
     throw new Error(
-      "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY. Run `supabase status` and update `.env.local` before using Supabase-backed features.",
+      "Missing NEXT_PUBLIC_SUPABASE_DB_URL or NEXT_PUBLIC_SUPABASE_DB_PUBLISHABLE_KEY. Run `supabase status` and update `.env.local` before using Supabase-backed features.",
     );
   }
 

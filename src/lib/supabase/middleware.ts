@@ -23,7 +23,7 @@ export async function updateSession(
 
   const supabase = createServerClient<Database>(
     supabaseEnv.url,
-    supabaseEnv.anonKey,
+    supabaseEnv.publishableKey,
     {
       cookies: {
         getAll() {

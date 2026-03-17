@@ -9,28 +9,28 @@ function createEnv(overrides: Record<string, string>): NodeJS.ProcessEnv {
 }
 
 describe("getSupabaseEnv", () => {
-  it("returns null when the anon key is missing", () => {
+  it("returns null when the publishable key is missing", () => {
     expect(
       getSupabaseEnv(createEnv({
-        NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",
+        NEXT_PUBLIC_SUPABASE_DB_URL: "http://127.0.0.1:54321",
       })),
     ).toBeNull();
   });
 
-  it("returns null when the anon key is blank", () => {
+  it("returns null when the publishable key is blank", () => {
     expect(
       getSupabaseEnv(createEnv({
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: "   ",
-        NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",
+        NEXT_PUBLIC_SUPABASE_DB_PUBLISHABLE_KEY: "   ",
+        NEXT_PUBLIC_SUPABASE_DB_URL: "http://127.0.0.1:54321",
       })),
     ).toBeNull();
   });
 
-  it("returns null when the anon key is still the placeholder", () => {
+  it("returns null when the publishable key is still the placeholder", () => {
     expect(
       getSupabaseEnv(createEnv({
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: "your-anon-key-here",
-        NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",
+        NEXT_PUBLIC_SUPABASE_DB_PUBLISHABLE_KEY: "your-publishable-key-here",
+        NEXT_PUBLIC_SUPABASE_DB_URL: "http://127.0.0.1:54321",
       })),
     ).toBeNull();
   });
@@ -38,11 +38,11 @@ describe("getSupabaseEnv", () => {
   it("returns the normalized values when the env is complete", () => {
     expect(
       getSupabaseEnv(createEnv({
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: " anon-key ",
-        NEXT_PUBLIC_SUPABASE_URL: " http://127.0.0.1:54321 ",
+        NEXT_PUBLIC_SUPABASE_DB_PUBLISHABLE_KEY: " sb_publishable_test ",
+        NEXT_PUBLIC_SUPABASE_DB_URL: " http://127.0.0.1:54321 ",
       })),
     ).toEqual({
-      anonKey: "anon-key",
+      publishableKey: "sb_publishable_test",
       url: "http://127.0.0.1:54321",
     });
   });

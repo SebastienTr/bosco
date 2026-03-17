@@ -8,11 +8,11 @@ export type { User, EmailOtpType } from "@supabase/supabase-js";
 
 export async function createClient() {
   const cookieStore = await cookies();
-  const { anonKey, url } = requireSupabaseEnv();
+  const { publishableKey, url } = requireSupabaseEnv();
 
   return createServerClient<Database>(
     url,
-    anonKey,
+    publishableKey,
     {
       cookies: {
         getAll() {
