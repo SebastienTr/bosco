@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Leg } from "@/lib/data/legs";
 import type { Stopover } from "@/lib/data/stopovers";
@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import MapLoader from "@/components/map/MapLoader";
 import { StopoverPanel } from "@/components/voyage/StopoverPanel";
 import { deleteLeg } from "@/app/voyage/[id]/actions";
+import { regeocodeUnnamed } from "@/app/voyage/[id]/stopover/actions";
 import { removeLegFromState, restoreLegToState } from "./leg-state";
 
 const StopoverMarkers = dynamic(
@@ -32,6 +33,18 @@ export function VoyageContent({
   voyageId,
 }: VoyageContentProps) {
   const [legs, setLegs] = useState(initialLegs);
+  const regeocodeTriggered = useRef(false);
+
+  // Auto-detect unnamed stopovers and trigger geocoding
+  useEffect(() => {
+    if (regeocodeTriggered.current) return;
+    const hasUnnamed = stopovers.some((s) => !s.name || s.name === "Unnamed");
+    if (!hasUnnamed) return;
+    regeocodeTriggered.current = true;
+    regeocodeUnnamed({ voyageId }).then((result) => {
+      if (result.data) window.location.reload();
+    });
+  }, [stopovers, voyageId]);
 
   const tracks: GeoJSON.LineString[] = legs.map(
     (leg) => leg.track_geojson as unknown as GeoJSON.LineString,

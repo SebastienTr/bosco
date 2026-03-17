@@ -89,9 +89,9 @@ export async function importTracks(
     };
   }
 
-  // Persist stopovers if provided (non-blocking for geocoding)
+  // Persist stopovers if provided (awaited so geocoding completes before response)
   if (parsed.data.stopovers && parsed.data.stopovers.length > 0) {
-    void persistStopovers({
+    await persistStopovers({
       voyageId: parsed.data.voyageId,
       stopovers: parsed.data.stopovers,
     });
