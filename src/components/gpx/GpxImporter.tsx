@@ -10,7 +10,7 @@ import type {
 import { parseGpx } from "@/lib/gpx/parser";
 import { importTracks } from "@/app/voyage/[id]/import/actions";
 import { mergeTracksToSingleLeg, statsToLegData } from "@/lib/gpx/import";
-import { reverseGeocode } from "@/lib/geo/reverse-geocode";
+import { reverseGeocode } from "@/lib/geo/reverse-geocode-client";
 import { ImportProgress } from "./ImportProgress";
 import { TrackPreview } from "./TrackPreview";
 
