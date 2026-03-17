@@ -23,6 +23,9 @@ vi.mock("@/lib/data/stopovers", () => ({
 
 vi.mock("@/lib/geo/reverse-geocode", () => ({
   reverseGeocodeServer: vi.fn(() => Promise.resolve({ name: "", country: null })),
+  reverseGeocodeBatchServer: vi.fn((points: { lat: number; lon: number }[]) =>
+    Promise.resolve(points.map(() => ({ name: "", country: null }))),
+  ),
 }));
 
 import { requireAuth } from "@/lib/auth";

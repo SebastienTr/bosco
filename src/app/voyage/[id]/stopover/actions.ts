@@ -11,7 +11,10 @@ import {
 } from "@/lib/data/stopovers";
 import type { Stopover } from "@/lib/data/stopovers";
 import { haversineDistanceNm } from "@/lib/geo/distance";
-import { reverseGeocodeServer } from "@/lib/geo/reverse-geocode";
+import {
+  reverseGeocodeServer,
+  reverseGeocodeBatchServer,
+} from "@/lib/geo/reverse-geocode";
 import type { ActionResponse } from "@/types";
 
 const DEFAULT_MERGE_RADIUS_NM = 1.08; // ~2 km
@@ -127,24 +130,26 @@ export async function persistStopovers(
     };
   }
 
-  // Reverse geocode new stopovers sequentially (Nominatim rate limit: 1 req/s)
-  const geocoded = [...inserted];
-  for (let i = 0; i < geocoded.length; i++) {
-    const stopover = geocoded[i];
-    const geo = await reverseGeocodeServer(
-      Number(stopover.latitude),
-      Number(stopover.longitude),
-    );
-    if (geo.name) {
-      const { data: updated } = await updateStopoverDb(stopover.id, {
-        name: geo.name,
-        country: geo.country,
-      });
-      if (updated) {
-        geocoded[i] = updated;
+  // Reverse geocode new stopovers in parallel batch
+  const points = inserted.map((s) => ({
+    lat: Number(s.latitude),
+    lon: Number(s.longitude),
+  }));
+  const geoResults = await reverseGeocodeBatchServer(points);
+
+  const geocoded = await Promise.all(
+    inserted.map(async (stopover, i) => {
+      const geo = geoResults[i];
+      if (geo.name) {
+        const { data: updated } = await updateStopoverDb(stopover.id, {
+          name: geo.name,
+          country: geo.country,
+        });
+        return updated ?? stopover;
       }
-    }
-  }
+      return stopover;
+    }),
+  );
 
   return { data: [...existingStopovers, ...geocoded], error: null };
 }
