@@ -1,12 +1,13 @@
 "use client";
 
-const STEPS = ["parsing", "simplifying", "detecting", "ready"] as const;
+const STEPS = ["parsing", "simplifying", "detecting", "geocoding", "ready"] as const;
 type Step = (typeof STEPS)[number];
 
 const STEP_LABELS: Record<Step, string> = {
   parsing: "Parsing tracks...",
   simplifying: "Simplifying...",
   detecting: "Detecting stopovers...",
+  geocoding: "Naming stopovers...",
   ready: "Preparing preview...",
 };
 

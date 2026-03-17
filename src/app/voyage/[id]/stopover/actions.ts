@@ -28,6 +28,8 @@ const StopoverCandidateSchema = z.object({
   trackIndices: z.array(z.number()),
   arrived_at: z.string().nullable(),
   departed_at: z.string().nullable(),
+  name: z.string().nullable().optional(),
+  country: z.string().nullable().optional(),
 });
 
 const PersistStopoversSchema = z.object({
@@ -114,8 +116,8 @@ export async function persistStopovers(
 
   const toInsert = newCandidates.map((c) => ({
     voyage_id: parsed.data.voyageId,
-    name: "",
-    country: null as string | null,
+    name: c.name || "",
+    country: (c.country as string | null) ?? null,
     latitude: c.latitude,
     longitude: c.longitude,
     arrived_at: c.arrived_at,
@@ -130,26 +132,32 @@ export async function persistStopovers(
     };
   }
 
-  // Reverse geocode new stopovers in parallel batch
-  const points = inserted.map((s) => ({
-    lat: Number(s.latitude),
-    lon: Number(s.longitude),
-  }));
-  const geoResults = await reverseGeocodeBatchServer(points);
+  // Only geocode stopovers that don't already have a name (pre-resolved client-side)
+  const needsGeocode = inserted.filter((s) => !s.name);
+  let geocoded = [...inserted];
+  if (needsGeocode.length > 0) {
+    const points = needsGeocode.map((s) => ({
+      lat: Number(s.latitude),
+      lon: Number(s.longitude),
+    }));
+    const geoResults = await reverseGeocodeBatchServer(points);
 
-  const geocoded = await Promise.all(
-    inserted.map(async (stopover, i) => {
-      const geo = geoResults[i];
-      if (geo.name) {
-        const { data: updated } = await updateStopoverDb(stopover.id, {
-          name: geo.name,
-          country: geo.country,
-        });
-        return updated ?? stopover;
-      }
-      return stopover;
-    }),
-  );
+    let geoIdx = 0;
+    geocoded = await Promise.all(
+      inserted.map(async (stopover) => {
+        if (stopover.name) return stopover;
+        const geo = geoResults[geoIdx++];
+        if (geo.name) {
+          const { data: updated } = await updateStopoverDb(stopover.id, {
+            name: geo.name,
+            country: geo.country,
+          });
+          return updated ?? stopover;
+        }
+        return stopover;
+      }),
+    );
+  }
 
   // Post-geocode name-based deduplication (with distance guard)
   const NAME_MERGE_MAX_NM = 25; // ~46km — prevent merging same-name cities far apart

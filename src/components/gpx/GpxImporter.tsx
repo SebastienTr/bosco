@@ -10,24 +10,31 @@ import type {
 import { parseGpx } from "@/lib/gpx/parser";
 import { importTracks } from "@/app/voyage/[id]/import/actions";
 import { mergeTracksToSingleLeg, statsToLegData } from "@/lib/gpx/import";
+import { reverseGeocode } from "@/lib/geo/reverse-geocode";
 import { ImportProgress } from "./ImportProgress";
 import { TrackPreview } from "./TrackPreview";
 
-type ProgressStep = "parsing" | "simplifying" | "detecting" | "ready";
+type ProgressStep = "parsing" | "simplifying" | "detecting" | "geocoding" | "ready";
+
+/** Resolved stopover name from geocoding */
+interface StopoverGeoInfo {
+  name: string;
+  country: string | null;
+}
 
 type ImportState =
   | { step: "idle" }
   | { step: "processing"; progress: ProgressStep }
-  | { step: "preview"; result: ProcessingResult }
-  | { step: "importing"; result: ProcessingResult }
+  | { step: "preview"; result: ProcessingResult; geoNames: StopoverGeoInfo[] }
+  | { step: "importing"; result: ProcessingResult; geoNames: StopoverGeoInfo[] }
   | { step: "error"; message: string };
 
 type ImportAction =
   | { type: "FILE_SELECTED" }
   | { type: "PROGRESS"; progress: ProgressStep }
-  | { type: "PROCESSING_COMPLETE"; result: ProcessingResult }
+  | { type: "PROCESSING_COMPLETE"; result: ProcessingResult; geoNames: StopoverGeoInfo[] }
   | { type: "PROCESSING_ERROR"; message: string }
-  | { type: "IMPORT_START"; result: ProcessingResult }
+  | { type: "IMPORT_START"; result: ProcessingResult; geoNames: StopoverGeoInfo[] }
   | { type: "IMPORT_COMPLETE" }
   | { type: "IMPORT_ERROR"; message: string }
   | { type: "RETRY" };
@@ -39,11 +46,11 @@ function reducer(_state: ImportState, action: ImportAction): ImportState {
     case "PROGRESS":
       return { step: "processing", progress: action.progress };
     case "PROCESSING_COMPLETE":
-      return { step: "preview", result: action.result };
+      return { step: "preview", result: action.result, geoNames: action.geoNames };
     case "PROCESSING_ERROR":
       return { step: "error", message: action.message };
     case "IMPORT_START":
-      return { step: "importing", result: action.result };
+      return { step: "importing", result: action.result, geoNames: action.geoNames };
     case "IMPORT_COMPLETE":
       return { step: "idle" };
     case "IMPORT_ERROR":
@@ -61,6 +68,20 @@ interface GpxImporterProps {
 
 const SHARE_CACHE = "bosco-share-target";
 const SHARE_KEY = "/shared-gpx";
+
+async function geocodeStopovers(result: ProcessingResult): Promise<StopoverGeoInfo[]> {
+  const names: StopoverGeoInfo[] = [];
+  for (const candidate of result.stopovers) {
+    const [lon, lat] = candidate.position;
+    try {
+      const geo = await reverseGeocode(lat, lon);
+      names.push({ name: geo.name, country: geo.country });
+    } catch {
+      names.push({ name: "", country: null });
+    }
+  }
+  return names;
+}
 
 export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxImporterProps) {
   const [state, dispatch] = useReducer(reducer, { step: "idle" });
@@ -82,9 +103,14 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
           dispatch({ type: "PROGRESS", progress: msg.step });
           break;
         case "result":
-          dispatch({
-            type: "PROCESSING_COMPLETE",
-            result: msg.data,
+          // Geocode stopovers client-side before showing preview
+          dispatch({ type: "PROGRESS", progress: "geocoding" });
+          geocodeStopovers(msg.data).then((geoNames) => {
+            dispatch({
+              type: "PROCESSING_COMPLETE",
+              result: msg.data,
+              geoNames,
+            });
           });
           break;
         case "error":
@@ -176,7 +202,7 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
     async (selectedIndices: number[], merge: boolean) => {
       if (state.step !== "preview") return;
 
-      dispatch({ type: "IMPORT_START", result: state.result });
+      dispatch({ type: "IMPORT_START", result: state.result, geoNames: state.geoNames });
 
       const legs =
         merge && selectedIndices.length > 1
@@ -189,16 +215,16 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
             );
 
       // Map stopovers from ProcessingResult to import format with timing derivation
-      const stopoverInputs = state.result.stopovers.map((candidate) => {
+      const stopoverInputs = state.result.stopovers.map((candidate, idx) => {
         let arrived_at: string | null = null;
         let departed_at: string | null = null;
 
         if (candidate.type === "departure") {
-          const idx = Math.min(...candidate.trackIndices);
-          departed_at = state.result.stats[idx]?.startTime ?? null;
+          const tIdx = Math.min(...candidate.trackIndices);
+          departed_at = state.result.stats[tIdx]?.startTime ?? null;
         } else if (candidate.type === "arrival") {
-          const idx = Math.max(...candidate.trackIndices);
-          arrived_at = state.result.stats[idx]?.endTime ?? null;
+          const tIdx = Math.max(...candidate.trackIndices);
+          arrived_at = state.result.stats[tIdx]?.endTime ?? null;
         } else {
           // waypoint: arriving track ends here, departing track starts here
           const sorted = [...candidate.trackIndices].sort((a, b) => a - b);
@@ -210,6 +236,7 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
           }
         }
 
+        const geo = state.geoNames[idx];
         return {
           longitude: candidate.position[0],
           latitude: candidate.position[1],
@@ -217,6 +244,8 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
           trackIndices: candidate.trackIndices,
           arrived_at,
           departed_at,
+          name: geo?.name || null,
+          country: geo?.country || null,
         };
       });
 

@@ -28,6 +28,8 @@ const StopoverInputSchema = z.object({
   trackIndices: z.array(z.number()),
   arrived_at: z.string().nullable(),
   departed_at: z.string().nullable(),
+  name: z.string().nullable().optional(),
+  country: z.string().nullable().optional(),
 });
 
 const ImportTracksSchema = z.object({
