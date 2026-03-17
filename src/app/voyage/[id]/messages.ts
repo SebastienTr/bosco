@@ -18,6 +18,12 @@ export const messages = {
   },
   backToDashboard: "Dashboard",
   settingsLink: "Voyage settings",
+  stopovers: {
+    regeocodeButton: "Detect names",
+    regeocodeLoading: "Detecting...",
+    regeocodeSuccess: "Stopover names updated",
+    regeocodeError: "Failed to detect names",
+  },
   legs: {
     deleteConfirmTitle: "Delete this leg?",
     deleteConfirmDescription: "This cannot be undone.",

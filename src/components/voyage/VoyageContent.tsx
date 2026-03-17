@@ -85,7 +85,7 @@ export function VoyageContent({
       </MapLoader>
 
       {/* Stopover list panel */}
-      {stopovers.length > 0 && <StopoverPanel stopovers={stopovers} />}
+      {stopovers.length > 0 && <StopoverPanel stopovers={stopovers} voyageId={voyageId} />}
 
       {/* Leg list panel */}
       {legs.length > 0 && (

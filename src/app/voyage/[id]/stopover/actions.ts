@@ -382,3 +382,60 @@ export async function mergeStopovers(
 
   return { data: updated, error: null };
 }
+
+const RegeocodeSchema = z.object({
+  voyageId: z.string().uuid(),
+});
+
+export async function regeocodeUnnamed(
+  input: z.input<typeof RegeocodeSchema>,
+): Promise<ActionResponse<Stopover[]>> {
+  const authResult = await requireAuth();
+  if (authResult.error) return { data: null, error: authResult.error };
+
+  const parsed = RegeocodeSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      data: null,
+      error: { code: "VALIDATION_ERROR", message: parsed.error.issues[0].message },
+    };
+  }
+
+  const ownershipError = await verifyVoyageOwnership(
+    parsed.data.voyageId,
+    authResult.data.id,
+  );
+  if (ownershipError) return ownershipError as ActionResponse<Stopover[]>;
+
+  const { data: stopovers } = await getStopoversByVoyageId(parsed.data.voyageId);
+  if (!stopovers) return { data: [], error: null };
+
+  const unnamed = stopovers.filter((s) => !s.name || s.name === "Unnamed");
+  if (unnamed.length === 0) return { data: stopovers, error: null };
+
+  const points = unnamed.map((s) => ({
+    lat: Number(s.latitude),
+    lon: Number(s.longitude),
+  }));
+  const geoResults = await reverseGeocodeBatchServer(points);
+
+  const updated: Stopover[] = [];
+  for (let i = 0; i < unnamed.length; i++) {
+    const geo = geoResults[i];
+    if (geo.name) {
+      const { data: u } = await updateStopoverDb(unnamed[i].id, {
+        name: geo.name,
+        country: geo.country,
+      });
+      updated.push(u ?? { ...unnamed[i], name: geo.name, country: geo.country });
+    } else {
+      updated.push(unnamed[i]);
+    }
+  }
+
+  // Return all stopovers with updated names
+  const updatedIds = new Set(unnamed.map((s) => s.id));
+  const updatedMap = new Map(updated.map((s) => [s.id, s]));
+  const result = stopovers.map((s) => updatedMap.get(s.id) ?? s);
+  return { data: result, error: null };
+}

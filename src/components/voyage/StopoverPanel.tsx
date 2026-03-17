@@ -1,18 +1,24 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { toast } from "sonner";
 import type { Stopover } from "@/lib/data/stopovers";
+import { regeocodeUnnamed } from "@/app/voyage/[id]/stopover/actions";
 import { StopoverList } from "./StopoverList";
+import { messages } from "@/app/voyage/[id]/messages";
 
 interface StopoverPanelProps {
   stopovers: Stopover[];
+  voyageId: string;
 }
 
-export function StopoverPanel({ stopovers }: StopoverPanelProps) {
+export function StopoverPanel({ stopovers, voyageId }: StopoverPanelProps) {
   const [open, setOpen] = useState(false);
+  const [isRegeocoding, setIsRegeocoding] = useState(false);
+
+  const hasUnnamed = stopovers.some((s) => !s.name || s.name === "Unnamed");
 
   const handleSelect = useCallback((stopover: Stopover) => {
-    // Dispatch custom event for map to center on this stopover
     window.dispatchEvent(
       new CustomEvent("bosco:center-stopover", {
         detail: {
@@ -22,6 +28,24 @@ export function StopoverPanel({ stopovers }: StopoverPanelProps) {
       }),
     );
   }, []);
+
+  async function handleRegeocode() {
+    setIsRegeocoding(true);
+    try {
+      const result = await regeocodeUnnamed({ voyageId });
+      if (result.error) {
+        toast.error(messages.stopovers.regeocodeError);
+      } else {
+        toast.success(messages.stopovers.regeocodeSuccess);
+        // Reload page to show updated names
+        window.location.reload();
+      }
+    } catch {
+      toast.error(messages.stopovers.regeocodeError);
+    } finally {
+      setIsRegeocoding(false);
+    }
+  }
 
   if (stopovers.length === 0) return null;
 
@@ -57,26 +81,39 @@ export function StopoverPanel({ stopovers }: StopoverPanelProps) {
             <h2 className="font-heading text-sm font-semibold text-navy">
               Stopovers
             </h2>
-            <button
-              onClick={() => setOpen(false)}
-              className="rounded p-1 text-mist hover:text-navy"
-              aria-label="Close stopover list"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+            <div className="flex items-center gap-1">
+              {hasUnnamed && (
+                <button
+                  onClick={handleRegeocode}
+                  disabled={isRegeocoding}
+                  className="rounded px-2 py-1 text-xs font-semibold text-ocean hover:bg-ocean/10 disabled:opacity-50"
+                >
+                  {isRegeocoding
+                    ? messages.stopovers.regeocodeLoading
+                    : messages.stopovers.regeocodeButton}
+                </button>
+              )}
+              <button
+                onClick={() => setOpen(false)}
+                className="rounded p-1 text-mist hover:text-navy"
+                aria-label="Close stopover list"
               >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
             <StopoverList stopovers={stopovers} onSelect={handleSelect} />
