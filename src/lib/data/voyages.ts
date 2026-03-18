@@ -50,6 +50,22 @@ export async function deleteVoyage(id: string) {
   return supabase.from("voyages").delete().eq("id", id);
 }
 
+export async function getPublicVoyageBySlug(username: string, slug: string) {
+  const supabase = await createClient();
+  return supabase
+    .from("voyages")
+    .select(`
+      *,
+      profiles!inner(id, username, boat_name, boat_type, profile_photo_url),
+      legs(id, track_geojson, distance_nm, duration_seconds, started_at, ended_at, avg_speed_kts, max_speed_kts),
+      stopovers(id, name, country, latitude, longitude, arrived_at, departed_at)
+    `)
+    .eq("profiles.username", username)
+    .eq("slug", slug)
+    .eq("is_public", true)
+    .single();
+}
+
 export async function checkSlugAvailability(
   userId: string,
   slug: string,

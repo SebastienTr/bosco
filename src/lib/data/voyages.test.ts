@@ -7,6 +7,7 @@ import {
   updateVoyage,
   deleteVoyage,
   checkSlugAvailability,
+  getPublicVoyageBySlug,
 } from "./voyages";
 
 // Mock supabase server client
@@ -177,6 +178,51 @@ describe("deleteVoyage", () => {
 
     const result = await deleteVoyage("v-1");
 
+    expect(result.error).toBeTruthy();
+  });
+});
+
+describe("getPublicVoyageBySlug", () => {
+  it("should return voyage with nested profile, legs, and stopovers", async () => {
+    const voyage = {
+      id: "v-1",
+      name: "Mediterranean Cruise",
+      slug: "med-cruise",
+      is_public: true,
+      profiles: { id: "p-1", username: "sailor", boat_name: "Bosco", boat_type: "Catamaran", profile_photo_url: null },
+      legs: [{ id: "l-1", track_geojson: {}, distance_nm: 120 }],
+      stopovers: [{ id: "s-1", name: "Marseille", country: "France" }],
+    };
+    mockSingle.mockResolvedValue({ data: voyage, error: null });
+
+    const result = await getPublicVoyageBySlug("sailor", "med-cruise");
+
+    expect(mockFrom).toHaveBeenCalledWith("voyages");
+    expect(result.data).toEqual(voyage);
+    expect(result.error).toBeNull();
+  });
+
+  it("should return error when voyage not found", async () => {
+    mockSingle.mockResolvedValue({
+      data: null,
+      error: { code: "PGRST116", message: "No rows found" },
+    });
+
+    const result = await getPublicVoyageBySlug("nobody", "nonexistent");
+
+    expect(result.data).toBeNull();
+    expect(result.error).toBeTruthy();
+  });
+
+  it("should return error for private voyage (is_public = false)", async () => {
+    mockSingle.mockResolvedValue({
+      data: null,
+      error: { code: "PGRST116", message: "No rows found" },
+    });
+
+    const result = await getPublicVoyageBySlug("sailor", "private-voyage");
+
+    expect(result.data).toBeNull();
     expect(result.error).toBeTruthy();
   });
 });

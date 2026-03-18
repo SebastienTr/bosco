@@ -8,6 +8,7 @@ interface StopoverMarkerProps {
   position: [number, number]; // [longitude, latitude] GeoJSON order
   name: string;
   country: string | null;
+  readOnly?: boolean;
   onRename?: (name: string) => void;
   onDelete?: () => void;
   onDragEnd?: (lat: number, lon: number) => void;
@@ -25,6 +26,7 @@ export function StopoverMarker({
   position,
   name,
   country,
+  readOnly,
   onRename,
   onDelete,
 }: StopoverMarkerProps) {
@@ -62,39 +64,50 @@ export function StopoverMarker({
       <Popup>
         <div
           className="flex min-w-[160px] flex-col gap-2"
-          role="button"
+          role={readOnly ? undefined : "button"}
           aria-label={`Stopover: ${displayLabel}`}
         >
-          <div className="flex gap-1">
-            <input
-              ref={inputRef}
-              type="text"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSave();
-              }}
-              placeholder="Stopover name"
-              className="flex-1 rounded border px-1 py-0.5 text-sm"
-              autoFocus
-            />
-            <button
-              onClick={handleSave}
-              className="rounded bg-ocean px-2 py-0.5 text-xs text-white"
-            >
-              OK
-            </button>
-          </div>
-          {country && (
-            <span className="text-xs text-mist">{country}</span>
-          )}
-          {onDelete && (
-            <button
-              onClick={onDelete}
-              className="mt-1 text-left text-xs text-coral hover:text-coral/80"
-            >
-              Delete stopover
-            </button>
+          {readOnly ? (
+            <>
+              <span className="text-sm font-medium">{name}</span>
+              {country && (
+                <span className="text-xs text-mist">{country}</span>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="flex gap-1">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSave();
+                  }}
+                  placeholder="Stopover name"
+                  className="flex-1 rounded border px-1 py-0.5 text-sm"
+                  autoFocus
+                />
+                <button
+                  onClick={handleSave}
+                  className="rounded bg-ocean px-2 py-0.5 text-xs text-white"
+                >
+                  OK
+                </button>
+              </div>
+              {country && (
+                <span className="text-xs text-mist">{country}</span>
+              )}
+              {onDelete && (
+                <button
+                  onClick={onDelete}
+                  className="mt-1 text-left text-xs text-coral hover:text-coral/80"
+                >
+                  Delete stopover
+                </button>
+              )}
+            </>
           )}
         </div>
       </Popup>

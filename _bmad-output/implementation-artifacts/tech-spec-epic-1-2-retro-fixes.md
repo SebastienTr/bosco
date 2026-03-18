@@ -3,6 +3,7 @@ title: 'Epic 1-2 Retro Fixes: Stopover Reliability & UI Stabilization'
 type: 'bugfix'
 created: '2026-03-17T15:25:00Z'
 status: 'done'
+completed: '2026-03-17'
 baseline_commit: '13af2d9'
 context:
   - '_bmad-output/implementation-artifacts/epic-1-2-retro-2026-03-17.md'
