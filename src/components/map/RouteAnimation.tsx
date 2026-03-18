@@ -59,8 +59,14 @@ export function RouteAnimation({
     [legs],
   );
 
-  // Create polylines on mount
+  // Fit map to all track bounds immediately, then create polylines
   useEffect(() => {
+    const allCoords = legs.flatMap((leg) => toLatLngs(leg.coordinates));
+    if (allCoords.length > 0) {
+      const bounds = L.latLngBounds(allCoords as L.LatLngExpression[]);
+      map.fitBounds(bounds, { padding: [20, 20] });
+    }
+
     const polylines = legs.map(() =>
       L.polyline([], {
         color: TRACK_COLOR,
