@@ -5,8 +5,12 @@ import dynamic from "next/dynamic";
 import MapLoader from "@/components/map/MapLoader";
 import { StatsBar } from "@/components/voyage/StatsBar";
 import { BoatBadge } from "@/components/voyage/BoatBadge";
-import { messages } from "./messages";
 import type { Json } from "@/types/supabase";
+import {
+  getLastKnownVoyagePosition,
+  toVoyageRouteTracks,
+} from "@/lib/voyage-route";
+import { messages } from "./messages";
 
 const RouteAnimation = dynamic(
   () =>
@@ -76,45 +80,29 @@ export default function PublicVoyageContent({
     null,
   );
 
-  const tracks: GeoJSON.LineString[] = useMemo(
-    () =>
-      legs.map((leg) => leg.track_geojson as unknown as GeoJSON.LineString),
+  const routeTracks = useMemo(
+    () => toVoyageRouteTracks(legs),
     [legs],
   );
 
-  // Sort legs chronologically for animation
-  const sortedLegCoords = useMemo(() => {
-    const sorted = [...legs]
-      .filter((l) => l.started_at)
-      .sort(
-        (a, b) =>
-          new Date(a.started_at!).getTime() -
-          new Date(b.started_at!).getTime(),
-      );
-    return sorted.map((leg) => ({
-      coordinates: (leg.track_geojson as unknown as GeoJSON.LineString)
-        .coordinates,
-    }));
-  }, [legs]);
+  const tracks: GeoJSON.LineString[] = useMemo(
+    () =>
+      routeTracks.map((track) => ({
+        type: "LineString",
+        coordinates: track.coordinates,
+      })),
+    [routeTracks],
+  );
+
+  const animationLegs = useMemo(
+    () => routeTracks.map((track) => ({ coordinates: track.coordinates })),
+    [routeTracks],
+  );
 
   // Last known position: last coordinate of the most recent leg
   const lastKnownPosition = useMemo<[number, number] | null>(() => {
-    if (legs.length === 0) return null;
-    const sorted = [...legs]
-      .filter((l) => l.started_at)
-      .sort(
-        (a, b) =>
-          new Date(b.started_at!).getTime() -
-          new Date(a.started_at!).getTime(),
-      );
-    const lastLeg = sorted[0];
-    if (!lastLeg) return null;
-    const geojson = lastLeg.track_geojson as unknown as GeoJSON.LineString;
-    const coords = geojson.coordinates;
-    if (coords.length === 0) return null;
-    const last = coords[coords.length - 1];
-    return [last[0], last[1]];
-  }, [legs]);
+    return getLastKnownVoyagePosition(routeTracks);
+  }, [routeTracks]);
 
   const handleAnimationComplete = useCallback(() => {
     setAnimationComplete(true);
@@ -132,15 +120,24 @@ export default function PublicVoyageContent({
 
   return (
     <div className="relative h-dvh w-full">
+      <header className="pointer-events-none absolute inset-x-0 top-4 z-[350] flex justify-center px-4">
+        <div className="max-w-[min(28rem,calc(100vw-8rem))] rounded-2xl bg-navy/75 px-4 py-3 text-center text-white shadow-overlay backdrop-blur-[12px]">
+          <h1 className="font-heading text-h3 leading-tight">{voyageName}</h1>
+          <p className="mt-1 truncate font-sans text-xs uppercase tracking-[0.2em] text-white/80">
+            {(boatName ?? voyageName)} · @{username}
+          </p>
+        </div>
+      </header>
+
       <MapLoader
-        tracks={animationComplete ? tracks : []}
+        tracks={animationComplete || animationLegs.length === 0 ? tracks : []}
         className="h-full w-full"
         ariaLabel={messages.map.ariaLabel}
       >
         {/* During animation: RouteAnimation manages polylines directly */}
-        {!animationComplete && sortedLegCoords.length > 0 && (
+        {!animationComplete && animationLegs.length > 0 && (
           <RouteAnimation
-            legs={sortedLegCoords}
+            legs={animationLegs}
             totalDistanceNm={totalDistanceNm}
             onComplete={handleAnimationComplete}
             onBoatPositionChange={handleBoatPositionChange}

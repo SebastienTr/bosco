@@ -47,6 +47,7 @@ vi.mock("@/lib/supabase/server", () => ({
 const {
   checkUsernameAvailability,
   getProfileByUserId,
+  getPublicProfileByUsername,
   updateProfile,
 } = await import("@/lib/data/profiles");
 
@@ -68,6 +69,29 @@ describe("getProfileByUserId", () => {
     expect(result).toEqual({ data: mockProfile, error: null });
     expect(mockSelect).toHaveBeenCalledWith("*");
     expect(mockEq).toHaveBeenCalledWith("id", "user-123");
+  });
+});
+
+describe("getPublicProfileByUsername", () => {
+  it("queries public profile fields by username", async () => {
+    const mockProfile = {
+      id: "user-123",
+      username: "skipper",
+      boat_name: "Laurine",
+      boat_type: "Sloop",
+      bio: "Heading south",
+      profile_photo_url: null,
+      boat_photo_url: null,
+    };
+    mockSingle.mockReturnValue({ data: mockProfile, error: null });
+
+    const result = await getPublicProfileByUsername("skipper");
+
+    expect(result).toEqual({ data: mockProfile, error: null });
+    expect(mockSelect).toHaveBeenCalledWith(
+      "id, username, boat_name, boat_type, bio, profile_photo_url, boat_photo_url",
+    );
+    expect(mockEq).toHaveBeenCalledWith("username", "skipper");
   });
 });
 

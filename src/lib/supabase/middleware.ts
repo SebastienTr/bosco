@@ -9,12 +9,28 @@ export type SessionResult = {
   user: User | null;
 };
 
-export async function updateSession(
+function createMiddlewareResponse(
   request: NextRequest,
-): Promise<SessionResult> {
-  let supabaseResponse = NextResponse.next({
+  requestHeaders?: Headers,
+) {
+  if (requestHeaders) {
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
+  }
+
+  return NextResponse.next({
     request,
   });
+}
+
+export async function updateSession(
+  request: NextRequest,
+  requestHeaders?: Headers,
+): Promise<SessionResult> {
+  let supabaseResponse = createMiddlewareResponse(request, requestHeaders);
   const supabaseEnv = getSupabaseEnv();
 
   if (!supabaseEnv) {
@@ -33,9 +49,7 @@ export async function updateSession(
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
-          supabaseResponse = NextResponse.next({
-            request,
-          });
+          supabaseResponse = createMiddlewareResponse(request, requestHeaders);
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options),
           );

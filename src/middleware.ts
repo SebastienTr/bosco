@@ -1,5 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import {
+  buildPublicVoyageCsp,
+  createCspNonce,
+  isPublicVoyagePath,
+} from "@/lib/security/public-csp";
 
 const PROTECTED_ROUTES = ["/dashboard", "/voyage"];
 
@@ -10,10 +15,29 @@ function isProtectedRoute(pathname: string) {
 }
 
 export async function middleware(request: NextRequest) {
-  // Refresh auth session and get current user (single getUser call)
-  const { response, user } = await updateSession(request);
-
   const { pathname } = request.nextUrl;
+  const requestHeaders = new Headers(request.headers);
+
+  let cspHeader: string | null = null;
+  let nonce: string | null = null;
+
+  if (isPublicVoyagePath(pathname)) {
+    nonce = createCspNonce();
+    cspHeader = buildPublicVoyageCsp(
+      nonce,
+      process.env.NODE_ENV !== "production",
+    );
+    requestHeaders.set("Content-Security-Policy", cspHeader);
+    requestHeaders.set("x-nonce", nonce);
+  }
+
+  // Refresh auth session and get current user (single getUser call)
+  const { response, user } = await updateSession(request, requestHeaders);
+
+  if (cspHeader && nonce) {
+    response.headers.set("Content-Security-Policy", cspHeader);
+    response.headers.set("x-nonce", nonce);
+  }
 
   // Redirect unauthenticated users away from protected routes
   if (isProtectedRoute(pathname) && !user) {

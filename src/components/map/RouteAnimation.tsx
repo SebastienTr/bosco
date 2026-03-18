@@ -54,6 +54,11 @@ export function RouteAnimation({
     [totalDistanceNm],
   );
 
+  const allLatLngs = useMemo(
+    () => legs.flatMap((leg) => toLatLngs(leg.coordinates)),
+    [legs],
+  );
+
   const totalCoordCount = useMemo(
     () => legs.reduce((sum, leg) => sum + leg.coordinates.length, 0),
     [legs],
@@ -80,6 +85,15 @@ export function RouteAnimation({
       polylines.forEach((p) => p.remove());
     };
   }, [map, legs]);
+
+  useEffect(() => {
+    if (allLatLngs.length === 0) {
+      return;
+    }
+
+    const bounds = L.latLngBounds(allLatLngs as L.LatLngExpression[]);
+    map.fitBounds(bounds, { padding: [20, 20] });
+  }, [allLatLngs, map]);
 
   // Update polylines to show a given number of visible coordinates
   const updatePolylines = useCallback(

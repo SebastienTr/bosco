@@ -43,14 +43,13 @@ export function BoatBadge({
           {boatType && (
             <p className="font-sans text-xs text-white/80">{boatType}</p>
           )}
-          <p className="mt-1 font-sans text-xs text-white/80">
-            <Link
-              href={`/${username}`}
-              className="text-white underline underline-offset-2 hover:text-white/90"
-            >
-              {username}
-            </Link>
-          </p>
+          <p className="mt-1 font-sans text-xs text-white/80">@{username}</p>
+          <Link
+            href={`/${username}`}
+            className="mt-2 inline-flex text-xs font-semibold text-white underline underline-offset-2 hover:text-white/90"
+          >
+            {messages.boatBadge.profileLink}
+          </Link>
         </div>
       )}
     </div>

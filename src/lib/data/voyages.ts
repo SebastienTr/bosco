@@ -66,6 +66,27 @@ export async function getPublicVoyageBySlug(username: string, slug: string) {
     .single();
 }
 
+export async function getPublicVoyagesByUserId(userId: string) {
+  const supabase = await createClient();
+
+  return supabase
+    .from("voyages")
+    .select(`
+      id,
+      name,
+      slug,
+      description,
+      cover_image_url,
+      created_at,
+      updated_at,
+      legs(id, track_geojson, distance_nm),
+      stopovers(id)
+    `)
+    .eq("user_id", userId)
+    .eq("is_public", true)
+    .order("updated_at", { ascending: false });
+}
+
 export async function checkSlugAvailability(
   userId: string,
   slug: string,

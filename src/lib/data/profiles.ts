@@ -14,6 +14,18 @@ export async function getProfileByUserId(userId: Profile["id"]) {
   return supabase.from("profiles").select("*").eq("id", userId).single();
 }
 
+export async function getPublicProfileByUsername(username: string) {
+  const supabase = await createClient();
+
+  return supabase
+    .from("profiles")
+    .select(
+      "id, username, boat_name, boat_type, bio, profile_photo_url, boat_photo_url",
+    )
+    .eq("username", username)
+    .single();
+}
+
 export async function checkUsernameAvailability(
   username: string,
   excludeUserId?: string,

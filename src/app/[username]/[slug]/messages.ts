@@ -1,8 +1,10 @@
 export const messages = {
   meta: {
     notFoundTitle: "Voyage not found",
-    descriptionFallback: (username: string) =>
-      `Sailing voyage by ${username}`,
+    descriptionFallback: (username: string, totalDistanceNm: number) =>
+      totalDistanceNm > 0
+        ? `Sailing voyage by ${username} · ${totalDistanceNm.toFixed(1)} nm`
+        : `Sailing voyage by ${username}`,
   },
   map: {
     ariaLabel: "Public sailing voyage map",

@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { getPublicVoyageBySlug } from "@/lib/data/voyages";
+import { formatDistanceNm } from "@/lib/utils/format";
 import PublicVoyageContent from "./PublicVoyageContent";
 import { messages } from "./messages";
-import type { Metadata } from "next";
 
 interface Props {
   params: Promise<{ username: string; slug: string }>;
@@ -17,8 +18,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const title = `${voyage.name} — ${voyage.profiles.boat_name ?? username}`;
-  const description =
-    voyage.description ?? messages.meta.descriptionFallback(username);
+  const totalDistanceNm = (voyage.legs ?? []).reduce(
+    (sum, leg) => sum + (leg.distance_nm ?? 0),
+    0,
+  );
+  const description = voyage.description
+    ? `${voyage.description} · ${formatDistanceNm(totalDistanceNm)}`
+    : messages.meta.descriptionFallback(username, totalDistanceNm);
 
   return { title, description };
 }

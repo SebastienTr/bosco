@@ -8,6 +8,7 @@ import {
   deleteVoyage,
   checkSlugAvailability,
   getPublicVoyageBySlug,
+  getPublicVoyagesByUserId,
 } from "./voyages";
 
 // Mock supabase server client
@@ -233,6 +234,27 @@ describe("getPublicVoyageBySlug", () => {
 
     expect(result.data).toBeNull();
     expect(result.error).toBeTruthy();
+  });
+});
+
+describe("getPublicVoyagesByUserId", () => {
+  it("should return public voyages ordered by updated_at", async () => {
+    const voyages = [
+      {
+        id: "v-1",
+        name: "Mediterranean Cruise",
+        slug: "med-cruise",
+        is_public: true,
+        legs: [{ id: "l-1", track_geojson: {}, distance_nm: 120 }],
+        stopovers: [{ id: "s-1" }],
+      },
+    ] as never[];
+    mockOrder.mockReturnValue({ data: voyages, error: null });
+
+    const result = await getPublicVoyagesByUserId("u-1");
+
+    expect(mockFrom).toHaveBeenCalledWith("voyages");
+    expect(result.data).toEqual(voyages);
   });
 });
 
