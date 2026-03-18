@@ -32,9 +32,10 @@ import { messages } from "./messages";
 
 interface VoyageSettingsFormProps {
   voyage: Voyage;
+  username: string | null;
 }
 
-export function VoyageSettingsForm({ voyage }: VoyageSettingsFormProps) {
+export function VoyageSettingsForm({ voyage, username }: VoyageSettingsFormProps) {
   const router = useRouter();
   const [name, setName] = useState(voyage.name);
   const [description, setDescription] = useState(voyage.description ?? "");
@@ -46,6 +47,7 @@ export function VoyageSettingsForm({ voyage }: VoyageSettingsFormProps) {
   const [coverUrl, setCoverUrl] = useState(voyage.cover_image_url ?? "");
   const [uploadingCover, setUploadingCover] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -251,6 +253,42 @@ export function VoyageSettingsForm({ voyage }: VoyageSettingsFormProps) {
             className="data-checked:bg-success"
           />
         </div>
+
+        {isPublic && username && (
+          <div className="mt-3">
+            <p className="mb-1 text-small font-semibold text-slate">
+              {messages.visibility.publicLinkLabel}
+            </p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 truncate rounded-lg border border-navy/10 bg-foam px-3 py-2 text-small text-navy">
+                {`${typeof window !== "undefined" ? window.location.origin : ""}/${username}/${slug}`}
+              </code>
+              <Button
+                type="button"
+                variant="outline"
+                className="min-h-[44px] shrink-0 border-navy/20 text-small"
+                onClick={async () => {
+                  const url = `${window.location.origin}/${username}/${slug}`;
+                  await navigator.clipboard.writeText(url);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+              >
+                {copied ? (
+                  <span className="flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    {messages.visibility.copied}
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                    {messages.visibility.copy}
+                  </span>
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Section 3: Cover Image */}

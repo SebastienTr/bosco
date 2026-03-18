@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { getUser } from "@/lib/auth";
 import { getVoyageById } from "@/lib/data/voyages";
+import { getProfileByUserId } from "@/lib/data/profiles";
 import { VoyageSettingsForm } from "./VoyageSettingsForm";
 import { messages } from "./messages";
 
@@ -38,6 +39,9 @@ export default async function VoyageSettingsPage({
     notFound();
   }
 
+  const { data: profile } = await getProfileByUserId(user.id);
+  const username = profile?.username ?? null;
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
       <Link
@@ -65,7 +69,7 @@ export default async function VoyageSettingsPage({
         {messages.heading}
       </h1>
 
-      <VoyageSettingsForm voyage={voyage} />
+      <VoyageSettingsForm voyage={voyage} username={username} />
     </div>
   );
 }

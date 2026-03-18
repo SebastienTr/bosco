@@ -27,6 +27,9 @@ export const messages = {
       "When public, anyone with the link can view your voyage on your public profile.",
     publicToast: "Voyage is now public",
     privateToast: "Voyage is now private",
+    publicLinkLabel: "Public link",
+    copied: "Copied!",
+    copy: "Copy",
   },
   cover: {
     title: "Cover Image",
