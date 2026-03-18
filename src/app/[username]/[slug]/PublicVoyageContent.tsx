@@ -226,7 +226,11 @@ export default function PublicVoyageContent({
           className="h-full w-full"
           ariaLabel={messages.map.ariaLabel}
           {...(initialMapView
-            ? { center: initialMapView.center, zoom: initialMapView.zoom }
+            ? {
+                center: initialMapView.center,
+                zoom: initialMapView.zoom,
+                skipAutoFit: true,
+              }
             : {})}
         >
           <MapCenterListener />

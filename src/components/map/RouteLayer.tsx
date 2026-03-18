@@ -8,6 +8,7 @@ import { useEffect, useMemo } from "react";
 interface RouteLayerProps {
   tracks: GeoJSON.LineString[];
   trackColors?: string[];
+  skipAutoFit?: boolean;
 }
 
 const TRACK_STYLE = {
@@ -28,20 +29,24 @@ export function toLatLngs(
   );
 }
 
-export function RouteLayer({ tracks, trackColors }: RouteLayerProps) {
+export function RouteLayer({
+  tracks,
+  trackColors,
+  skipAutoFit = false,
+}: RouteLayerProps) {
   const map = useMap();
 
   const allPositions = useMemo(() => {
     return tracks.flatMap((track) => toLatLngs(track.coordinates));
   }, [tracks]);
 
-  // Auto-fit bounds to show all tracks
+  // Auto-fit bounds to show all tracks (unless initial view was provided via URL hash)
   useEffect(() => {
-    if (allPositions.length > 0) {
+    if (!skipAutoFit && allPositions.length > 0) {
       const bounds = L.latLngBounds(allPositions as L.LatLngExpression[]);
       map.fitBounds(bounds, { padding: [20, 20] });
     }
-  }, [map, allPositions]);
+  }, [map, allPositions, skipAutoFit]);
 
   return (
     <>

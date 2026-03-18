@@ -611,6 +611,8 @@ Claude Opus 4.6 (1M context)
 
 - site-url.ts: Used `||` instead of `??` to handle empty env strings correctly
 - MapViewSync: Required `useRef(null)` for React 19 strict types and null check before clearTimeout
+- Profile OG image: Added try-catch wrapper and made voyages count non-blocking — edge runtime may fail on heavy queries
+- Map hash restore: RouteLayer.fitBounds() was overriding initial hash view — added skipAutoFit prop to prevent this
 
 ### Completion Notes List
 
@@ -625,6 +627,7 @@ Claude Opus 4.6 (1M context)
 ### Change Log
 
 - 2026-03-18: Story 3.3 implementation complete — all 7 tasks done, all ACs satisfied
+- 2026-03-18: Fix profile OG image 500 error (try-catch + edge runtime safety), fix map hash restore (skipAutoFit prop)
 
 ### File List
 
@@ -638,10 +641,11 @@ New files:
 Modified files:
 - src/app/[username]/[slug]/page.tsx
 - src/app/[username]/[slug]/PublicVoyageContent.tsx
-- src/app/[username]/[slug]/messages.ts (no changes needed — existing messages sufficient)
 - src/app/[username]/page.tsx
 - src/app/[username]/messages.ts
 - src/lib/data/voyages.ts
+- src/components/map/MapCanvas.tsx
+- src/components/map/RouteLayer.tsx
 - next.config.ts
 - _bmad-output/implementation-artifacts/sprint-status.yaml
 - _bmad-output/implementation-artifacts/3-3-seo-open-graph-and-public-profile.md

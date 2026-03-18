@@ -16,6 +16,7 @@ export interface MapCanvasProps {
   zoom?: number;
   tracks?: GeoJSON.LineString[];
   trackColors?: string[];
+  skipAutoFit?: boolean;
   className?: string;
   ariaLabel?: string;
   children?: React.ReactNode;
@@ -51,6 +52,7 @@ export default function MapCanvas({
   zoom = DEFAULT_ZOOM,
   tracks = [],
   trackColors,
+  skipAutoFit = false,
   className,
   ariaLabel = DEFAULT_ARIA_LABEL,
   children,
@@ -68,7 +70,11 @@ export default function MapCanvas({
         <TileLayer url={OSM_URL} attribution={OSM_ATTRIBUTION} />
         <TileLayer url={OPENSEAMAP_URL} attribution={OPENSEAMAP_ATTRIBUTION} />
         {tracks.length > 0 && (
-          <RouteLayer tracks={tracks} trackColors={trackColors} />
+          <RouteLayer
+            tracks={tracks}
+            trackColors={trackColors}
+            skipAutoFit={skipAutoFit}
+          />
         )}
         {children}
       </MapContainer>
