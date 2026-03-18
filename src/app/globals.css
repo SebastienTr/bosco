@@ -103,6 +103,28 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* === Animations === */
+  --animate-slide-up: slide-up 200ms ease-out;
+  --animate-slide-right: slide-right 200ms ease-out;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 /* === shadcn/ui semantic tokens (Ocean & Sunset branded) === */
@@ -165,5 +187,16 @@
   .bosco-map .leaflet-bar a:focus-visible {
     outline: 2px solid #2563eb;
     outline-offset: 2px;
+  }
+
+  .bosco-stopover-marker {
+    cursor: pointer;
+  }
+
+  .bosco-stopover-marker:focus,
+  .bosco-stopover-marker:focus-visible {
+    stroke: var(--color-ocean);
+    stroke-width: 4px;
+    outline: none;
   }
 }

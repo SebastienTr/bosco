@@ -29,4 +29,24 @@ export const messages = {
     collapseLabel: "Hide boat details",
     profileLink: "View profile",
   },
+  stopoverSheet: {
+    arrivedLabel: "Arrived",
+    departedLabel: "Departed",
+    durationLabel: "Duration",
+    addNotePlaceholder: "Add a note...",
+    closeLabel: "Close stopover details",
+    nightsUnit: (n: number) => (n === 1 ? "1 night" : `${n} nights`),
+    hoursUnit: (n: number) => (n === 1 ? "1 hour" : `${n} hours`),
+    sheetAriaLabel: "Stopover details",
+  },
+  portsPanel: {
+    header: "Ports of Call",
+    ariaLabel: "Ports of call",
+    closeLabel: "Close ports panel",
+    emptyState: "No stopovers yet",
+  },
+  actionFab: {
+    openLabel: "Open ports panel",
+    closeLabel: "Close ports panel",
+  },
 };

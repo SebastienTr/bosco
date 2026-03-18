@@ -45,7 +45,7 @@ export function StatsBar({
 
   return (
     <div
-      className="fixed bottom-8 left-1/2 z-[400] -translate-x-1/2 rounded-2xl bg-navy/75 px-6 py-3 shadow-overlay backdrop-blur-[12px]"
+      className="absolute bottom-8 left-1/2 z-[400] -translate-x-1/2 rounded-2xl bg-navy/75 px-6 py-3 shadow-overlay backdrop-blur-[12px]"
       role="region"
       aria-label="Voyage statistics"
     >

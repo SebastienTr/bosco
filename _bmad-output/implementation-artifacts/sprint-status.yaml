@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-15
-last_updated: 2026-03-18T08:06:00Z
+last_updated: 2026-03-18T12:05:00Z
 project: bosco
 project_key: NOKEY
 tracking_system: file-system
@@ -63,8 +63,8 @@ development_status:
 
   # Epic 3: Public Pages & Sharing
   epic-3: in-progress
-  3-1-public-voyage-page-map-stats-and-route-animation: review
-  3-2-stopover-interaction-and-ports-panel: backlog
+  3-1-public-voyage-page-map-stats-and-route-animation: done
+  3-2-stopover-interaction-and-ports-panel: review
   3-3-seo-open-graph-and-public-profile: backlog
   epic-3-retrospective: optional
 

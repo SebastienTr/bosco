@@ -21,10 +21,10 @@ export function BoatBadge({
   const displayName = boatName ?? voyageName;
 
   return (
-    <div className="fixed left-14 top-4 z-[400]">
+    <div className="absolute left-14 top-4 z-[400]">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-2 rounded-full bg-navy/75 px-3 py-2 shadow-overlay backdrop-blur-[12px] transition-all duration-200 ease-out"
+        className="flex items-center gap-2 rounded-full bg-navy/75 px-3 py-2 shadow-overlay backdrop-blur-[12px] transition-all duration-200 ease-out focus-visible:outline-2 focus-visible:outline-ocean focus-visible:outline-offset-2"
         aria-expanded={expanded}
         aria-label={
           expanded
