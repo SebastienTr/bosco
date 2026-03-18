@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPublicVoyageBySlug } from "@/lib/data/voyages";
 import { formatDistanceNm } from "@/lib/utils/format";
+import { siteUrl } from "@/lib/utils/site-url";
 import PublicVoyageContent from "./PublicVoyageContent";
 import { messages } from "./messages";
 
@@ -26,7 +27,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? `${voyage.description} · ${formatDistanceNm(totalDistanceNm)}`
     : messages.meta.descriptionFallback(username, totalDistanceNm);
 
-  return { title, description };
+  const url = `${siteUrl}/${username}/${slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "website",
+      siteName: "Bosco",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
 }
 
 export default async function PublicVoyagePage({ params }: Props) {
@@ -69,18 +88,51 @@ export default async function PublicVoyagePage({ params }: Props) {
 
   const profile = voyage.profiles;
 
+  const description = voyage.description
+    ? `${voyage.description} · ${formatDistanceNm(totalDistanceNm)}`
+    : messages.meta.descriptionFallback(username, totalDistanceNm);
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    name: voyage.name,
+    description,
+    url: `${siteUrl}/${username}/${slug}`,
+    organizer: {
+      "@type": "Person",
+      name: profile.username ?? username,
+      url: `${siteUrl}/${profile.username ?? username}`,
+    },
+    startDate: firstDate ?? undefined,
+    endDate: lastDate ?? undefined,
+    sport: "Sailing",
+    location:
+      stopovers.length > 0
+        ? {
+            "@type": "Place",
+            name: `${stopovers[0].name} to ${stopovers[stopovers.length - 1].name}`,
+          }
+        : undefined,
+  };
+
   return (
-    <PublicVoyageContent
-      voyageName={voyage.name}
-      legs={legs}
-      stopovers={stopovers}
-      totalDistanceNm={totalDistanceNm}
-      days={days}
-      portsCount={portsCount}
-      countriesCount={countriesCount}
-      boatName={profile.boat_name}
-      boatType={profile.boat_type}
-      username={profile.username ?? username}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <PublicVoyageContent
+        voyageName={voyage.name}
+        legs={legs}
+        stopovers={stopovers}
+        totalDistanceNm={totalDistanceNm}
+        days={days}
+        portsCount={portsCount}
+        countriesCount={countriesCount}
+        boatName={profile.boat_name}
+        boatType={profile.boat_type}
+        username={profile.username ?? username}
+      />
+    </>
   );
 }

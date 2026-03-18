@@ -80,7 +80,7 @@ export async function getPublicVoyagesByUserId(userId: string) {
       created_at,
       updated_at,
       legs(id, track_geojson, distance_nm),
-      stopovers(id)
+      stopovers(id, country)
     `)
     .eq("user_id", userId)
     .eq("is_public", true)

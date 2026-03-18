@@ -15,6 +15,21 @@ import {
 } from "@/lib/voyage-route";
 import { messages } from "./messages";
 
+function parseMapHash(): {
+  center: [number, number];
+  zoom: number;
+} | null {
+  if (typeof window === "undefined") return null;
+  const match = window.location.hash.match(
+    /^#map=(\d+)\/([-\d.]+)\/([-\d.]+)$/,
+  );
+  if (!match) return null;
+  return {
+    zoom: parseInt(match[1], 10),
+    center: [parseFloat(match[2]), parseFloat(match[3])],
+  };
+}
+
 const RouteAnimation = dynamic(
   () =>
     import("@/components/map/RouteAnimation").then((m) => m.RouteAnimation),
@@ -37,6 +52,12 @@ const MapCenterListener = dynamic(
     import("@/components/map/MapCenterListener").then(
       (m) => m.MapCenterListener,
     ),
+  { ssr: false },
+);
+
+const MapViewSync = dynamic(
+  () =>
+    import("@/components/map/MapViewSync").then((m) => m.MapViewSync),
   { ssr: false },
 );
 
@@ -89,6 +110,7 @@ export default function PublicVoyageContent({
   boatType,
   username,
 }: PublicVoyageContentProps) {
+  const initialMapView = useMemo(() => parseMapHash(), []);
   const [animationComplete, setAnimationComplete] = useState(false);
   const [boatPosition, setBoatPosition] = useState<[number, number] | null>(
     null,
@@ -203,8 +225,12 @@ export default function PublicVoyageContent({
           }
           className="h-full w-full"
           ariaLabel={messages.map.ariaLabel}
+          {...(initialMapView
+            ? { center: initialMapView.center, zoom: initialMapView.zoom }
+            : {})}
         >
           <MapCenterListener />
+          <MapViewSync />
 
           {/* During animation: RouteAnimation manages polylines directly */}
           {!animationComplete && animationLegs.length > 0 && (

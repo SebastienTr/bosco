@@ -131,7 +131,7 @@ export function PortsPanel<T extends StopoverListItem>({
           </div>
 
           {/* Stopover list */}
-          <div className="flex-1 overflow-y-auto [&_summary]:text-white/90 [&_span]:text-white/70 [&_button]:text-white/80 [&_button:hover]:bg-white/10">
+          <div className="flex-1 overflow-y-auto pb-20 [&_summary]:text-white/90 [&_span]:text-white/70 [&_button]:text-white/80 [&_button:hover]:bg-white/10">
             {stopovers.length > 0 ? (
               <StopoverList
                 stopovers={stopovers}
