@@ -20,6 +20,7 @@ type ProgressStep = "parsing" | "simplifying" | "detecting" | "geocoding" | "rea
 interface StopoverGeoInfo {
   name: string;
   country: string | null;
+  country_code: string | null;
 }
 
 type ImportState =
@@ -75,9 +76,9 @@ async function geocodeStopovers(result: ProcessingResult): Promise<StopoverGeoIn
     const [lon, lat] = candidate.position;
     try {
       const geo = await reverseGeocode(lat, lon);
-      names.push({ name: geo.name, country: geo.country });
+      names.push({ name: geo.name, country: geo.country, country_code: geo.country_code });
     } catch {
-      names.push({ name: "", country: null });
+      names.push({ name: "", country: null, country_code: null });
     }
   }
   return names;
@@ -246,6 +247,7 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
           departed_at,
           name: geo?.name || null,
           country: geo?.country || null,
+          country_code: geo?.country_code || null,
         };
       });
 
