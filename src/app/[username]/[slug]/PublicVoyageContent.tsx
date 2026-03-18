@@ -55,6 +55,7 @@ interface StopoverData {
   id: string;
   name: string;
   country: string | null;
+  country_code: string | null;
   latitude: number;
   longitude: number;
   arrived_at: string | null;
@@ -269,6 +270,7 @@ export default function PublicVoyageContent({
           <StopoverSheet
             name={selectedStopover.name}
             country={selectedStopover.country}
+            countryCode={selectedStopover.country_code}
             arrivedAt={selectedStopover.arrived_at}
             departedAt={selectedStopover.departed_at}
             onDismiss={handleDismissSheet}

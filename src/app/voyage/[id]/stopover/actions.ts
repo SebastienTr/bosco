@@ -30,6 +30,7 @@ const StopoverCandidateSchema = z.object({
   departed_at: z.string().nullable(),
   name: z.string().nullable().optional(),
   country: z.string().nullable().optional(),
+  country_code: z.string().nullable().optional(),
 });
 
 const PersistStopoversSchema = z.object({
@@ -118,6 +119,7 @@ export async function persistStopovers(
     voyage_id: parsed.data.voyageId,
     name: c.name || "",
     country: (c.country as string | null) ?? null,
+    country_code: (c.country_code as string | null) ?? null,
     latitude: c.latitude,
     longitude: c.longitude,
     arrived_at: c.arrived_at,
@@ -151,6 +153,7 @@ export async function persistStopovers(
           const { data: updated } = await updateStopoverDb(stopover.id, {
             name: geo.name,
             country: geo.country,
+            country_code: geo.country_code,
           });
           return updated ?? stopover;
         }
@@ -219,6 +222,7 @@ export async function persistStopovers(
       departed_at: allDepartures[0] ?? null,
       name: keep.name || mergedDups[0].name,
       country: keep.country || mergedDups[0].country,
+      country_code: keep.country_code || mergedDups[0].country_code,
     });
     if (updated) {
       Object.assign(keep, updated);
@@ -293,7 +297,11 @@ export async function repositionStopover(
   void reverseGeocodeServer(parsed.data.latitude, parsed.data.longitude).then(
     async (geo) => {
       if (geo.name) {
-        await updateStopoverDb(parsed.data.id, { name: geo.name, country: geo.country });
+        await updateStopoverDb(parsed.data.id, {
+          name: geo.name,
+          country: geo.country,
+          country_code: geo.country_code,
+        });
       }
     },
   );
@@ -434,8 +442,9 @@ export async function regeocodeUnnamed(
       const { data: u } = await updateStopoverDb(unnamed[i].id, {
         name: geo.name,
         country: geo.country,
+        country_code: geo.country_code,
       });
-      updated.push(u ?? { ...unnamed[i], name: geo.name, country: geo.country });
+      updated.push(u ?? { ...unnamed[i], name: geo.name, country: geo.country, country_code: geo.country_code });
     } else {
       updated.push(unnamed[i]);
     }

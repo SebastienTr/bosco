@@ -39,21 +39,32 @@ describe("getCachedGeocode", () => {
     expect(result).toBeNull();
   });
 
-  it("should return cached name and country on hit", async () => {
+  it("should return cached name, country, and country_code on hit", async () => {
     mockSingle.mockReturnValue({
-      data: { name: "Marseille", country: "France" },
+      data: { name: "Marseille", country: "France", country_code: "fr" },
       error: null,
     });
 
     const result = await getCachedGeocode("43.300", "5.400");
 
-    expect(result).toEqual({ name: "Marseille", country: "France" });
+    expect(result).toEqual({ name: "Marseille", country: "France", country_code: "fr" });
+  });
+
+  it("should handle null country_code in cached data", async () => {
+    mockSingle.mockReturnValue({
+      data: { name: "Marseille", country: "France", country_code: null },
+      error: null,
+    });
+
+    const result = await getCachedGeocode("43.300", "5.400");
+
+    expect(result).toEqual({ name: "Marseille", country: "France", country_code: null });
   });
 });
 
 describe("upsertGeocode", () => {
-  it("should upsert into geocode_cache", async () => {
-    await upsertGeocode("43.300", "5.400", "Marseille", "France");
+  it("should upsert into geocode_cache with country_code", async () => {
+    await upsertGeocode("43.300", "5.400", "Marseille", "France", "fr");
 
     expect(mockFrom).toHaveBeenCalledWith("geocode_cache");
     expect(mockUpsert).toHaveBeenCalledWith({
@@ -61,17 +72,19 @@ describe("upsertGeocode", () => {
       lon_key: "5.400",
       name: "Marseille",
       country: "France",
+      country_code: "fr",
     });
   });
 
-  it("should handle null country", async () => {
-    await upsertGeocode("43.300", "5.400", "Marseille", null);
+  it("should handle null country and country_code", async () => {
+    await upsertGeocode("43.300", "5.400", "Marseille", null, null);
 
     expect(mockUpsert).toHaveBeenCalledWith({
       lat_key: "43.300",
       lon_key: "5.400",
       name: "Marseille",
       country: null,
+      country_code: null,
     });
   });
 });
@@ -79,16 +92,16 @@ describe("upsertGeocode", () => {
 describe("getCachedGeocode + upsertGeocode round-trip", () => {
   it("should return the upserted value on subsequent get", async () => {
     // First call: upsert
-    await upsertGeocode("43.300", "5.400", "Toulon", "France");
+    await upsertGeocode("43.300", "5.400", "Toulon", "France", "fr");
     expect(mockUpsert).toHaveBeenCalled();
 
     // Second call: get (simulate DB returning the value)
     mockSingle.mockReturnValue({
-      data: { name: "Toulon", country: "France" },
+      data: { name: "Toulon", country: "France", country_code: "fr" },
       error: null,
     });
 
     const result = await getCachedGeocode("43.300", "5.400");
-    expect(result).toEqual({ name: "Toulon", country: "France" });
+    expect(result).toEqual({ name: "Toulon", country: "France", country_code: "fr" });
   });
 });

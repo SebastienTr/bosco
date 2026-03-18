@@ -22,9 +22,9 @@ vi.mock("@/lib/data/stopovers", () => ({
 }));
 
 vi.mock("@/lib/geo/reverse-geocode", () => ({
-  reverseGeocodeServer: vi.fn(() => Promise.resolve({ name: "", country: null })),
+  reverseGeocodeServer: vi.fn(() => Promise.resolve({ name: "", country: null, country_code: null })),
   reverseGeocodeBatchServer: vi.fn((points: { lat: number; lon: number }[]) =>
-    Promise.resolve(points.map(() => ({ name: "", country: null }))),
+    Promise.resolve(points.map(() => ({ name: "", country: null, country_code: null }))),
   ),
 }));
 
@@ -175,8 +175,8 @@ describe("persistStopovers", () => {
 
     // Both stopovers geocode to "Le Havre"
     mockBatchGeocode.mockResolvedValue([
-      { name: "Le Havre", country: "France" },
-      { name: "Le Havre", country: "France" },
+      { name: "Le Havre", country: "France", country_code: "fr" },
+      { name: "Le Havre", country: "France", country_code: "fr" },
     ]);
 
     // updateStopover is called for geocoding each, then for the merge
@@ -265,8 +265,8 @@ describe("persistStopovers", () => {
 
     // Different names: Le Havre vs Honfleur
     mockBatchGeocode.mockResolvedValue([
-      { name: "Le Havre", country: "France" },
-      { name: "Honfleur", country: "France" },
+      { name: "Le Havre", country: "France", country_code: "fr" },
+      { name: "Honfleur", country: "France", country_code: "fr" },
     ]);
 
     mockUpdateStopover

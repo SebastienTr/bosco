@@ -7,12 +7,14 @@ const stopovers = [
     id: "sto-1",
     name: "Gothenburg",
     country: "Sweden",
+    country_code: "se",
     arrived_at: "2025-07-15T00:00:00.000Z",
   },
   {
     id: "sto-2",
     name: "Lysekil",
     country: "Sweden",
+    country_code: "se",
     arrived_at: "2025-07-17T00:00:00.000Z",
   },
 ];

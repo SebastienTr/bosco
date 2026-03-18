@@ -2,6 +2,7 @@ import {
   getCachedGeocode,
   upsertGeocode,
 } from "@/lib/data/geocode-cache";
+import type { GeoResult } from "@/lib/data/geocode-cache";
 
 /**
  * Server-side reverse geocode — calls Nominatim directly.
@@ -12,7 +13,7 @@ import {
  * - L2: Supabase `geocode_cache` table for cross-request / cold-start persistence
  */
 
-const l1Cache = new Map<string, { name: string; country: string | null }>();
+const l1Cache = new Map<string, GeoResult>();
 let serverLastRequestTime = 0;
 const MIN_INTERVAL_MS = 1100;
 
@@ -26,8 +27,6 @@ function splitCacheKey(key: string): { latKey: string; lonKey: string } {
   return { latKey, lonKey };
 }
 
-type GeoResult = { name: string; country: string | null };
-
 async function fetchNominatim(lat: number, lon: number): Promise<GeoResult> {
   try {
     const response = await fetch(
@@ -37,7 +36,7 @@ async function fetchNominatim(lat: number, lon: number): Promise<GeoResult> {
       },
     );
 
-    if (!response.ok) return { name: "", country: null };
+    if (!response.ok) return { name: "", country: null, country_code: null };
 
     const data = await response.json();
     const name =
@@ -48,10 +47,11 @@ async function fetchNominatim(lat: number, lon: number): Promise<GeoResult> {
       data.name ||
       "";
     const country = data.address?.country ?? null;
+    const country_code = data.address?.country_code ?? null;
 
-    return { name, country };
+    return { name, country, country_code };
   } catch {
-    return { name: "", country: null };
+    return { name: "", country: null, country_code: null };
   }
 }
 
@@ -87,7 +87,7 @@ export async function reverseGeocodeServer(
 
   // Only cache successful results (non-empty name) to allow retries on failure
   if (result.name) {
-    void upsertGeocode(latKey, lonKey, result.name, result.country);
+    void upsertGeocode(latKey, lonKey, result.name, result.country, result.country_code);
   }
 
   return result;
@@ -151,14 +151,14 @@ export async function reverseGeocodeBatchServer(
     // Only cache successful results (non-empty name)
     if (result.name) {
       const { latKey, lonKey } = splitCacheKey(key);
-      void upsertGeocode(latKey, lonKey, result.name, result.country);
+      void upsertGeocode(latKey, lonKey, result.name, result.country, result.country_code);
     }
   }
 
   // Map results back to original order
-  const results: GeoResult[] = points.map(() => ({ name: "", country: null }));
+  const results: GeoResult[] = points.map(() => ({ name: "", country: null, country_code: null }));
   for (const [key, indices] of uniqueEntries) {
-    const result = resolvedResults.get(key) ?? { name: "", country: null };
+    const result = resolvedResults.get(key) ?? { name: "", country: null, country_code: null };
     for (const i of indices) {
       results[i] = result;
     }

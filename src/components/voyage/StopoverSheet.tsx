@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
-import { countryToFlag } from "@/lib/utils/country-flag";
+import { countryCodeToFlag } from "@/lib/utils/country-flag";
 
 interface StopoverSheetProps {
   name: string;
   country: string | null;
+  countryCode: string | null;
   arrivedAt: string | null;
   departedAt: string | null;
   onDismiss: () => void;
@@ -50,6 +51,7 @@ function computeDuration(
 export function StopoverSheet({
   name,
   country,
+  countryCode,
   arrivedAt,
   departedAt,
   onDismiss,
@@ -58,7 +60,7 @@ export function StopoverSheet({
   const sheetRef = useRef<HTMLDivElement>(null);
   const touchStartY = useRef(0);
 
-  const flag = countryToFlag(country);
+  const flag = countryCodeToFlag(countryCode);
   const duration = computeDuration(arrivedAt, departedAt, messages);
 
   // Focus trap + Escape

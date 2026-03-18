@@ -1,11 +1,12 @@
 "use client";
 
-import { countryToFlag } from "@/lib/utils/country-flag";
+import { countryCodeToFlag } from "@/lib/utils/country-flag";
 
 export interface StopoverListItem {
   id: string;
   name: string;
   country: string | null;
+  country_code: string | null;
   arrived_at: string | null;
 }
 
@@ -43,7 +44,7 @@ export function StopoverList<T extends StopoverListItem>({ stopovers, onSelect }
       {[...groups.entries()].map(([country, items]) => (
         <details key={country} open>
           <summary className="cursor-pointer rounded py-2 font-heading text-sm font-semibold text-navy focus-visible:outline-2 focus-visible:outline-ocean focus-visible:outline-offset-2">
-            {countryToFlag(country)}{countryToFlag(country) ? " " : ""}{country}
+            {countryCodeToFlag(items[0].country_code)}{countryCodeToFlag(items[0].country_code) ? " " : ""}{country}
             <span className="ml-1 text-xs text-mist">({items.length})</span>
           </summary>
           <ul className="flex flex-col gap-0.5 pl-2">

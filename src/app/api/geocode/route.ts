@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
   if (isNaN(lat) || isNaN(lon)) {
     return NextResponse.json(
-      { name: "", country: null },
+      { name: "", country: null, country_code: null },
       { status: 400 },
     );
   }
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     );
 
     if (!response.ok) {
-      return NextResponse.json({ name: "", country: null });
+      return NextResponse.json({ name: "", country: null, country_code: null });
     }
 
     const data = await response.json();
@@ -57,16 +57,17 @@ export async function GET(request: NextRequest) {
       data.name ||
       "";
     const country = data.address?.country ?? null;
+    const country_code = data.address?.country_code ?? null;
 
-    const result = { name, country };
+    const result = { name, country, country_code };
 
     // Only cache successful results (non-empty name) to allow retries on failure
     if (name) {
-      void upsertGeocode(latKey, lonKey, name, country);
+      void upsertGeocode(latKey, lonKey, name, country, country_code);
     }
 
     return NextResponse.json(result);
   } catch {
-    return NextResponse.json({ name: "", country: null });
+    return NextResponse.json({ name: "", country: null, country_code: null });
   }
 }

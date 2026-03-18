@@ -58,7 +58,7 @@ export async function getPublicVoyageBySlug(username: string, slug: string) {
       *,
       profiles!inner(id, username, boat_name, boat_type, profile_photo_url),
       legs(id, track_geojson, distance_nm, duration_seconds, started_at, ended_at, avg_speed_kts, max_speed_kts),
-      stopovers(id, name, country, latitude, longitude, arrived_at, departed_at)
+      stopovers(id, name, country, country_code, latitude, longitude, arrived_at, departed_at)
     `)
     .ilike("profiles.username", username)
     .eq("slug", slug)

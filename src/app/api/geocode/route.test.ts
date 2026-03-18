@@ -34,6 +34,7 @@ describe("GET /api/geocode", () => {
           address: {
             city: "Marseille",
             country: "France",
+            country_code: "fr",
           },
           name: "Vieux-Port",
         }),
@@ -44,6 +45,7 @@ describe("GET /api/geocode", () => {
 
     expect(data.name).toBe("Marseille");
     expect(data.country).toBe("France");
+    expect(data.country_code).toBe("fr");
     expect(response.status).toBe(200);
   });
 

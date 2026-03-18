@@ -21,6 +21,7 @@ describe("StopoverSheet", () => {
       <StopoverSheet
         name="Brest"
         country="France"
+        countryCode="fr"
         arrivedAt="2025-07-15T00:00:00.000Z"
         departedAt="2025-07-17T00:00:00.000Z"
         onDismiss={onDismiss}
@@ -46,6 +47,7 @@ describe("StopoverSheet", () => {
       <StopoverSheet
         name="Brest"
         country="France"
+        countryCode="fr"
         arrivedAt="2025-07-15T00:00:00.000Z"
         departedAt="2025-07-17T00:00:00.000Z"
         onDismiss={onDismiss}

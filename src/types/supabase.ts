@@ -40,6 +40,7 @@ export type Database = {
           lon_key: string
           name: string
           country: string | null
+          country_code: string | null
           created_at: string
         }
         Insert: {
@@ -47,6 +48,7 @@ export type Database = {
           lon_key: string
           name: string
           country?: string | null
+          country_code?: string | null
           created_at?: string
         }
         Update: {
@@ -54,6 +56,7 @@ export type Database = {
           lon_key?: string
           name?: string
           country?: string | null
+          country_code?: string | null
           created_at?: string
         }
         Relationships: []
@@ -145,6 +148,7 @@ export type Database = {
         Row: {
           arrived_at: string | null
           country: string | null
+          country_code: string | null
           created_at: string
           departed_at: string | null
           id: string
@@ -156,6 +160,7 @@ export type Database = {
         Insert: {
           arrived_at?: string | null
           country?: string | null
+          country_code?: string | null
           created_at?: string
           departed_at?: string | null
           id?: string
@@ -167,6 +172,7 @@ export type Database = {
         Update: {
           arrived_at?: string | null
           country?: string | null
+          country_code?: string | null
           created_at?: string
           departed_at?: string | null
           id?: string
