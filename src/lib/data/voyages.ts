@@ -60,7 +60,7 @@ export async function getPublicVoyageBySlug(username: string, slug: string) {
       legs(id, track_geojson, distance_nm, duration_seconds, started_at, ended_at, avg_speed_kts, max_speed_kts),
       stopovers(id, name, country, latitude, longitude, arrived_at, departed_at)
     `)
-    .eq("profiles.username", username.toLowerCase())
+    .ilike("profiles.username", username)
     .eq("slug", slug)
     .eq("is_public", true)
     .single();

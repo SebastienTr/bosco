@@ -15,6 +15,7 @@ const mockSingle = vi.fn();
 const mockMaybeSingle = vi.fn();
 const mockOrder = vi.fn(() => ({ data: [], error: null }));
 const mockEq = vi.fn();
+const mockIlike = vi.fn();
 const mockSelect = vi.fn();
 const mockInsert = vi.fn();
 const mockUpdate = vi.fn();
@@ -45,14 +46,22 @@ beforeEach(() => {
   mockSelect.mockReturnValue({
     single: mockSingle,
     eq: mockEq,
+    ilike: mockIlike,
     order: mockOrder,
   });
   mockEq.mockReturnValue({
     single: mockSingle,
     eq: mockEq,
+    ilike: mockIlike,
     order: mockOrder,
     maybeSingle: mockMaybeSingle,
     select: mockSelect,
+  });
+  mockIlike.mockReturnValue({
+    single: mockSingle,
+    eq: mockEq,
+    ilike: mockIlike,
+    order: mockOrder,
   });
 });
 
