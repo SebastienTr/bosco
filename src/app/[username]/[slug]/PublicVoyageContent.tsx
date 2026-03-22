@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import MapLoader from "@/components/map/MapLoader";
 import { StatsBar } from "@/components/voyage/StatsBar";
@@ -13,22 +13,8 @@ import {
   getLastKnownVoyagePosition,
   toVoyageRouteTracks,
 } from "@/lib/voyage-route";
+import { parseMapHash } from "@/lib/utils/map-view-hash";
 import { messages } from "./messages";
-
-function parseMapHash(): {
-  center: [number, number];
-  zoom: number;
-} | null {
-  if (typeof window === "undefined") return null;
-  const match = window.location.hash.match(
-    /^#map=(\d+)\/([-\d.]+)\/([-\d.]+)$/,
-  );
-  if (!match) return null;
-  return {
-    zoom: parseInt(match[1], 10),
-    center: [parseFloat(match[2]), parseFloat(match[3])],
-  };
-}
 
 const RouteAnimation = dynamic(
   () =>
@@ -110,14 +96,13 @@ export default function PublicVoyageContent({
   boatType,
   username,
 }: PublicVoyageContentProps) {
-  const initialMapView = useMemo(() => parseMapHash(), []);
-  const [animationComplete, setAnimationComplete] = useState(false);
-  const [boatPosition, setBoatPosition] = useState<[number, number] | null>(
-    null,
-  );
-  const [selectedStopover, setSelectedStopover] =
-    useState<StopoverData | null>(null);
-  const [activeOverlay, setActiveOverlay] = useState<ActiveOverlay>(null);
+  const initialMapView = useMemo(() => {
+    if (typeof window === "undefined") {
+      return null;
+    }
+
+    return parseMapHash(window.location.hash);
+  }, []);
 
   const routeTracks = useMemo(() => toVoyageRouteTracks(legs), [legs]);
 
@@ -135,10 +120,21 @@ export default function PublicVoyageContent({
     [routeTracks],
   );
 
+  const hasSharedMapView = initialMapView !== null;
+  const shouldAnimateRoute = !hasSharedMapView && animationLegs.length > 0;
+
   // Last known position: last coordinate of the most recent leg
   const lastKnownPosition = useMemo<[number, number] | null>(() => {
     return getLastKnownVoyagePosition(routeTracks);
   }, [routeTracks]);
+
+  const [animationComplete, setAnimationComplete] = useState(!shouldAnimateRoute);
+  const [boatPosition, setBoatPosition] = useState<[number, number] | null>(
+    () => (shouldAnimateRoute ? null : lastKnownPosition),
+  );
+  const [selectedStopover, setSelectedStopover] =
+    useState<StopoverData | null>(null);
+  const [activeOverlay, setActiveOverlay] = useState<ActiveOverlay>(null);
 
   const handleAnimationComplete = useCallback(() => {
     setAnimationComplete(true);
@@ -220,9 +216,7 @@ export default function PublicVoyageContent({
         </header>
 
         <MapLoader
-          tracks={
-            animationComplete || animationLegs.length === 0 ? tracks : []
-          }
+          tracks={animationComplete || !shouldAnimateRoute ? tracks : []}
           className="h-full w-full"
           ariaLabel={messages.map.ariaLabel}
           {...(initialMapView
@@ -237,7 +231,7 @@ export default function PublicVoyageContent({
           <MapViewSync />
 
           {/* During animation: RouteAnimation manages polylines directly */}
-          {!animationComplete && animationLegs.length > 0 && (
+          {shouldAnimateRoute && !animationComplete && (
             <RouteAnimation
               legs={animationLegs}
               totalDistanceNm={totalDistanceNm}

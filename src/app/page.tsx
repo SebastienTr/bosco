@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   Navigation,
@@ -24,15 +24,22 @@ const stepIcons = [FileDown, Upload, Share2];
 const featureIcons = [Navigation, Anchor, Globe];
 const featureKeys = ["track", "stopovers", "share"] as const;
 
-export default function Home() {
-  const [lang, setLang] = useState<Lang>(defaultLang);
+function getInitialLang(): Lang {
+  if (typeof window === "undefined") {
+    return defaultLang;
+  }
 
-  useEffect(() => {
-    const stored = localStorage.getItem(LANG_KEY) as Lang | null;
-    if (stored && stored in landingMessages) {
-      setLang(stored);
-    }
-  }, []);
+  const stored = window.localStorage.getItem(LANG_KEY);
+
+  if (stored && stored in landingMessages) {
+    return stored as Lang;
+  }
+
+  return defaultLang;
+}
+
+export default function Home() {
+  const [lang, setLang] = useState<Lang>(getInitialLang);
 
   function changeLang(next: Lang) {
     setLang(next);

@@ -38,11 +38,20 @@ export function VoyageContent({
   // Auto-detect unnamed stopovers and trigger geocoding
   useEffect(() => {
     if (regeocodeTriggered.current) return;
-    const hasUnnamed = stopovers.some((s) => !s.name || s.name === "Unnamed");
-    if (!hasUnnamed) return;
+    const unnamed = stopovers.filter((s) => !s.name || s.name === "Unnamed");
+    if (unnamed.length === 0) return;
     regeocodeTriggered.current = true;
     regeocodeUnnamed({ voyageId }).then((result) => {
-      if (result.data) window.location.reload();
+      // Only reload if at least one stopover was actually renamed
+      const updatedCount = (result.data ?? []).filter(
+        (s) => s.name && s.name !== "Unnamed",
+      ).length;
+      const previouslyNamed = stopovers.filter(
+        (s) => s.name && s.name !== "Unnamed",
+      ).length;
+      if (updatedCount > previouslyNamed) {
+        window.location.reload();
+      }
     });
   }, [stopovers, voyageId]);
 

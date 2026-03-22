@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPublicVoyageBySlug } from "@/lib/data/voyages";
 import { formatDistanceNm } from "@/lib/utils/format";
+import { getVoyageMetrics } from "@/lib/utils/voyage-metrics";
 import { siteUrl } from "@/lib/utils/site-url";
 import PublicVoyageContent from "./PublicVoyageContent";
 import { messages } from "./messages";
@@ -58,35 +59,9 @@ export default async function PublicVoyagePage({ params }: Props) {
 
   const legs = voyage.legs ?? [];
   const stopovers = voyage.stopovers ?? [];
-
-  const totalDistanceNm = legs.reduce(
-    (sum, l) => sum + (l.distance_nm ?? 0),
-    0,
-  );
-
-  const sortedLegs = legs
-    .filter((l) => l.started_at)
-    .sort(
-      (a, b) =>
-        new Date(a.started_at!).getTime() - new Date(b.started_at!).getTime(),
-    );
-
-  const firstDate = sortedLegs[0]?.started_at;
-  const lastDate = sortedLegs[sortedLegs.length - 1]?.ended_at;
-  const days =
-    firstDate && lastDate
-      ? Math.ceil(
-          (new Date(lastDate).getTime() - new Date(firstDate).getTime()) /
-            86400000,
-        )
-      : 0;
-
-  const portsCount = stopovers.length;
-  const countriesCount = new Set(
-    stopovers.map((s) => s.country).filter(Boolean),
-  ).size;
-
   const profile = voyage.profiles;
+  const { totalDistanceNm, days, portsCount, countriesCount, firstDate, lastDate } =
+    getVoyageMetrics(legs, stopovers);
 
   const description = voyage.description
     ? `${voyage.description} · ${formatDistanceNm(totalDistanceNm)}`

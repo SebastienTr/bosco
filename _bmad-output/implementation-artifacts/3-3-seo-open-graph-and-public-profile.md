@@ -1,6 +1,6 @@
 # Story 3.3: SEO, Open Graph & Public Profile
 
-Status: review
+Status: done
 
 ## Story
 
@@ -613,39 +613,52 @@ Claude Opus 4.6 (1M context)
 - MapViewSync: Required `useRef(null)` for React 19 strict types and null check before clearTimeout
 - Profile OG image: Added try-catch wrapper and made voyages count non-blocking — edge runtime may fail on heavy queries
 - Map hash restore: RouteLayer.fitBounds() was overriding initial hash view — added skipAutoFit prop to prevent this
+- Shared map view: RouteAnimation was still overriding hashed views, so shared links now skip intro auto-fit/animation and preserve the incoming viewport
 
 ### Completion Notes List
 
 - **Task 1:** Extended `generateMetadata` in voyage page with `openGraph` (title, description, url, type: website, siteName), `twitter` (summary_large_image), and `alternates.canonical`. Created reusable `siteUrl` utility at `src/lib/utils/site-url.ts`. No manual `images` in OG to avoid duplicates with `opengraph-image.tsx`.
-- **Task 2:** Created `src/app/[username]/[slug]/opengraph-image.tsx` with 1200x630px branded image. Navy gradient background, Bosco branding (⛵ emoji), voyage name, stats (distance, ports, countries), and @username. Fallback for missing voyages. Uses inline CSS only (no Tailwind).
+- **Task 2:** Created `src/app/[username]/[slug]/opengraph-image.tsx` with 1200x630px branded image. When `cover_image_url` exists, the image is fetched and used as the OG background with a Bosco overlay. The card now renders voyage name plus four key stats: distance, days, ports, and countries. Fallback for missing voyages. Uses inline CSS only (no Tailwind).
 - **Task 3:** Added JSON-LD `SportsEvent` structured data in voyage page. Includes name, description, organizer (Person), startDate, endDate, sport: "Sailing", and location (first → last stopover).
 - **Task 4:** Enhanced profile page: profile photo (96x96 rounded), boat photo, cover images on voyage cards, countries count. Updated `getPublicVoyagesByUserId` to include `country` in stopovers select. Added Supabase Storage image domains to `next.config.ts`. Updated `messages.ts` with new strings.
 - **Task 5:** Extended profile page `generateMetadata` with OG (type: profile, profile photo image), Twitter (summary), and canonical URL. Created `src/app/[username]/opengraph-image.tsx` with branded image showing username, boat name, voyage count.
-- **Task 6:** Created `MapViewSync` component that debounces (500ms) map moveend events and updates URL hash with `#map=zoom/lat/lng`. Added `parseMapHash()` in `PublicVoyageContent` to restore map view from hash on load. Uses `replaceState` to avoid history clutter.
-- **Task 7:** TypeScript strict clean, ESLint clean (pre-existing issues only), 217 tests pass (no regressions, +12 from baseline), build succeeds with OG image routes visible.
+- **Task 6:** Created `MapViewSync` component that debounces (500ms) map moveend events and updates URL hash with `#map=zoom/lat/lng`. Added shared map-hash helpers for parse/format, preserved the incoming center/zoom on load, and skipped the route intro animation when a shared hash is present so the shared viewport is not overwritten.
+- **Task 7:** TypeScript strict clean, ESLint clean, 228 tests pass, and the production build succeeds with OG image routes visible.
 
 ### Change Log
 
-- 2026-03-18: Story 3.3 implementation complete — all 7 tasks done, all ACs satisfied
 - 2026-03-18: Fix profile OG image 500 error (try-catch + edge runtime safety), fix map hash restore (skipAutoFit prop)
+- 2026-03-18: Review fixes applied — shared map links now preserve hashed view state, voyage OG images use cover-photo backgrounds and include days, lint warnings were cleaned up, and regression tests were added
+- 2026-03-18: Story 3.3 implementation complete — all 7 tasks done, all ACs satisfied
 
 ### File List
 
 New files:
 - src/lib/utils/site-url.ts
 - src/lib/utils/site-url.test.ts
+- src/lib/utils/map-view-hash.ts
+- src/lib/utils/map-view-hash.test.ts
+- src/lib/utils/voyage-metrics.ts
+- src/lib/utils/voyage-metrics.test.ts
+- src/lib/utils/image-data-url.ts
+- src/lib/utils/image-data-url.test.ts
 - src/app/[username]/[slug]/opengraph-image.tsx
 - src/app/[username]/opengraph-image.tsx
 - src/components/map/MapViewSync.tsx
+- src/components/map/RouteLayer.autofit.test.tsx
 
 Modified files:
 - src/app/[username]/[slug]/page.tsx
 - src/app/[username]/[slug]/PublicVoyageContent.tsx
 - src/app/[username]/page.tsx
 - src/app/[username]/messages.ts
+- src/app/page.tsx
+- src/app/voyage/[id]/stopover/actions.ts
 - src/lib/data/voyages.ts
+- src/lib/data/voyages.test.ts
 - src/components/map/MapCanvas.tsx
 - src/components/map/RouteLayer.tsx
+- src/components/voyage/PortsPanel.tsx
 - next.config.ts
 - _bmad-output/implementation-artifacts/sprint-status.yaml
 - _bmad-output/implementation-artifacts/3-3-seo-open-graph-and-public-profile.md

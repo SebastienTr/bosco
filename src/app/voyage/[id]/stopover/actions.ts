@@ -451,7 +451,6 @@ export async function regeocodeUnnamed(
   }
 
   // Return all stopovers with updated names
-  const updatedIds = new Set(unnamed.map((s) => s.id));
   const updatedMap = new Map(updated.map((s) => [s.id, s]));
   const result = stopovers.map((s) => updatedMap.get(s.id) ?? s);
   return { data: result, error: null };

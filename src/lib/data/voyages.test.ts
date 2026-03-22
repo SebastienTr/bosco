@@ -254,6 +254,9 @@ describe("getPublicVoyagesByUserId", () => {
     const result = await getPublicVoyagesByUserId("u-1");
 
     expect(mockFrom).toHaveBeenCalledWith("voyages");
+    expect(mockSelect).toHaveBeenCalledWith(
+      expect.stringContaining("stopovers(id, country)"),
+    );
     expect(result.data).toEqual(voyages);
   });
 });
