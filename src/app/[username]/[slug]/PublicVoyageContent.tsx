@@ -8,6 +8,9 @@ import { BoatBadge } from "@/components/voyage/BoatBadge";
 import { StopoverSheet } from "@/components/voyage/StopoverSheet";
 import { PortsPanel } from "@/components/voyage/PortsPanel";
 import { ActionFAB } from "@/components/voyage/ActionFAB";
+import { JournalTimeline } from "@/components/log/JournalTimeline";
+import { PhotoLightbox } from "@/components/log/PhotoLightbox";
+import type { LogEntry } from "@/lib/data/log-entries";
 import type { Json } from "@/types/supabase";
 import {
   getLastKnownVoyagePosition,
@@ -69,7 +72,7 @@ interface StopoverData {
   departed_at: string | null;
 }
 
-type ActiveOverlay = null | "sheet" | "panel";
+type ActiveOverlay = null | "sheet" | "panel" | "lightbox" | "journal";
 
 interface PublicVoyageContentProps {
   voyageName: string;
@@ -82,6 +85,7 @@ interface PublicVoyageContentProps {
   boatName: string | null;
   boatType: string | null;
   username: string;
+  logEntries: LogEntry[];
 }
 
 export default function PublicVoyageContent({
@@ -95,6 +99,7 @@ export default function PublicVoyageContent({
   boatName,
   boatType,
   username,
+  logEntries,
 }: PublicVoyageContentProps) {
   const initialMapView = useMemo(() => {
     if (typeof window === "undefined") {
@@ -135,6 +140,7 @@ export default function PublicVoyageContent({
   const [selectedStopover, setSelectedStopover] =
     useState<StopoverData | null>(null);
   const [activeOverlay, setActiveOverlay] = useState<ActiveOverlay>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   const handleAnimationComplete = useCallback(() => {
     setAnimationComplete(true);
@@ -180,6 +186,25 @@ export default function PublicVoyageContent({
     setActiveOverlay(null);
   }, []);
 
+  const handleToggleJournal = useCallback(() => {
+    setActiveOverlay((prev) => {
+      if (prev === "journal") return null;
+      setSelectedStopover(null);
+      return "journal";
+    });
+  }, []);
+
+  const handlePhotoTap = useCallback((url: string) => {
+    setLightboxUrl(url);
+    setSelectedStopover(null);
+    setActiveOverlay("lightbox");
+  }, []);
+
+  const handleCloseLightbox = useCallback(() => {
+    setLightboxUrl(null);
+    setActiveOverlay(null);
+  }, []);
+
   const handlePortsPanelSelect = useCallback(
     (stopover: StopoverData) => {
       handleSelectStopover(stopover);
@@ -188,11 +213,13 @@ export default function PublicVoyageContent({
   );
 
   const isPortsPanelOpen = activeOverlay === "panel";
+  const isJournalOpen = activeOverlay === "journal";
+  const hasLogEntries = logEntries.length > 0;
 
   return (
     <div className="relative flex h-dvh w-full">
-      {/* Desktop persistent sidebar */}
-      <div className="hidden lg:block">
+      {/* Desktop persistent sidebars */}
+      <div className="hidden lg:flex lg:h-full lg:flex-row">
         <PortsPanel
           stopovers={stopovers}
           isOpen={true}
@@ -200,6 +227,25 @@ export default function PublicVoyageContent({
           onSelectStopover={handlePortsPanelSelect}
           messages={messages.portsPanel}
         />
+        {/* Desktop journal below ports */}
+        {hasLogEntries && (
+          <aside className="flex h-full w-[280px] shrink-0 flex-col border-l border-navy/10 bg-sand">
+            <div className="border-b border-navy/10 px-4 py-3">
+              <h2 className="font-heading text-h3 text-navy">
+                {messages.journal.header}
+              </h2>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3">
+              <JournalTimeline
+                entries={logEntries}
+                stopovers={stopovers}
+                legs={legs}
+                onPhotoTap={handlePhotoTap}
+                ariaLabel={messages.journal.ariaLabel}
+              />
+            </div>
+          </aside>
+        )}
       </div>
 
       {/* Map fills remaining space */}
@@ -300,6 +346,94 @@ export default function PublicVoyageContent({
             onDismiss={handleDismissSheet}
             messages={messages.stopoverSheet}
           />
+        )}
+
+        {/* Journal toggle button — mobile only, when entries exist */}
+        {hasLogEntries && (
+          <button
+            type="button"
+            onClick={handleToggleJournal}
+            aria-label={
+              isJournalOpen
+                ? messages.journal.closeLabel
+                : messages.journal.openLabel
+            }
+            className="absolute bottom-10 right-4 z-[400] flex min-h-[44px] items-center gap-1.5 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-navy shadow-card transition-colors hover:bg-foam lg:hidden"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20" />
+            </svg>
+            {messages.journal.toggle(logEntries.length)}
+          </button>
+        )}
+
+        {/* Mobile Journal Panel */}
+        {hasLogEntries && (
+          <div
+            className={`fixed inset-y-0 right-0 z-[450] w-[280px] lg:hidden ${
+              isJournalOpen ? "translate-x-0" : "translate-x-full"
+            } transition-transform duration-200 ease-out ${
+              isJournalOpen ? "" : "pointer-events-none"
+            }`}
+            aria-hidden={!isJournalOpen}
+            inert={!isJournalOpen}
+          >
+            {isJournalOpen && (
+              <div
+                className="fixed inset-0 -z-10 bg-navy/30"
+                onClick={() => setActiveOverlay(null)}
+                aria-hidden="true"
+              />
+            )}
+            <div className="flex h-full flex-col bg-navy/75 backdrop-blur-[12px]">
+              <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                <h2 className="font-heading text-h3 text-white">
+                  {messages.journal.header}
+                </h2>
+                <button
+                  onClick={() => setActiveOverlay(null)}
+                  aria-label={messages.journal.closeLabel}
+                  className="rounded-full p-1.5 text-white/60 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-ocean focus-visible:outline-offset-2"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  >
+                    <path d="M4 4l8 8M12 4l-8 8" />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 pb-20 [&_div.shadow-card]:bg-white/10 [&_h3]:text-white [&_p]:text-white/80 [&_.text-mist]:text-white/60">
+                <JournalTimeline
+                  entries={logEntries}
+                  stopovers={stopovers}
+                  legs={legs}
+                  onPhotoTap={handlePhotoTap}
+                  ariaLabel={messages.journal.ariaLabel}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Photo Lightbox */}
+        {activeOverlay === "lightbox" && (
+          <PhotoLightbox url={lightboxUrl} onClose={handleCloseLightbox} />
         )}
       </div>
     </div>

@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-15
-last_updated: 2026-03-26T12:13:19Z
+last_updated: 2026-03-26T13:54:00Z
 project: bosco
 project_key: NOKEY
 tracking_system: file-system
@@ -71,5 +71,5 @@ development_status:
   # Epic 4: Voyage Journal & Photos
   epic-4: in-progress
   4-1-journal-entry-creation-and-management: done
-  4-2-journal-timeline-display: backlog
+  4-2-journal-timeline-display: review
   epic-4-retrospective: optional

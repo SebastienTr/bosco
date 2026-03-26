@@ -37,6 +37,9 @@ export const messages = {
     confirmButton: "Delete",
     cancelButton: "Cancel",
   },
+  photos: {
+    openLabel: (index: number) => `Open photo ${index}`,
+  },
   validation: {
     textRequired: "Entry text is required",
     textTooLong: "Entry must be under 10000 characters",

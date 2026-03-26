@@ -22,6 +22,7 @@ interface LogEntryCardProps {
   legLabel?: string | null;
   onEdit?: () => void;
   onDelete?: () => void;
+  onPhotoTap?: (url: string) => void;
 }
 
 function formatDate(dateStr: string): string {
@@ -39,6 +40,7 @@ export function LogEntryCard({
   legLabel,
   onEdit,
   onDelete,
+  onPhotoTap,
 }: LogEntryCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const photoUrls = (entry.photo_urls ?? []) as string[];
@@ -73,16 +75,35 @@ export function LogEntryCard({
       {/* Photos */}
       {photoUrls.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {photoUrls.slice(0, 4).map((url) => (
-            <Image
-              key={url}
-              src={url}
-              alt=""
-              width={48}
-              height={48}
-              className="h-12 w-12 rounded object-cover"
-            />
-          ))}
+          {photoUrls.slice(0, 4).map((url, index) =>
+            onPhotoTap ? (
+              <button
+                key={url}
+                type="button"
+                onClick={() => onPhotoTap(url)}
+                aria-label={messages.photos.openLabel(index + 1)}
+                aria-haspopup="dialog"
+                className="h-12 w-12 overflow-hidden rounded focus-visible:outline-2 focus-visible:outline-ocean focus-visible:outline-offset-2"
+              >
+                <Image
+                  src={url}
+                  alt=""
+                  width={48}
+                  height={48}
+                  className="h-12 w-12 rounded object-cover"
+                />
+              </button>
+            ) : (
+              <Image
+                key={url}
+                src={url}
+                alt=""
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded object-cover"
+              />
+            ),
+          )}
           {photoUrls.length > 4 && (
             <div className="flex h-12 w-12 items-center justify-center rounded bg-navy/10 font-body text-xs font-semibold text-navy">
               +{photoUrls.length - 4}

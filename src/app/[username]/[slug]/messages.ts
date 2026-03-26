@@ -49,4 +49,11 @@ export const messages = {
     openLabel: "Open ports panel",
     closeLabel: "Close ports panel",
   },
+  journal: {
+    header: "Journal",
+    ariaLabel: "Voyage journal entries",
+    openLabel: "Open journal",
+    closeLabel: "Close journal",
+    toggle: (count: number) => (count === 1 ? "1 entry" : `${count} entries`),
+  },
 };

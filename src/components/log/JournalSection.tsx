@@ -19,6 +19,7 @@ interface JournalSectionProps {
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
+  onPhotoTap?: (url: string) => void;
 }
 
 export function JournalSection({
@@ -29,6 +30,7 @@ export function JournalSection({
   isOpen,
   onToggle,
   onClose,
+  onPhotoTap,
 }: JournalSectionProps) {
   const router = useRouter();
   const [showForm, setShowForm] = useState(false);
@@ -170,6 +172,7 @@ export function JournalSection({
                     legLabel={getLegLabel(entry.leg_id)}
                     onEdit={() => handleEdit(entry)}
                     onDelete={() => handleDelete(entry)}
+                    onPhotoTap={onPhotoTap}
                   />
                 ))}
               </div>

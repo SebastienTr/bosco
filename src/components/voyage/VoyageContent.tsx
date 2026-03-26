@@ -21,9 +21,10 @@ const StopoverMarkers = dynamic(
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LegList } from "@/components/voyage/LegList";
 import { JournalSection } from "@/components/log/JournalSection";
+import { PhotoLightbox } from "@/components/log/PhotoLightbox";
 import { messages } from "@/app/voyage/[id]/messages";
 
-type ActiveOverlay = "stopovers" | "legs" | "journal" | null;
+type ActiveOverlay = "stopovers" | "legs" | "journal" | "lightbox" | null;
 
 interface VoyageContentProps {
   initialLegs: Leg[];
@@ -40,6 +41,7 @@ export function VoyageContent({
 }: VoyageContentProps) {
   const [legs, setLegs] = useState(initialLegs);
   const [activeOverlay, setActiveOverlay] = useState<ActiveOverlay>(null);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const regeocodeTriggered = useRef(false);
 
   // Auto-detect unnamed stopovers and trigger geocoding
@@ -71,6 +73,16 @@ export function VoyageContent({
   }, []);
 
   const closeOverlay = useCallback(() => {
+    setActiveOverlay(null);
+  }, []);
+
+  const handlePhotoTap = useCallback((url: string) => {
+    setLightboxUrl(url);
+    setActiveOverlay("lightbox");
+  }, []);
+
+  const handleCloseLightbox = useCallback(() => {
+    setLightboxUrl(null);
     setActiveOverlay(null);
   }, []);
 
@@ -152,7 +164,13 @@ export function VoyageContent({
         isOpen={activeOverlay === "journal"}
         onToggle={() => toggleOverlay("journal")}
         onClose={closeOverlay}
+        onPhotoTap={handlePhotoTap}
       />
+
+      {/* Photo Lightbox */}
+      {activeOverlay === "lightbox" && (
+        <PhotoLightbox url={lightboxUrl} onClose={handleCloseLightbox} />
+      )}
 
       {/* EmptyState overlay when no tracks */}
       {legs.length === 0 && (
