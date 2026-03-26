@@ -293,18 +293,15 @@ export async function repositionStopover(
     };
   }
 
-  // Fire reverse geocode for new position (non-blocking)
-  void reverseGeocodeServer(parsed.data.latitude, parsed.data.longitude).then(
-    async (geo) => {
-      if (geo.name) {
-        await updateStopoverDb(parsed.data.id, {
-          name: geo.name,
-          country: geo.country,
-          country_code: geo.country_code,
-        });
-      }
-    },
-  );
+  // Reverse geocode for new position (must await — Vercel kills async work after response)
+  const geo = await reverseGeocodeServer(parsed.data.latitude, parsed.data.longitude);
+  if (geo.name) {
+    await updateStopoverDb(parsed.data.id, {
+      name: geo.name,
+      country: geo.country,
+      country_code: geo.country_code,
+    });
+  }
 
   return { data, error: null };
 }

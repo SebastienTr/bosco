@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Leg } from "@/lib/data/legs";
 import type { Stopover } from "@/lib/data/stopovers";
+import type { LogEntry } from "@/lib/data/log-entries";
 import type { ActionResponse } from "@/types";
 import dynamic from "next/dynamic";
 import MapLoader from "@/components/map/MapLoader";
@@ -19,20 +20,26 @@ const StopoverMarkers = dynamic(
 );
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LegList } from "@/components/voyage/LegList";
+import { JournalSection } from "@/components/log/JournalSection";
 import { messages } from "@/app/voyage/[id]/messages";
+
+type ActiveOverlay = "stopovers" | "legs" | "journal" | null;
 
 interface VoyageContentProps {
   initialLegs: Leg[];
   stopovers: Stopover[];
   voyageId: string;
+  initialLogEntries?: LogEntry[];
 }
 
 export function VoyageContent({
   initialLegs,
   stopovers,
   voyageId,
+  initialLogEntries = [],
 }: VoyageContentProps) {
   const [legs, setLegs] = useState(initialLegs);
+  const [activeOverlay, setActiveOverlay] = useState<ActiveOverlay>(null);
   const regeocodeTriggered = useRef(false);
 
   // Auto-detect unnamed stopovers and trigger geocoding
@@ -58,6 +65,14 @@ export function VoyageContent({
   const tracks: GeoJSON.LineString[] = legs.map(
     (leg) => leg.track_geojson as unknown as GeoJSON.LineString,
   );
+
+  const toggleOverlay = useCallback((overlay: Exclude<ActiveOverlay, null>) => {
+    setActiveOverlay((current) => (current === overlay ? null : overlay));
+  }, []);
+
+  const closeOverlay = useCallback(() => {
+    setActiveOverlay(null);
+  }, []);
 
   const handleDeleteLeg = useCallback(
     async (legId: string): Promise<ActionResponse<null>> => {
@@ -107,12 +122,37 @@ export function VoyageContent({
       </MapLoader>
 
       {/* Stopover list panel */}
-      {stopovers.length > 0 && <StopoverPanel stopovers={stopovers} voyageId={voyageId} />}
+      {stopovers.length > 0 && (
+        <StopoverPanel
+          stopovers={stopovers}
+          voyageId={voyageId}
+          isOpen={activeOverlay === "stopovers"}
+          onToggle={() => toggleOverlay("stopovers")}
+          onClose={closeOverlay}
+        />
+      )}
 
       {/* Leg list panel */}
       {legs.length > 0 && (
-        <LegList legs={legs} onDelete={handleDeleteLeg} />
+        <LegList
+          legs={legs}
+          onDelete={handleDeleteLeg}
+          isOpen={activeOverlay === "legs"}
+          onToggle={() => toggleOverlay("legs")}
+          onClose={closeOverlay}
+        />
       )}
+
+      {/* Journal section */}
+      <JournalSection
+        entries={initialLogEntries}
+        legs={legs}
+        stopovers={stopovers}
+        voyageId={voyageId}
+        isOpen={activeOverlay === "journal"}
+        onToggle={() => toggleOverlay("journal")}
+        onClose={closeOverlay}
+      />
 
       {/* EmptyState overlay when no tracks */}
       {legs.length === 0 && (

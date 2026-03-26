@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { Stopover } from "@/lib/data/stopovers";
 import { regeocodeUnnamed } from "@/app/voyage/[id]/stopover/actions";
@@ -10,10 +10,18 @@ import { messages } from "@/app/voyage/[id]/messages";
 interface StopoverPanelProps {
   stopovers: Stopover[];
   voyageId: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
 }
 
-export function StopoverPanel({ stopovers, voyageId }: StopoverPanelProps) {
-  const [open, setOpen] = useState(false);
+export function StopoverPanel({
+  stopovers,
+  voyageId,
+  isOpen,
+  onToggle,
+  onClose,
+}: StopoverPanelProps) {
   const [isRegeocoding, setIsRegeocoding] = useState(false);
 
   const hasUnnamed = stopovers.some((s) => !s.name || s.name === "Unnamed");
@@ -53,7 +61,7 @@ export function StopoverPanel({ stopovers, voyageId }: StopoverPanelProps) {
     <>
       {/* Toggle button */}
       <button
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={onToggle}
         className="absolute right-3 top-3 z-[500] flex min-h-[44px] items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-navy shadow-card transition-colors hover:bg-foam"
         aria-label="Toggle stopover list"
       >
@@ -75,7 +83,7 @@ export function StopoverPanel({ stopovers, voyageId }: StopoverPanelProps) {
       </button>
 
       {/* Panel */}
-      {open && (
+      {isOpen && (
         <div className="absolute right-3 top-16 z-[500] flex w-64 max-h-[calc(100dvh-80px)] flex-col rounded-lg bg-white shadow-overlay lg:top-3 lg:right-3 lg:h-[calc(100%-24px)] lg:w-72">
           <div className="flex shrink-0 items-center justify-between border-b px-3 py-2">
             <h2 className="font-heading text-sm font-semibold text-navy">
@@ -94,7 +102,7 @@ export function StopoverPanel({ stopovers, voyageId }: StopoverPanelProps) {
                 </button>
               )}
               <button
-                onClick={() => setOpen(false)}
+                onClick={onClose}
                 className="rounded p-1 text-mist hover:text-navy"
                 aria-label="Close stopover list"
               >

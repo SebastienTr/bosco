@@ -5,6 +5,7 @@ import { getUser } from "@/lib/auth";
 import { getVoyageById } from "@/lib/data/voyages";
 import { getLegsByVoyageId } from "@/lib/data/legs";
 import { getStopoversByVoyageId } from "@/lib/data/stopovers";
+import { getLogEntriesByVoyageId } from "@/lib/data/log-entries";
 import { VoyageContent } from "@/components/voyage/VoyageContent";
 import { messages } from "./messages";
 
@@ -46,6 +47,12 @@ export default async function VoyagePage({
     await getStopoversByVoyageId(id);
   if (stopoversError) {
     throw new Error(`Failed to load stopovers: ${stopoversError.message}`);
+  }
+
+  const { data: logEntries, error: logEntriesError } =
+    await getLogEntriesByVoyageId(id);
+  if (logEntriesError) {
+    throw new Error(`Failed to load log entries: ${logEntriesError.message}`);
   }
 
   return (
@@ -112,6 +119,7 @@ export default async function VoyagePage({
         initialLegs={legs ?? []}
         stopovers={stopovers ?? []}
         voyageId={id}
+        initialLogEntries={logEntries ?? []}
       />
     </div>
   );

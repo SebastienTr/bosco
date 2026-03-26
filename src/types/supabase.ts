@@ -36,28 +36,28 @@ export type Database = {
     Tables: {
       geocode_cache: {
         Row: {
-          lat_key: string
-          lon_key: string
-          name: string
           country: string | null
           country_code: string | null
-          created_at: string
-        }
-        Insert: {
+          created_at: string | null
           lat_key: string
           lon_key: string
           name: string
+        }
+        Insert: {
           country?: string | null
           country_code?: string | null
-          created_at?: string
+          created_at?: string | null
+          lat_key: string
+          lon_key: string
+          name: string
         }
         Update: {
+          country?: string | null
+          country_code?: string | null
+          created_at?: string | null
           lat_key?: string
           lon_key?: string
           name?: string
-          country?: string | null
-          country_code?: string | null
-          created_at?: string
         }
         Relationships: []
       }
@@ -101,6 +101,64 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "legs_voyage_id_fkey"
+            columns: ["voyage_id"]
+            isOneToOne: false
+            referencedRelation: "voyages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      log_entries: {
+        Row: {
+          created_at: string
+          entry_date: string
+          id: string
+          leg_id: string | null
+          photo_urls: Json
+          stopover_id: string | null
+          text: string
+          updated_at: string
+          voyage_id: string
+        }
+        Insert: {
+          created_at?: string
+          entry_date: string
+          id?: string
+          leg_id?: string | null
+          photo_urls?: Json
+          stopover_id?: string | null
+          text: string
+          updated_at?: string
+          voyage_id: string
+        }
+        Update: {
+          created_at?: string
+          entry_date?: string
+          id?: string
+          leg_id?: string | null
+          photo_urls?: Json
+          stopover_id?: string | null
+          text?: string
+          updated_at?: string
+          voyage_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "log_entries_leg_id_fkey"
+            columns: ["leg_id"]
+            isOneToOne: false
+            referencedRelation: "legs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "log_entries_stopover_id_fkey"
+            columns: ["stopover_id"]
+            isOneToOne: false
+            referencedRelation: "stopovers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "log_entries_voyage_id_fkey"
             columns: ["voyage_id"]
             isOneToOne: false
             referencedRelation: "voyages"

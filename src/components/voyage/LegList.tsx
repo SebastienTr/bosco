@@ -10,6 +10,9 @@ import type { ActionResponse } from "@/types";
 interface LegListProps {
   legs: Leg[];
   onDelete: (legId: string) => Promise<ActionResponse<null>>;
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
 }
 
 function formatDate(iso: string | null): string {
@@ -18,11 +21,16 @@ function formatDate(iso: string | null): string {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
 }
 
-export function LegList({ legs, onDelete }: LegListProps) {
+export function LegList({
+  legs,
+  onDelete,
+  isOpen,
+  onToggle,
+  onClose,
+}: LegListProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [open, setOpen] = useState(false);
 
   function openDeleteDialog(legId: string) {
     if (isDeleting) return;
@@ -57,7 +65,7 @@ export function LegList({ legs, onDelete }: LegListProps) {
     <>
       {/* Toggle button */}
       <button
-        onClick={() => setOpen((prev) => !prev)}
+        onClick={onToggle}
         className="absolute bottom-3 left-3 z-[500] flex min-h-[44px] items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-navy shadow-card transition-colors hover:bg-foam"
         aria-label="Toggle leg list"
       >
@@ -83,14 +91,14 @@ export function LegList({ legs, onDelete }: LegListProps) {
       </button>
 
       {/* Panel */}
-      {open && (
+      {isOpen && (
         <div className="absolute bottom-16 left-3 z-[500] flex w-56 max-w-[calc(100vw-24px)] max-h-[calc(100dvh-160px)] flex-col rounded-lg bg-white shadow-overlay">
           <div className="flex shrink-0 items-center justify-between border-b px-3 py-2">
             <h2 className="font-heading text-sm font-semibold text-navy">
               Legs
             </h2>
             <button
-              onClick={() => setOpen(false)}
+              onClick={onClose}
               className="rounded p-1 text-mist hover:text-navy"
               aria-label="Close leg list"
             >
