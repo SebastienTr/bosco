@@ -49,11 +49,7 @@ export default async function VoyagePage({
     throw new Error(`Failed to load stopovers: ${stopoversError.message}`);
   }
 
-  const { data: logEntries, error: logEntriesError } =
-    await getLogEntriesByVoyageId(id);
-  if (logEntriesError) {
-    throw new Error(`Failed to load log entries: ${logEntriesError.message}`);
-  }
+  const { data: logEntries } = await getLogEntriesByVoyageId(id);
 
   return (
     <div className="flex h-dvh flex-col">

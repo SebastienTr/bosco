@@ -86,7 +86,7 @@ export function JournalSection({
 
           onToggle();
         }}
-        className="absolute bottom-3 right-3 z-[500] flex min-h-[44px] items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-navy shadow-card transition-colors hover:bg-foam"
+        className="absolute bottom-10 right-3 z-[500] flex min-h-[44px] items-center gap-1 rounded-lg bg-white px-3 py-2 text-sm font-semibold text-navy shadow-card transition-colors hover:bg-foam"
         aria-label="Toggle journal"
       >
         <svg
@@ -109,7 +109,7 @@ export function JournalSection({
 
       {/* Panel */}
       {isOpen && (
-        <div className="absolute bottom-16 right-3 z-[500] flex w-80 max-w-[calc(100vw-24px)] max-h-[calc(100dvh-160px)] flex-col rounded-lg bg-white shadow-overlay">
+        <div className="absolute bottom-[5.5rem] right-3 z-[500] flex w-80 max-w-[calc(100vw-24px)] max-h-[calc(100dvh-160px)] flex-col rounded-lg bg-white shadow-overlay">
           {/* Header */}
           <div className="flex shrink-0 items-center justify-between border-b px-3 py-2">
             <h2 className="font-heading text-sm font-semibold text-navy">
