@@ -448,15 +448,21 @@ None — clean implementation with no debugging issues.
 ### Change Log
 
 - 2026-03-26: Story 4.2 implementation complete — journal timeline display on public and authenticated pages with photo lightbox
+- 2026-03-26: Layout refactor — replaced double sidebar with floating journal panel (desktop + mobile)
+- 2026-03-29: Code review — fixed 2 stale tests, updated File List
 
 ### File List
 
 - src/app/[username]/[slug]/page.tsx (MODIFIED — SSR log entries fetch + JSON-LD subEvent)
-- src/app/[username]/[slug]/PublicVoyageContent.tsx (MODIFIED — logEntries prop, journal panel, lightbox overlay)
+- src/app/[username]/[slug]/PublicVoyageContent.tsx (MODIFIED — logEntries prop, floating journal panel, lightbox overlay)
+- src/app/[username]/[slug]/PublicVoyageContent.test.tsx (NEW — layout and journal panel tests)
 - src/app/[username]/[slug]/messages.ts (MODIFIED — added journal messages)
+- src/app/voyage/[id]/log/messages.ts (MODIFIED — added photos.openLabel for accessibility)
 - src/components/log/JournalTimeline.tsx (NEW — read-only timeline display component)
+- src/components/log/JournalTimeline.test.tsx (NEW — leg label ordering tests)
 - src/components/log/PhotoLightbox.tsx (NEW — full-viewport photo lightbox)
-- src/components/log/LogEntryCard.tsx (MODIFIED — added onPhotoTap prop)
+- src/components/log/LogEntryCard.tsx (MODIFIED — added onPhotoTap prop with aria-haspopup)
+- src/components/log/LogEntryCard.test.tsx (NEW — photo tap interaction tests)
 - src/components/log/JournalSection.tsx (MODIFIED — added onPhotoTap prop passthrough)
 - src/components/voyage/VoyageContent.tsx (MODIFIED — lightbox overlay integration)
 - _bmad-output/implementation-artifacts/sprint-status.yaml (MODIFIED — story status updates)

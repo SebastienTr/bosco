@@ -81,25 +81,35 @@ describe("PublicVoyageContent", () => {
     ],
   };
 
-  it("keeps the closed mobile journal panel inert until opened", () => {
-    const { container } = render(<PublicVoyageContent {...props} />);
+  it("renders the journal panel only when the toggle is clicked", () => {
+    render(<PublicVoyageContent {...props} />);
 
-    const closedPanel = container.querySelector('div[aria-hidden="true"][inert]');
-    expect(closedPanel).toBeTruthy();
+    // Panel is NOT in the DOM when closed (conditional rendering)
+    expect(screen.queryByText(messages.journal.header)).toBeNull();
 
+    // Open via toggle button
     fireEvent.click(
       screen.getByRole("button", { name: messages.journal.openLabel }),
     );
 
-    const openPanel = container.querySelector('div[aria-hidden="false"]');
-    expect(openPanel?.hasAttribute("inert")).toBe(false);
+    // Panel is now rendered with the header
+    expect(screen.getByText(messages.journal.header)).toBeTruthy();
+
+    // Close via the X button inside the panel header
+    const closeButtons = screen.getAllByRole("button", {
+      name: messages.journal.closeLabel,
+    });
+    // Click the panel's close button (last one — inside the panel header)
+    fireEvent.click(closeButtons[closeButtons.length - 1]);
+
+    // Panel removed from DOM again
+    expect(screen.queryByText(messages.journal.header)).toBeNull();
   });
 
-  it("lays out the desktop sidebars horizontally at full height", () => {
+  it("renders the desktop ports sidebar separately from the map area", () => {
     const { container } = render(<PublicVoyageContent {...props} />);
 
-    const desktopSidebarLayout = container.firstElementChild?.firstElementChild;
-    expect(desktopSidebarLayout?.className).toContain("lg:flex-row");
-    expect(desktopSidebarLayout?.className).toContain("lg:h-full");
+    const desktopSidebar = container.firstElementChild?.firstElementChild;
+    expect(desktopSidebar?.className).toContain("lg:block");
   });
 });
