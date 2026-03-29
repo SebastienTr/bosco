@@ -1,5 +1,5 @@
 # generated: 2026-03-15
-# last_updated: 2026-03-16T15:41:00Z
+# last_updated: 2026-03-29T18:46:00
 # project: bosco
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,13 +35,17 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-15
-last_updated: 2026-03-26T13:54:00Z
+last_updated: 2026-03-29T18:46:00
 project: bosco
 project_key: NOKEY
 tracking_system: file-system
 story_location: "{project-root}/_bmad-output/implementation-artifacts"
 
 development_status:
+  # ============================================
+  # MVP EPICS (1-4) — COMPLETED
+  # ============================================
+
   # Epic 1: Sailor Onboarding & Profile
   epic-1: done
   1-1-landing-page-and-project-foundation: done
@@ -69,7 +73,70 @@ development_status:
   epic-3-retrospective: done
 
   # Epic 4: Voyage Journal & Photos
-  epic-4: in-progress
+  epic-4: done
   4-1-journal-entry-creation-and-management: done
   4-2-journal-timeline-display: done
   epic-4-retrospective: optional
+
+  # ============================================
+  # v1.0 EPICS (5-10) — NEW WORK
+  # ============================================
+
+  # Epic 5: Production Infrastructure & Legal
+  epic-5: in-progress
+  5-1-supabase-pro-migration-and-custom-smtp: ready-for-dev
+  5-2-database-schema-updates-for-v1: backlog
+  5-3-production-monitoring-and-observability: backlog
+  5-4-privacy-policy-and-terms-of-service: backlog
+  5-5-account-deletion-with-data-cascade: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: App Store Distribution & Native Import
+  epic-6: backlog
+  6-1-capacitor-project-setup-and-android-build: backlog
+  6-2-android-gpx-share-target-intent-filter: backlog
+  6-3-ios-project-setup-and-basic-build: backlog
+  6-4-ios-share-extension-for-gpx-import: backlog
+  6-5-deep-linking-universal-links-and-app-links: backlog
+  6-6-cross-platform-auth-and-file-preservation: backlog
+  6-7-app-store-submission-and-listings: backlog
+  6-8-cross-platform-qa-and-parity: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: Visual Storytelling — Photos, OG & Sharing
+  epic-7: backlog
+  7-1-photo-markers-on-map: backlog
+  7-2-photo-marker-clustering: backlog
+  7-3-photo-lightbox-viewer: backlog
+  7-4-dynamic-og-image-generation: backlog
+  7-5-native-share-and-share-button: backlog
+  7-6-dual-cta-on-public-pages: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8: Landing Page & Onboarding
+  epic-8: backlog
+  8-1-landing-page-redesign: backlog
+  8-2-native-app-onboarding-flow: backlog
+  8-3-enhanced-empty-state-with-demo-voyage: backlog
+  8-4-actionable-error-messages-and-recovery-ux: backlog
+  8-5-navionics-gpx-export-guide: backlog
+  epic-8-retrospective: optional
+
+  # Epic 9: Offline & Internationalization — Polish & Reach
+  epic-9: backlog
+  9-1-offline-journal-entry-creation: backlog
+  9-2-offline-sync-engine-and-indicator: backlog
+  9-3-service-worker-cache-for-offline-browsing: backlog
+  9-4-i18n-setup-with-next-intl: backlog
+  9-5-french-translations-and-language-switcher: backlog
+  epic-9-retrospective: optional
+
+  # Epic 10: Admin Zone & Dashboard Enhancements
+  epic-10: backlog
+  10-1-admin-route-and-authorization: backlog
+  10-2-admin-metrics-dashboard: backlog
+  10-3-admin-user-list-and-management: backlog
+  10-4-admin-error-monitoring-and-storage: backlog
+  10-5-trophy-coming-soon-preview: backlog
+  10-6-enhanced-dashboard-voyage-cards: backlog
+  epic-10-retrospective: optional

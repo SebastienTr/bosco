@@ -1,5 +1,6 @@
 ---
 stepsCompleted: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+v1Addendum: 2026-03-29
 inputDocuments:
   - '_bmad-output/planning-artifacts/prd.md'
   - '_bmad-output/planning-artifacts/prd-validation-report.md'
@@ -10,6 +11,7 @@ inputDocuments:
 
 **Author:** Seb
 **Date:** 2026-03-15
+**v1.0 Addendum:** 2026-03-29
 
 ---
 
@@ -77,21 +79,21 @@ The creator loop drives content creation. The visitor loop drives sharing and en
 
 ### Platform Strategy
 
-**MVP — PWA (Progressive Web App):**
-- Installable on home screen via Chrome on Android
-- Registers as a Web Share Target — appears in the OS share sheet when exporting from Navionics
-- Core import flow: Navionics export → tap "Bosco" in share sheet → preview → confirm → done
+**Web (responsive, SSR):**
 - Public voyage pages: standard responsive web, SSR, accessible on any browser and device (iOS Safari, Android Chrome, desktop browsers)
-- Creator experience optimized for Android Chrome (Samsung Galaxy S23 Ultra as reference device)
-- Simple client-side GPX processing: standard DOMParser, Douglas-Peucker in a single pass — no over-engineering for MVP
+- Creator experience: responsive web accessible via any modern browser
+- PWA capabilities: Web Share Target on Android, installable on home screen
 
-**V2 — Native app (App Store + Play Store):**
-- Full native experience on both iOS and Android
-- Native share target on iOS (where PWA share target is unreliable)
-- Better performance for large file processing on lower-end devices
-- Potential for deeper OS integration (notifications, background sync)
+**Native Apps — Capacitor (v1.0):**
+- iOS and Android apps wrapping `sailbosco.com` via Capacitor WebView shell
+- iOS Share Extension (Swift) — receives GPX files from Navionics share sheet
+- Android Intent filter — receives GPX files from Navionics share sheet
+- Native share sheet for sending links (`@capacitor/share`)
+- Deep linking: Universal Links (iOS) + App Links (Android) via `.well-known/`
+- Available on Apple App Store and Google Play Store
+- Single codebase: what works on web works in the app
 
-**Non-negotiable:** The ability to export directly from Navionics into Bosco via the share sheet is THE core flow. The entire platform strategy serves this requirement.
+**Non-negotiable:** The ability to export directly from Navionics into Bosco via the share sheet is THE core flow on **both iOS and Android**. The entire platform strategy serves this requirement.
 
 ### Effortless Interactions
 
@@ -107,8 +109,8 @@ The creator loop drives content creation. The visitor loop drives sharing and en
 - Leg connection — matching leg endpoints to existing stopovers within radius
 - Track simplification during import — transparent to the user beyond a progress indicator
 
-**Deliberately deferred but designed for:**
-- Log entries (journal) — secondary, optional. Not part of the core loop for MVP. A discreet "Add a note" placeholder is reserved at stopover level in the UI layout, ready to activate without redesigning. Never required or pushed.
+**Implemented (Epic 4 — Journal & Photos):**
+- Log entries (journal) — users can create journal entries with free-form text and photo attachments, linked to dates, legs, and stopovers. Journal timeline visible on both creator and public voyage pages. Photo lightbox for full-screen viewing. "Add a note" link in StopoverSheet invites entries without being pushy.
 
 ### Critical Success Moments
 
@@ -960,3 +962,420 @@ VoyageCard, EmptyState, all shadcn/ui components (Form, Dialog, Toggle, etc.)
 - Share target import works with Android TalkBack
 - Install prompt is accessible via keyboard
 - Service worker status communicated via aria-live region
+
+---
+
+## v1.0 Addendum — New Features UX
+
+**Context:** This section covers UX specifications for features added in the v1.0 PRD that were not part of the original MVP scope. The MVP (4 epics) is deployed and live at sailbosco.com. v1.0 transitions Bosco from working prototype to production-grade product on app stores.
+
+**Date:** 2026-03-29
+
+### Landing Page Redesign
+
+**Goal:** Convert visiting sailors into users. Current landing is functional but lacks persuasive impact.
+
+**Structure (single page, scroll):**
+
+1. **Hero** — "Your sailing story, traced on the map"
+   - Animated mini-demo: a short track animates on a live Leaflet map (not a static screenshot)
+   - Two CTAs: "Get Started" (coral, primary) + app store badges (iOS + Android)
+   - Subtitle reinforcing the core value: track fidelity
+
+2. **How it works** — 3-step flow (Export → Import → Share)
+   - Keep current design but add small animated illustrations per step
+   - Add "Works with Navionics" logo for instant recognition
+
+3. **Live voyage showcase** — Embed a real public voyage (Seb's Göteborg → Nice)
+   - Interactive mini-map visitors can zoom and tap
+   - Stats bar visible: "1,689 nm · 45 ports · 7 countries"
+   - CTA below: "This could be your voyage"
+
+4. **Social proof** — When available: testimonials, user count, shared voyages count
+
+5. **App store section** — Download badges prominent, QR code for mobile
+   - "Available on App Store and Google Play"
+
+6. **Footer** — Links: privacy policy, terms, contact. "Bosco — Made for sailors."
+
+**Mobile:** Hero stacks vertically (text above map demo). App store badges stack. Single-column.
+
+### Native App Onboarding (iOS + Android)
+
+**First launch flow:**
+
+```
+App opens → Splash screen (Bosco logo, 1.5s max) → Landing/auth screen
+```
+
+**If not authenticated:**
+- Show a condensed landing: hero text + demo animation + "Sign in with email" button
+- Magic link flow identical to web
+- After auth: profile setup (username + boat name) → "Create your first voyage" → empty voyage with import prompt
+
+**If authenticated (returning):**
+- App opens directly to last active voyage map
+- No re-authentication needed (persistent session via Capacitor secure storage)
+
+**iOS Share Extension flow:**
+1. User taps Share in Navionics → selects "Bosco" in share sheet
+2. Share Extension receives GPX file
+3. If authenticated: opens main app with file → import preview
+4. If not authenticated: opens main app → sign in → returns to import with file preserved (FR-15)
+5. Extension UI: minimal — "Opening in Bosco..." loading indicator
+
+**Android Intent filter flow:**
+1. User taps Share in Navionics → selects "Bosco"
+2. App opens with GPX file → import preview (same as current PWA flow)
+
+### Admin Zone UX
+
+**Route:** `/admin` — protected by middleware + is_admin check
+
+**Layout:** Uses creator layout (foam background, sidebar on desktop, bottom tabs on mobile). Admin-specific tab in navigation only visible to admins.
+
+**Dashboard view (default):**
+
+| Metric | Display |
+|--------|---------|
+| Total users | Large number + trend arrow (vs last week) |
+| New this week | Number + sparkline |
+| Active voyages | Number |
+| Total legs imported | Number |
+| Storage usage | Progress bar (used/quota) |
+
+**User list view:**
+- Searchable table: username, email, voyages count, legs count, created date, last active
+- Row action: "Disable" button (with confirmation dialog)
+- Mobile: cards instead of table, same fields
+
+**Error monitoring view:**
+- Summary: unhandled exceptions last 24h, last 7d
+- Link to external Sentry dashboard (opens in new tab)
+- Alert thresholds displayed: >5 errors/day = red, 1-5 = amber, 0 = green
+
+**Mobile considerations:**
+- All admin views must work on mobile — Seb checks from the cockpit
+- Metrics as stacked cards, not grid
+- User list as scrollable card list
+
+### Offline Mode UX
+
+**Use case:** Sailor at anchor, no network. Writes journal entries. Syncs when WiFi available.
+
+**Offline-capable actions:**
+- Write journal entry (text + photos) → saved to IndexedDB
+- Browse cached voyage data (Service Worker cache)
+
+**Visual indicators:**
+
+**SyncIndicator component:**
+- Position: discreet badge on journal section
+- States:
+  - All synced: no badge visible (clean state)
+  - Pending: pill badge "2 entries pending" in mist color — not red, not alarming
+  - Syncing: subtle pulse animation on badge "Syncing..."
+  - Failed: amber badge "Sync failed · Retry" — tap to retry
+- Never blocks the UI or shows a modal
+- Appears on both creator voyage view and journal panel
+
+**Offline entry creation:**
+- User creates entry normally — UI is identical to online
+- Save completes in <200ms (local-first, IndexedDB)
+- Entry appears in journal timeline with subtle "pending" icon (cloud with arrow)
+- When network returns: sync happens silently, pending icon disappears
+- If photo upload fails (file too large): single notification "1 photo couldn't upload · Retry"
+
+**Network status:**
+- No persistent "You are offline" banner — too alarming for the use case
+- If user attempts an online-only action (GPX import, sign in): contextual message "This requires an internet connection"
+
+### i18n Language Switch UX
+
+**Location:** In-app settings page (alongside profile editing)
+
+**Component: LanguageSwitcher**
+- Dropdown select or radio group: English / Français
+- Persisted in user profile (database)
+- Effect: immediate (<500ms), no page reload
+- Initial detection: browser/OS locale suggests, user can override
+
+**Landing page:** Language selector in header (already present — flag + dropdown)
+
+**Content scope for v1.0:** All UI strings, labels, buttons, error messages, empty states. User-generated content (voyage names, journal entries) remains in original language.
+
+### Public Voyage Page — v1.0 Enhancements
+
+#### Dual CTA (FR-44)
+
+**Position:** Bottom of the page, below the stats bar area on desktop. On mobile: fixed bottom bar that appears after 10 seconds of viewing (not immediately — let the wow moment happen first).
+
+**Design:**
+- Left CTA: "Sail too? **Create your own voyage**" → links to app store or sign up
+- Right CTA: Share icon button → native OS share sheet (on mobile) or copy link (on desktop)
+- Translucent glass treatment matching stats bar
+- Dismissible (X button) — once dismissed, stays dismissed for session
+
+#### Geo-Tagged Photo Markers (FR-33, FR-34, FR-35)
+
+**PhotoMarker component:**
+- Appears on map at the location of the associated stopover or leg
+- Visual: small circular thumbnail (32px) with white 2px border and subtle shadow
+- Distinct from StopoverMarker (coral dot) — photo markers show actual image thumbnails
+- Clustering: when >15 markers visible at current zoom, cluster into a group marker showing count
+- Tap: opens PhotoLightbox
+
+**PhotoLightbox component:**
+- Full-viewport overlay
+- Navy/90 backdrop with backdrop-blur
+- Photo centered, max-size to fill viewport with padding
+- Controls: close (X top-right), swipe left/right for next/previous photo
+- Keyboard: Escape to close, arrow keys for navigation
+- Caption below: entry text excerpt, stopover name, date
+- Focus trap while open
+- z-index: 600 (above all other overlays)
+
+#### Dynamic OG Image (FR-43)
+
+**What visitors see when a link is shared:**
+- 1200x630px image showing the real voyage map with track visible
+- Voyage name overlaid in DM Serif Display
+- Stats strip at bottom: "1,689 nm · 45 ports · 7 countries"
+- Boat name in corner
+- Generated server-side, cached
+
+**Not a UX component per se, but affects the sharing experience. The OG preview IS the first impression for every shared link.**
+
+#### Trophy "Coming Soon" (FR-68)
+
+**Position:** Below the stats bar on public voyage pages (desktop: right column area, mobile: below map)
+
+**Design:**
+- Subtle card: "Bosco Trophy — Coming Soon"
+- Brief description: "A 3D-printed relief map of your voyage"
+- Illustration or render of a trophy concept
+- "Notify me" email input (optional — collects interest signal)
+- Muted styling — informational, not pushy. Sand background.
+
+### Dashboard Redesign
+
+#### Enhanced Voyage Cards (FR-49)
+
+**Current state:** Cover image + name + badge + stats. Functional but basic.
+
+**v1.0 enhancement:**
+- Add mini-map preview showing the track geometry (tiny MapCanvas, not interactive)
+- Show last import date: "Last track: 3 days ago"
+- Show journal count: "4 entries"
+- Quick actions on hover/long-press: "View", "Import track", "Settings"
+- Countries row with flag emojis
+
+#### Enhanced Empty State (FR-52)
+
+**For new users with no voyages:**
+- Animated mini-demo of a completed voyage (track drawing on a small map)
+- Headline: "Your first voyage awaits"
+- Steps: "1. Export from Navionics 2. Share to Bosco 3. Your voyage appears"
+- Primary CTA: "Create your first voyage"
+- Secondary: "See an example" → links to Seb's public voyage
+
+### Import Flow — iOS Updates
+
+**Current spec covers Android PWA share target. iOS additions:**
+
+**iOS Share Extension specifics:**
+- Share Extension is a separate Swift target — minimal UI
+- Shows: "Opening in Bosco..." with progress spinner
+- Passes GPX file to main app via App Group shared container
+- Main app opens and navigates to import preview with file pre-loaded
+- If multiple files shared: all passed, import preview shows all tracks
+
+**File preservation after auth redirect (FR-15):**
+- File stored in IndexedDB or App Group container before auth redirect
+- After magic link authentication: app detects pending import file
+- Automatically opens import preview with the preserved file
+- Toast: "We saved your file — let's import it"
+
+### Error Recovery UX (FR-55, FR-56)
+
+**Design principle:** Every error is an opportunity to help, not a dead end.
+
+**Error message anatomy:**
+1. **What happened** (clear, no jargon): "This file isn't a GPX format"
+2. **Why** (context): "Bosco works with GPX files exported from navigation apps"
+3. **What to do** (actionable): "Export from Navionics: Tracks → Select → Export → GPX format"
+
+**Specific error states:**
+
+| Error | Message | Recovery |
+|-------|---------|----------|
+| Wrong file format | "This file isn't GPX format" | Link to Navionics export guide (3 screenshots) |
+| File too large (>400MB) | "This file is too large (512 MB). Maximum is 400 MB" | "Try exporting fewer tracks from Navionics" |
+| Network error during upload | "Upload interrupted — no connection" | "Your import is saved. It will resume when you reconnect" |
+| Processing failure | "Something went wrong processing this file" | "Retry" button + "Contact us" link |
+| Magic link expired | "This link has expired" | "Resend magic link" button |
+| Username taken | "This username is already taken" | Inline suggestions |
+
+**Navionics GPX export guide (FR-56):**
+- Accessible from: error states, empty voyage state, landing page help section
+- Content: 3-4 annotated screenshots of Navionics export flow
+- Format: in-app drawer/modal, not external link
+
+### Deep Linking UX (FR-48)
+
+**Behavior:**
+- Tap `sailbosco.com/Seb/goteborg-to-nice` anywhere on the device
+- If app installed: opens directly in app → voyage page
+- If app not installed: opens in browser → web voyage page + smart banner "Open in Bosco app"
+
+**Smart app banner (web fallback):**
+- Position: top of public pages
+- Content: Bosco icon + "Open in the Bosco app" + "Open" button
+- Dismissible
+- Uses standard Apple Smart Banner meta tag + custom Android equivalent
+
+### Social Sharing UX (FR-46, FR-47)
+
+**Share flow on native app:**
+1. User taps share icon on voyage view or public page
+2. Native OS share sheet appears (via Capacitor `@capacitor/share`)
+3. Shares URL + text: "Check out my sailing voyage — [voyage name]"
+4. Recipient receives link with dynamic OG preview
+
+**Share flow on web:**
+1. User taps share button
+2. On mobile: Web Share API → native share sheet
+3. On desktop: copy link to clipboard + toast "Link copied"
+
+## v1.0 New Components
+
+### PhotoMarker
+
+**Purpose:** Display geo-tagged photos as map markers
+**Anatomy:** 32px circular thumbnail with white 2px border, subtle shadow
+**States:** Default (32px) | Hover (36px, shadow) | Cluster (count badge when >15 visible)
+**Accessibility:** Button role, aria-label: "Photo at Kiel — tap to view"
+
+### PhotoLightbox
+
+**Purpose:** Full-screen photo viewer
+**Anatomy:** Navy/90 backdrop + centered photo + close button + caption
+**Controls:** Close (X/Escape), next/previous (swipe/arrows)
+**Accessibility:** Dialog role, focus trap, Escape to close
+
+### SyncIndicator
+
+**Purpose:** Show offline sync status
+**Anatomy:** Pill badge on journal section
+**States:** Hidden (synced) | "N entries pending" (mist) | "Syncing..." (pulse) | "Sync failed · Retry" (amber)
+**Accessibility:** aria-live polite, announces state changes
+
+### LanguageSwitcher
+
+**Purpose:** Switch UI language
+**Anatomy:** Dropdown in settings: English / Français
+**Behavior:** Immediate effect (<500ms), persisted to profile
+**Accessibility:** Labeled select, announces language change
+
+### ShareButton
+
+**Purpose:** Share voyage link via native share or clipboard
+**Anatomy:** Share icon button (24px icon in 44px target)
+**Behavior:** Mobile: native share sheet | Desktop: copy to clipboard + toast
+**Accessibility:** Button role, aria-label: "Share this voyage"
+
+### DualCTA
+
+**Purpose:** Conversion bar on public pages
+**Anatomy:** Translucent bar with two actions (create + share) + dismiss
+**States:** Hidden (first 10s) | Visible (slide up) | Dismissed (session)
+**Accessibility:** Landmark role, each action labeled
+
+### TrophyPreview
+
+**Purpose:** "Coming Soon" teaser on public pages
+**Anatomy:** Sand card with description + optional "Notify me" input
+**States:** Default | Email submitted ("We'll notify you")
+**Accessibility:** Section role, form labeled
+
+### AdminMetricCard
+
+**Purpose:** Display a key metric in admin dashboard
+**Anatomy:** Large number + label + optional trend indicator
+**Variants:** Standard (number + label) | With sparkline | With progress bar (storage)
+**Accessibility:** aria-label: "Total users: 47, up 5 from last week"
+
+## v1.0 User Journey Additions
+
+### Journey 5: Admin Monitoring (UJ-5)
+
+```mermaid
+flowchart TD
+    A[Navigate to /admin] --> B{is_admin?}
+    B -->|No| C[Redirect to dashboard]
+    B -->|Yes| D[Admin dashboard — metrics cards]
+    D --> E{Action?}
+    E -->|Browse users| F[User list — searchable]
+    F --> G{Action on user?}
+    G -->|Disable| H[Confirmation dialog]
+    H -->|Confirm| I[User disabled — toast]
+    G -->|View detail| J[User stats]
+    E -->|Check errors| K[Error monitoring summary]
+    K --> L[Link to Sentry dashboard]
+    E -->|Check storage| M[Storage usage bar]
+    I --> E
+    J --> F
+```
+
+### Journey 6: Error Recovery (UJ-6)
+
+```mermaid
+flowchart TD
+    A[User imports file] --> B{File valid?}
+    B -->|Yes| C[Normal import flow]
+    B -->|No — wrong format| D["Error: This isn't GPX format"]
+    D --> E["Need help?" link]
+    E --> F[Navionics export guide — 3 screenshots]
+    F --> G[User exports correct GPX]
+    G --> C
+    B -->|No — too large| H["Error: File too large (512 MB)"]
+    H --> I["Try exporting fewer tracks"]
+    B -->|Network error| J["Upload interrupted"]
+    J --> K["Retry" button — file preserved locally]
+    K --> C
+```
+
+### Journey 7: iOS Share Extension Import
+
+```mermaid
+flowchart TD
+    A[Navionics → Share → Bosco] --> B[iOS Share Extension activates]
+    B --> C["Opening in Bosco..." indicator]
+    C --> D{Authenticated?}
+    D -->|Yes| E[Main app opens → import preview]
+    D -->|No| F[Main app opens → sign in screen]
+    F --> G[Magic link → authenticate]
+    G --> H[File preserved in App Group container]
+    H --> I["We saved your file — let's import it"]
+    I --> E
+    E --> J[Standard preview → confirm → voyage updated]
+```
+
+## v1.0 Mobile Observations (from live site review)
+
+**Tested at 500px viewport (Chrome minimum on macOS):**
+
+| Page | Observation | Status |
+|------|------------|--------|
+| Public voyage | Full-bleed map, FAB visible, stats bar compact 4-stat row | Good |
+| Public voyage | PortsPanel hidden, accessible via FAB | Good |
+| Public voyage | No share button or dual CTA visible | Gap — needs v1.0 work |
+| Dashboard | Bottom tab bar (Dashboard, Voyage, Profile) | Good |
+| Dashboard | Voyage card full-width, cover image + stats | Good |
+| Voyage view | Top bar truncates title ("Göteborg t...") | Minor — consider shorter display |
+| Voyage view | Import track button prominent | Good |
+| Voyage view | Stopovers/Legs/Journal buttons accessible | Good |
+| Settings | Form fields stack correctly | Good |
+| Profile public | Single column, left-aligned | Good but underuses desktop space |
+
+**Recommendation:** Mobile layouts are solid for core MVP features. v1.0 additions (dual CTA, photo markers, offline indicator, share button) need mobile-specific placement as specified in each component above.

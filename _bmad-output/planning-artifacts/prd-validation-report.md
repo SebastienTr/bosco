@@ -1,9 +1,14 @@
 ---
-validationTarget: '/Users/seb/workspace/bosco/_bmad-output/planning-artifacts/prd.md'
-validationDate: '2026-03-15'
+validationTarget: '_bmad-output/planning-artifacts/prd.md'
+validationDate: '2026-03-29'
 inputDocuments:
-  - '/Users/seb/workspace/bosco/_bmad-output/planning-artifacts/prd.md'
-  - '/Users/seb/workspace/bosco/PRD.md'
+  - '_bmad-output/planning-artifacts/prd.md'
+  - '_bmad-output/planning-artifacts/architecture.md'
+  - '_bmad-output/planning-artifacts/architecture-notes.md'
+  - '_bmad-output/planning-artifacts/ux-design-specification.md'
+  - '_bmad-output/planning-artifacts/epics.md'
+  - '_bmad-output/planning-artifacts/research/market-sailing-logbook-voyage-sharing-research-2026-03-18.md'
+  - '_bmad-output/brainstorming/brainstorming-session-2026-03-26-1400.md'
 validationStepsCompleted:
   - 'step-v-01-discovery'
   - 'step-v-02-format-detection'
@@ -18,38 +23,43 @@ validationStepsCompleted:
   - 'step-v-11-holistic-quality-validation'
   - 'step-v-12-completeness-validation'
 validationStatus: COMPLETE
-holisticQualityRating: '3/5 - Adequate'
-overallStatus: 'Critical'
+holisticQualityRating: '4/5 - Good'
+overallStatus: 'Warning'
 ---
 
 # PRD Validation Report
 
-**PRD Being Validated:** /Users/seb/workspace/bosco/_bmad-output/planning-artifacts/prd.md
-**Validation Date:** 2026-03-15
+**PRD Being Validated:** _bmad-output/planning-artifacts/prd.md
+**Validation Date:** 2026-03-29
 
 ## Input Documents
 
-- /Users/seb/workspace/bosco/_bmad-output/planning-artifacts/prd.md
-- /Users/seb/workspace/bosco/PRD.md
-
-## Validation Findings
-
-[Findings will be appended as validation progresses]
+- PRD: prd.md ✓
+- Architecture: architecture.md ✓
+- Architecture Notes: architecture-notes.md ✓
+- UX Design Specification: ux-design-specification.md ✓
+- Epics: epics.md ✓
+- Market Research: market-sailing-logbook-voyage-sharing-research-2026-03-18.md ✓
+- Brainstorming: brainstorming-session-2026-03-26-1400.md ✓
 
 ## Format Detection
 
-**PRD Structure:**
-- Executive Summary
-- Success Criteria
-- Product Scope
-- User Journeys
-- Functional Requirements
-- Non-Functional Requirements
+**PRD Structure (Level 2 Headers):**
+1. Executive Summary
+2. Project Classification
+3. Success Criteria
+4. Product Scope & Phased Development
+5. User Journeys
+6. Domain-Specific Requirements
+7. Innovation & Novel Patterns
+8. Web Application + Native Wrapper Requirements
+9. Functional Requirements
+10. Non-Functional Requirements
 
 **BMAD Core Sections Present:**
 - Executive Summary: Present
 - Success Criteria: Present
-- Product Scope: Present
+- Product Scope: Present (as "Product Scope & Phased Development")
 - User Journeys: Present
 - Functional Requirements: Present
 - Non-Functional Requirements: Present
@@ -71,8 +81,7 @@ overallStatus: 'Critical'
 
 **Severity Assessment:** Pass
 
-**Recommendation:**
-"PRD demonstrates good information density with minimal violations."
+**Recommendation:** PRD demonstrates excellent information density with zero violations. Writing is direct, concise, and every sentence carries weight.
 
 ## Product Brief Coverage
 
@@ -82,232 +91,247 @@ overallStatus: 'Critical'
 
 ### Functional Requirements
 
-**Total FRs Analyzed:** 46
+**Total FRs Analyzed:** 68
 
-**Format Violations:** 35
-- Line 165: `Session persists across browser sessions until explicit logout`
-- Line 172: `Profile page accessible at /{username} listing all public voyages`
-- Line 177: `Each voyage has: name, description, slug...`
-- Line 195: `Stopovers are auto-detected...`
-- Line 212: `Accessible at /{username}/{voyage-slug} when voyage is public`
+**Format Violations:** 20
+FRs not following "[Actor] can [capability]" pattern — use passive voice, system-as-actor, or state descriptions:
+- FR-2 (line 513): "Users remain signed in..." (state, not capability)
+- FR-3 (line 514): "Auth emails are sent..." (passive)
+- FR-15 (line 535): "Users...are redirected..." (passive)
+- FR-19 (line 539): "Imported tracks preserve..." (passive, no actor)
+- FR-22 (line 545): "The system auto-detects..." (system actor)
+- FR-23 (line 546): "The system assigns..." (system actor)
+- FR-28 (line 554): "Photos are compressed..." (passive)
+- FR-33 (line 562): "Photos...automatically appear..." (passive)
+- FR-43 (line 575): "Public pages generate..." (passive)
+- FR-44 (line 576): "Public pages display..." (passive)
+- FR-47 (line 585): "Shared links display..." (passive)
+- FR-48 (line 586): "Deep links...open in..." (passive)
+- FR-52 (line 593): "New users...see..." (passive)
+- FR-53 (line 597): "New users are guided..." (passive)
+- FR-54 (line 598): "The landing page communicates..." (passive)
+- FR-61 (line 614): "Bosco is available..." (state)
+- FR-62 (line 615): "Bosco is available..." (state)
+- FR-63 (line 616): "Core user flows...function identically..." (passive)
+- FR-64 (line 620): "The UI is available..." (state)
+- FR-68 (line 630): "Public voyage pages display..." (passive)
 
-**Subjective Adjectives Found:** 0
+*Note:* Many describe system behaviors or states rather than user capabilities. All remain clear and testable despite the format deviation. This is a stylistic choice rather than a quality defect.
+
+**Subjective Adjectives Found:** 2
+- FR-35 (line 564): "without visual clutter" — no metric for what constitutes clutter
+- FR-55 (line 602): "clear, contextual error messages" — "clear" is subjective
 
 **Vague Quantifiers Found:** 1
-- Line 180: `Users can have multiple voyages`
+- FR-28 (line 554): "web-friendly size" — no specific target (contrast NFR-17 which specifies "under 1 MB")
 
-**Implementation Leakage:** 5
-- Line 189: `Tracks are simplified client-side...`
-- Line 190: `Only simplified track data is uploaded and stored (no raw file storage)`
-- Line 196: `New stopovers are automatically named via reverse geocoding...`
-- Line 207: `Photos are compressed client-side before upload`
-- Line 220: `Deep linking via URL hash: #zoom/lat/lng`
+**Implementation Leakage:** 0
+Platform names (iOS, Android) and product names (Navionics, Sentry) are user-facing, not implementation details.
 
-**FR Violations Total:** 41
+**FR Violations Total:** 23 (20 format style + 3 substantive)
 
 ### Non-Functional Requirements
 
-**Total NFRs Analyzed:** 18
+**Total NFRs Analyzed:** 35
 
-**Missing Metrics:** 5
-- Line 240: `...without browser freeze`
-- Line 242: `...without visible lag`
-- Line 249: `CSP headers configured to prevent XSS`
-- Line 254: `Touch-friendly map interactions...`
-- Line 268: `architecture supports future unit toggle`
+**Missing Metrics:** 3
+- NFR-6 (line 641): "completes immediately" — no threshold (what is "immediately"? <100ms? <500ms?)
+- NFR-22 (line 666): "appropriate aria-labels" — "appropriate" is subjective
+- NFR-35 (line 688): "immediately without page reload" — "immediately" is vague
 
-**Incomplete Template:** 18
-- Line 239: metric provided, but no measurement method
-- Line 241: metric provided, but no measurement method
-- Line 248: threshold provided, but no measurement method
-- Line 260: binary expectation provided, but no measurement method
+**Incomplete Template:** 3 (missing measurement method)
+- NFR-20 (line 664): "keyboard accessible on desktop" — no measurement method specified
+- NFR-30 (line 680): "operational for sailbosco.com" — no measurement method
+- NFR-34 (line 687): "locale-aware" — no measurement method
 
 **Missing Context:** 0
 
-**NFR Violations Total:** 23
+**NFR Violations Total:** 6
+
+**Additional Observation — Implementation Details in NFRs:**
+10 NFRs reference specific technologies (RLS, Server Actions, Sentry, Supabase, httpOnly cookies, SSR, Intl.DateTimeFormat). While NFRs can legitimately reference tooling for measurement methods, some blur the line between requirement and implementation:
+- NFR-8: "enforced by RLS and Server Action checks"
+- NFR-11: "middleware and Server Action authorization checks"
+- NFR-28: "structured { data, error } responses"
+- NFR-33: "no inline string literals in components"
 
 ### Overall Assessment
 
-**Total Requirements:** 64
-**Total Violations:** 64
+**Total Requirements:** 103 (68 FRs + 35 NFRs)
+**Total Violations:** 29 (23 FR + 6 NFR)
+**Substantive Violations:** 9 (3 FR measurability + 6 NFR measurability)
 
-**Severity:** Critical
+**Severity:** Warning
 
-**Recommendation:**
-"Many requirements are not measurable or testable. Requirements must be revised to be testable for downstream work."
+**Recommendation:** The PRD's substantive measurability is strong — only 9 of 103 requirements have genuine measurability issues. The 20 FR format deviations are a stylistic pattern (system behaviors described as actions rather than user capabilities) that does not impair testability. Priority fixes: define thresholds for "immediately" (NFR-6, NFR-35), replace "visual clutter" with a metric (FR-35), specify "web-friendly size" target (FR-28), and add measurement methods to NFR-20, NFR-30, NFR-34.
 
 ## Traceability Validation
 
 ### Chain Validation
 
 **Executive Summary → Success Criteria:** Intact
+All 13 success criteria (SC-1–5, BS-1–4, TS-1–5) align with the Executive Summary vision. No misalignments.
 
-**Success Criteria → User Journeys:** Gaps Identified
-- `SC-5 Data integrity` has no explicit supporting user journey; it is an operational objective rather than a user flow.
+**Success Criteria → User Journeys:** Intact
+All 13 success criteria map to at least one user journey (UJ-1–7). 100% coverage.
 
-**User Journeys → Functional Requirements:** Intact
+**User Journeys → Functional Requirements:** Mostly Intact (1 minor gap)
+6 of 7 journeys are fully supported. UJ-3 (Visitor Becomes Amplifier) mentions re-share as critical ("The re-share button is as important as the sign-up CTA") but FR-44 covers dual CTAs without explicitly defining the re-share mechanism for unauthenticated visitors.
 
 **Scope → FR Alignment:** Intact
+All Must-Have (8/8) and Should-Have (7/7) items have corresponding FRs. 100% coverage.
 
 ### Orphan Elements
 
 **Orphan Functional Requirements:** 0
+All 68 FRs (FR-1 through FR-68) trace to at least one user journey or business objective.
 
-**Unsupported Success Criteria:** 1
-- `SC-5 Data integrity`
+**Unsupported Success Criteria:** 0
+All 13 success criteria have supporting user journeys.
 
 **User Journeys Without FRs:** 0
+All 7 journeys have supporting functional requirements.
 
-### Traceability Matrix
+### Traceability Summary
 
-| FR | Traceable Source |
-|---|---|
-| FR-1 Authentication | UJ-1 Onboarding |
-| FR-2 User Profile | UJ-1 Onboarding |
-| FR-3 Voyages | UJ-2 Create a Voyage; UJ-5 Share a Voyage |
-| FR-4 GPX Import & Track Processing | UJ-3 Import a GPX Track |
-| FR-5 Stopovers | UJ-3 Import a GPX Track |
-| FR-6 Log Entries | UJ-4 Write a Log Entry |
-| FR-7 Public Voyage Page | UJ-5 Share a Voyage; UJ-6 Browse as a Visitor |
-| FR-8 Public Profile Page | UJ-6 Browse as a Visitor |
-| FR-9 Dashboard | UJ-1 Onboarding; UJ-2 Create a Voyage |
+| Chain | Status |
+|-------|--------|
+| Executive Summary → Success Criteria | Intact |
+| Success Criteria → User Journeys | Intact |
+| User Journeys → FRs | 1 minor gap (UJ-3 re-share) |
+| Scope → FRs | Intact |
 
-**Total Traceability Issues:** 2
+**Total Traceability Issues:** 1
 
-**Severity:** Warning
+**Severity:** Pass
 
-**Recommendation:**
-"Traceability gaps identified - strengthen chains to ensure all requirements are justified."
+**Recommendation:** PRD demonstrates strong traceability with zero orphan requirements. One minor improvement: clarify FR-44 to explicitly define the re-share mechanism for visitors (e.g., "Visitors can re-share a voyage link via native share sheet without creating an account").
 
 ## Implementation Leakage Validation
 
 ### Leakage by Category
 
-**Frontend Frameworks:** 0 violations
+**Frontend/Backend Frameworks:** 3 violations
+- NFR-8 (line 646): "enforced by RLS and **Server Action** checks"
+- NFR-11 (line 649): "**middleware** and **Server Action** authorization checks"
+- NFR-28 (line 678): "All **Server Actions** return structured `{ data, error }` responses"
 
-**Backend Frameworks:** 0 violations
-
-**Databases:** 0 violations
+**Databases:** 2 violations
+- NFR-8 (line 646): "enforced by **RLS**" (Supabase Row Level Security)
+- NFR-31 (line 681): "**Supabase Pro** daily backups"
 
 **Cloud Platforms:** 0 violations
 
-**Infrastructure:** 0 violations
+**Infrastructure:** 2 violations
+- NFR-12 (line 650): "**httpOnly cookies** or **Capacitor** secure storage"
+- NFR-23 (line 670): "**(SSR)**" — Server-Side Rendering technique
 
 **Libraries:** 0 violations
 
-**Other Implementation Details:** 11 violations
-- Line 189: `simplified client-side`
-- Line 190: `no raw file storage`
-- Line 196: `via reverse geocoding`
-- Line 207: `compressed client-side`
-- Line 220: `via URL hash`
-- Line 246: `Row-level security enforced on all database tables`
-- Line 247: ``is_public = true``
-- Line 249: `CSP headers configured`
-- Line 256: `compressed client-side`
-- Line 260: `server-rendered with complete HTML on first response`
-- Line 268: `architecture supports future unit toggle`
+**Other Implementation Details:** 3 violations
+- FR-8 (line 522): "`is_admin` flag" — database column name (should be "Users designated as administrators")
+- FR-60 (line 610): "**Sentry** error digest" — specific monitoring tool
+- NFR-33 (line 686): "no **inline string literals in components**" — code-level implementation detail
+
+**Borderline (monitoring as measurement method):** 2 (not counted as violations)
+- NFR-27 (line 677): "measured via Sentry" — acceptable as measurement method
+- NFR-29 (line 679): "tracked in Sentry" — acceptable as measurement method
 
 ### Summary
 
-**Total Implementation Leakage Violations:** 11
+**Total Implementation Leakage Violations:** 10 (2 in FRs, 8 in NFRs)
 
 **Severity:** Critical
 
-**Recommendation:**
-"Extensive implementation leakage found. Requirements specify HOW instead of WHAT. Remove all implementation details - these belong in architecture, not PRD."
+**Recommendation:** The PRD references specific implementation patterns (Server Actions, RLS, Supabase, SSR, httpOnly cookies) in 10 requirements. These should specify WHAT, not HOW: "data access enforced at database and application layers" instead of "enforced by RLS and Server Action checks."
 
-**Note:** Capability-relevant terms such as GPX import and public URLs were not counted as leakage because they describe user-visible product behavior rather than stack choices.
+**Mitigating Context:** This is a brownfield PRD where the architecture is already defined and the tech stack is locked. The leakage is deliberate — referencing the actual implementation to ensure downstream consistency. In this context, the leakage is more of a coupling choice than a quality defect. For a greenfield PRD, this would require revision; for brownfield, it may be acceptable if the team accepts the coupling.
 
 ## Domain Compliance Validation
 
 **Domain:** maritime-recreation
-**Complexity:** Low (general/standard)
+**Complexity:** Low (consumer application, no regulated domain)
 **Assessment:** N/A - No special domain compliance requirements
 
-**Note:** This PRD is for a standard domain without regulatory compliance requirements.
+**Note:** Despite being a low-complexity domain, the PRD appropriately includes a "Domain-Specific Requirements" section covering RGPD/GDPR compliance, App Store compliance, and Location Data Handling. This proactive inclusion is commendable and exceeds baseline expectations for the domain.
 
 ## Project-Type Compliance Validation
 
-**Project Type:** web-application (mapped to `web_app`)
+**Project Type:** web-application + native-wrapper (hybrid web_app + mobile_app)
 
-### Required Sections
+### Required Sections (web_app)
 
-**Browser Matrix:** Missing
-- No explicit browser support matrix or supported browser/version policy was found.
+| Section | Status | Location |
+|---------|--------|----------|
+| Browser Matrix | Present | Lines 419-431 |
+| Responsive Design | Present | Lines 439-446 |
+| Performance Targets | Present | NFR-1 through NFR-7 |
+| SEO Strategy | Present | NFR-23 through NFR-26 |
+| Accessibility Level | Present | NFR-19 through NFR-22 |
 
-**Responsive Design:** Present
-- Covered by mobile-first positioning and `NFR-9`.
+### Required Sections (mobile_app)
 
-**Performance Targets:** Present
-- Covered by `NFR-1` to `NFR-4`.
-
-**SEO Strategy:** Present
-- Covered by SSR, Open Graph, and JSON-LD requirements.
-
-**Accessibility Level:** Missing
-- No explicit accessibility target such as WCAG level is documented.
+| Section | Status | Location |
+|---------|--------|----------|
+| Platform Requirements | Present | Lines 433-437, 456-470 |
+| Device Permissions | Incomplete | Native capabilities listed but required OS permissions (camera, file system, network, location) not explicitly documented |
+| Offline Mode | Present | Lines 472-491 |
+| Push Strategy | Present (deferred) | Line 469 — explicitly "Post-v1.0" |
+| Store Compliance | Present | Lines 372-377 |
 
 ### Excluded Sections (Should Not Be Present)
 
-**Native Features:** Absent ✓
-
-**CLI Commands:** Absent ✓
+| Section | Status |
+|---------|--------|
+| Desktop-specific features | Absent ✓ |
+| CLI commands | Absent ✓ |
 
 ### Compliance Summary
 
-**Required Sections:** 3/5 present
-**Excluded Sections Present:** 0 (should be 0)
-**Compliance Score:** 60%
+**Required Sections:** 9/10 present (1 incomplete)
+**Excluded Sections Present:** 0 (clean)
+**Compliance Score:** 95%
 
-**Severity:** Critical
+**Severity:** Pass
 
-**Recommendation:**
-"PRD is missing required sections for web_app. Add missing sections to properly specify this type of project."
+**Recommendation:** Add an explicit device permissions subsection to the Native Capabilities section listing required OS permissions (e.g., file system access for GPX import, photo library for journal entries, network for sync). This helps app store submission and privacy nutrition labels.
 
 ## SMART Requirements Validation
 
-**Total Functional Requirements:** 9
+**Total Functional Requirements:** 68
 
 ### Scoring Summary
 
-**All scores ≥ 3:** 66.7% (6/9)
-**All scores ≥ 4:** 66.7% (6/9)
-**Overall Average Score:** 4.3/5.0
+**All scores ≥ 3:** 98.5% (67/68)
+**All scores ≥ 4:** 42.6% (29/68)
+**Overall Average Score:** 4.62/5.0
 
-### Scoring Table
+### Flagged FRs (any score < 3)
 
-| FR # | Specific | Measurable | Attainable | Relevant | Traceable | Average | Flag |
-|------|----------|------------|------------|----------|-----------|--------|------|
-| FR-1 | 4 | 4 | 5 | 5 | 5 | 4.6 |  |
-| FR-2 | 4 | 4 | 5 | 5 | 5 | 4.6 |  |
-| FR-3 | 4 | 4 | 5 | 5 | 5 | 4.6 |  |
-| FR-4 | 4 | 2 | 4 | 5 | 5 | 4.0 | X |
-| FR-5 | 4 | 4 | 4 | 5 | 5 | 4.4 |  |
-| FR-6 | 4 | 4 | 5 | 5 | 5 | 4.6 |  |
-| FR-7 | 4 | 2 | 4 | 5 | 5 | 4.0 | X |
-| FR-8 | 4 | 4 | 5 | 5 | 5 | 4.6 |  |
-| FR-9 | 3 | 2 | 5 | 4 | 4 | 3.6 | X |
+| FR # | S | M | A | R | T | Avg | Issue |
+|------|---|---|---|---|---|-----|-------|
+| FR-59 | 5 | 5 | 5 | 3 | **2** | 4.0 | No moderation scenario in UJ; orphan at v1.0 scale (100 users) |
 
-**Legend:** 1=Poor, 3=Acceptable, 5=Excellent
-**Flag:** X = Score < 3 in one or more categories
+**FR-59 Improvement:** Either add UJ-8 (Admin Abuse Response) to justify, or defer to v1.1. User disable is unlikely to be needed with 100 sailors.
 
-### Improvement Suggestions
+### Borderline FRs (any score = 3)
 
-**Low-Scoring FRs:**
-
-**FR-4:** Split the requirement into capability statements and replace process/implementation wording such as `client-side`, `no raw file storage`, and `preserving sailing detail` with measurable acceptance criteria.
-
-**FR-7:** Convert the public voyage page feature list into explicit user-visible capabilities with measurable rendering and interaction expectations, leaving route animation and deep-linking mechanics to architecture/design artifacts.
-
-**FR-9:** Expand the dashboard requirement into explicit capabilities, such as creation, filtering, summary data, and profile-editing entry points, each with clear acceptance criteria.
+| FR # | S | M | A | R | T | Avg | Issue |
+|------|---|---|---|---|---|-----|-------|
+| FR-22 | 4 | 5 | 4 | 5 | 5 | 4.6 | "Configurable radius" — no default value specified |
+| FR-23 | 4 | 5 | 4 | 5 | 5 | 4.6 | Geocoding provider not named in FR; fallback missing |
+| FR-35 | 4 | 4 | 4 | 4 | 3 | 3.8 | "Visual clutter" subjective; no clustering threshold |
+| FR-37 | 4 | 4 | 5 | 5 | 5 | 4.6 | "Nautical chart context" — tile layer unspecified |
+| FR-43 | 4 | 5 | 4 | 5 | 5 | 4.6 | OG image generation approach and caching unspecified |
+| FR-53 | 4 | 5 | 5 | 5 | 5 | 4.8 | "Guided toward" — UX pattern unclear (modal? redirect?) |
+| FR-55 | 4 | 4 | 5 | 5 | 5 | 4.6 | "Clear, contextual" — no error message catalog |
+| FR-67 | 4 | 5 | 4 | 5 | 3 | 4.2 | Cascade scope not explicit; timeline missing from FR |
 
 ### Overall Assessment
 
-**Severity:** Critical
+**Severity:** Pass
 
-**Recommendation:**
-"Many FRs have quality issues. Revise flagged FRs using SMART framework to improve clarity and testability."
+**Recommendation:** FR quality is strong overall (4.62/5.0 average). Only 1 FR flagged (1.5%). The 8 borderline FRs would benefit from minor clarifications (default values, provider names, UX patterns) but are implementable as-is. Priority fix: resolve FR-59 status (defer or justify).
 
 ## Holistic Quality Assessment
 
@@ -316,151 +340,115 @@ overallStatus: 'Critical'
 **Assessment:** Good
 
 **Strengths:**
-- Clear product narrative from vision to journeys to requirements
-- Strong differentiation and target-user framing in the Executive Summary
-- Clean markdown structure that is easy to scan section by section
+- Compelling Executive Summary — "the map IS the story" framing is vivid and differentiating
+- User Journeys are exceptional — 5 named personas with narrative arcs, not just functional descriptions
+- Logical section flow: Vision → Success → Scope → Journeys → Requirements
+- MoSCoW prioritization is clear and well-reasoned
+- Risk mitigation table is practical with concrete strategies
+- The "What Makes This Special" section crystallizes the product vision
 
 **Areas for Improvement:**
-- Functional requirements often read as UI/state descriptions instead of contractual capabilities
-- Non-functional requirements are grouped well but frequently lack measurement methods
-- The document still contains architecture-level decisions that weaken the PRD boundary
+- The "Web Application + Native Wrapper Requirements" section mixes implementation details with requirements (Capacitor plugin names, build commands) — consider splitting into "Native Platform Requirements" (what) and moving implementation details to architecture
+- Some overlap between Journey "Requirements revealed" paragraphs and the FR section — could be tightened
 
 ### Dual Audience Effectiveness
 
 **For Humans:**
-- Executive-friendly: Strong
-- Developer clarity: Moderate
-- Designer clarity: Strong
-- Stakeholder decision-making: Strong
+- Executive-friendly: Excellent — any stakeholder can understand vision, scope, and success criteria in 5 minutes
+- Developer clarity: Good — FRs are clear enough to implement; minor detail gaps flagged in SMART analysis
+- Designer clarity: Good — User Journeys provide rich UX context with emotional beats
+- Stakeholder decision-making: Excellent — MoSCoW, timeline, risk, and cost are all explicit
 
 **For LLMs:**
-- Machine-readable structure: Strong
-- UX readiness: Strong
-- Architecture readiness: Moderate
-- Epic/Story readiness: Moderate
+- Machine-readable structure: Excellent — consistent ## headers, numbered FRs/NFRs, markdown tables, clear section boundaries
+- UX readiness: Excellent — journeys + personas + FR set provide complete UX input
+- Architecture readiness: Good — NFRs + platform matrix + native capabilities provide clear constraints; some overcoupling to specific tools
+- Epic/Story readiness: Excellent — FRs are granular, numbered, and journey-mapped
 
-**Dual Audience Score:** 3/5
+**Dual Audience Score:** 4/5
 
 ### BMAD PRD Principles Compliance
 
 | Principle | Status | Notes |
 |-----------|--------|-------|
-| Information Density | Met | The PRD is concise and avoids filler. |
-| Measurability | Not Met | Multiple FRs/NFRs are not expressed as measurable contracts. |
-| Traceability | Partial | FR mapping is mostly intact, but `SC-5` is not explicitly supported by a journey. |
-| Domain Awareness | Met | Domain classification is present and no special regulated-domain sections are required. |
-| Zero Anti-Patterns | Met | No significant filler or wordy prose was found. |
-| Dual Audience | Partial | The document is readable, but downstream AI handoff is weakened by leakage and missing web-app sections. |
-| Markdown Format | Met | The document follows clean BMAD-friendly markdown structure. |
+| Information Density | Met | Zero filler violations; every sentence carries weight |
+| Measurability | Partial | 9 substantive violations (subjective terms, vague metrics) |
+| Traceability | Met | Zero orphan FRs; all chains intact |
+| Domain Awareness | Met | RGPD, App Store, location data proactively covered |
+| Zero Anti-Patterns | Met | No conversational filler, no wordy/redundant phrases |
+| Dual Audience | Met | Works for executives, developers, designers, and LLMs |
+| Markdown Format | Met | Clean structure, proper headers, consistent tables |
 
-**Principles Met:** 4/7
+**Principles Met:** 6/7 (1 partial)
 
 ### Overall Quality Rating
 
-**Rating:** 3/5 - Adequate
+**Rating:** 4/5 - Good
 
-**Scale:**
-- 5/5 - Excellent: Exemplary, ready for production use
-- 4/5 - Good: Strong with minor improvements needed
-- 3/5 - Adequate: Acceptable but needs refinement
-- 2/5 - Needs Work: Significant gaps or issues
-- 1/5 - Problematic: Major flaws, needs substantial revision
+A strong, well-constructed PRD that clearly communicates vision, defines success measurably, tells compelling user stories, and provides granular requirements. The brownfield context adds deliberate implementation coupling that would be a concern in greenfield. Minor refinements would elevate this to Excellent.
 
 ### Top 3 Improvements
 
-1. **Rewrite FR-4, FR-7, and FR-9 as measurable capability contracts**
-   These three areas currently drive most of the SMART and measurability issues.
+1. **Decouple NFRs from specific technology**
+   10 NFRs reference implementation details (RLS, Server Actions, Sentry, Supabase, httpOnly cookies, SSR). Replace with capability descriptions: "data access enforced at database and application layers" instead of "enforced by RLS and Server Action checks." Move tool-specific references to architecture document.
 
-2. **Add the missing web-app framing sections**
-   Explicit browser support expectations and an accessibility target such as WCAG level are required for a solid web-app PRD.
+2. **Standardize FR format to "[Actor] can [capability]"**
+   20 FRs use passive voice or system-as-actor format. Rewrite for consistency: "Public pages generate OG images" → "Visitors who share a voyage link see a dynamic preview image." This improves testability and downstream story generation.
 
-3. **Remove remaining implementation decisions from PRD and close the SC-5 traceability gap**
-   Move residual HOW details to architecture notes and add explicit support for data-integrity objectives.
+3. **Replace subjective terms with measurable thresholds**
+   Define: "immediately" → "<200ms" (NFR-6, NFR-35), "visual clutter" → "max 15 markers visible per viewport" (FR-35), "web-friendly size" → "under 1 MB" (FR-28, align with NFR-17), "clear error messages" → "user understands recovery action within 5 seconds" (FR-55).
 
 ### Summary
 
-**This PRD is:** a solid, readable planning document with a clear product story, but not yet a fully rigorous BMAD requirement contract.
+**This PRD is:** A well-crafted, dense product specification that successfully serves both human stakeholders and LLM consumers, with strong traceability and compelling user narratives — needing only minor refinements to reach exemplary quality.
 
-**To make it great:** Focus on the top 3 improvements above.
+**To make it great:** Focus on the top 3 improvements above — all are mechanical edits, not structural changes.
 
 ## Completeness Validation
 
 ### Template Completeness
 
 **Template Variables Found:** 0
-No template variables remaining ✓
+No template variables remaining ✓ (URL route patterns like `/{username}` are intentional)
 
 ### Content Completeness by Section
 
-**Executive Summary:** Complete
-
-**Success Criteria:** Complete
-
-**Product Scope:** Incomplete
-- The phased scope is present, but explicit out-of-scope boundaries are not stated.
-
-**User Journeys:** Complete
-
-**Functional Requirements:** Complete
-
-**Non-Functional Requirements:** Incomplete
-- The section is present, but several NFRs lack specific measurement methods.
+| Section | Status |
+|---------|--------|
+| Executive Summary | Complete ✓ |
+| Project Classification | Complete ✓ |
+| Success Criteria | Complete ✓ |
+| Product Scope & Phased Development | Complete ✓ |
+| User Journeys | Complete ✓ |
+| Domain-Specific Requirements | Complete ✓ |
+| Innovation & Novel Patterns | Complete ✓ |
+| Web Application + Native Wrapper Requirements | Complete ✓ |
+| Functional Requirements | Complete ✓ |
+| Non-Functional Requirements | Complete ✓ |
 
 ### Section-Specific Completeness
 
-**Success Criteria Measurability:** All measurable
-
-**User Journeys Coverage:** Yes - covers creator and visitor flows
-
-**FRs Cover MVP Scope:** Yes
-
-**NFRs Have Specific Criteria:** Some
-- `NFR-2`, `NFR-4`, `NFR-5`, `NFR-8`, `NFR-10`, `NFR-13`, `NFR-15`, and `NFR-18` lack sufficient specificity or measurement method.
+**Success Criteria Measurability:** All measurable — each criterion has metric, target, and measurement method
+**User Journeys Coverage:** Yes — 5 personas, 7 journeys covering primary user, visitors, admin, error recovery, returning user
+**FRs Cover MVP Scope:** Yes — all Must-Have (8/8) and Should-Have (7/7) scope items have corresponding FRs
+**NFRs Have Specific Criteria:** Most — 29/35 have specific measurable criteria; 6 have minor vagueness (flagged in Measurability Validation)
 
 ### Frontmatter Completeness
 
-**stepsCompleted:** Present
-**classification:** Present
-**inputDocuments:** Present
-**date:** Present
+**stepsCompleted:** Present ✓ (12 steps)
+**classification:** Present ✓ (projectType, domain, complexity, projectContext)
+**inputDocuments:** Present ✓ (7 documents)
+**date:** Present ✓ (2026-03-29)
 
 **Frontmatter Completeness:** 4/4
 
 ### Completeness Summary
 
-**Overall Completeness:** 66.7% (4/6)
+**Overall Completeness:** 100% (10/10 sections complete)
 
 **Critical Gaps:** 0
-**Minor Gaps:** 2
-- Product Scope lacks explicit out-of-scope boundaries
-- Non-Functional Requirements are present but not fully specific
+**Minor Gaps:** 0
 
-**Severity:** Warning
+**Severity:** Pass
 
-**Recommendation:**
-"PRD has minor completeness gaps. Address minor gaps for complete documentation."
-
-## Post-Validation Simple Fixes Applied
-
-**Date:** 2026-03-15
-
-### Changes Applied to the PRD
-
-- Added an explicit `Out of Scope` subsection under Product Scope.
-- Added `## Browser Matrix` with supported browser expectations for MVP.
-- Added `## Accessibility Level` with WCAG 2.1 AA target and core accessibility expectations.
-- Added `UJ-7: Resume an Existing Voyage` to support the data-integrity objective.
-- Rephrased multiple FRs to focus on user-visible outcomes instead of implementation details.
-- Rephrased multiple NFRs to include clearer verification language and measurement methods.
-
-### Spot-Check Results After Fixes
-
-- Previously flagged implementation phrases such as `client-side`, `reverse geocoding`, `URL hash`, `Row-level security`, `is_public = true`, `CSP headers`, `server-rendered`, and `architecture supports` are no longer present in the current PRD.
-- The previously missing web-app sections (`Browser Matrix` and `Accessibility Level`) are now present.
-- Product Scope now includes explicit out-of-scope boundaries.
-- `SC-5 Data integrity` now has explicit support from `UJ-7`.
-
-### Remaining Note
-
-- The validation findings above reflect the original full validation pass.
-- A full re-run was not performed after these simple fixes, so remaining measurability and SMART issues should be confirmed with a fresh validation pass if you want an updated score.
+**Recommendation:** PRD is complete with all required sections and content present. No template variables remain. Frontmatter is fully populated.

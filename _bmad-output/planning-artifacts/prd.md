@@ -510,8 +510,8 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 ### Authentication & Identity
 
 - **FR-1:** Users can sign up and sign in via email magic link
-- **FR-2:** Users remain signed in across browser restarts and app relaunches until explicit logout or session expiry
-- **FR-3:** Auth emails are sent from a branded domain sender (sailbosco.com)
+- **FR-2:** Users can remain signed in across browser restarts and app relaunches until explicit logout or session expiry
+- **FR-3:** Users can receive auth emails from a branded domain sender (sailbosco.com)
 - **FR-4:** Users can sign in on web, iOS app, and Android app with the same account
 
 ### Sailor Profile
@@ -519,7 +519,7 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 - **FR-5:** Users can set a unique username (used in public URLs)
 - **FR-6:** Users can optionally add: boat name, boat type, bio, profile photo, boat photo
 - **FR-7:** Users can set their preferred language (English or French)
-- **FR-8:** Users with `is_admin` flag can access the admin zone
+- **FR-8:** Users with administrator privileges can access the admin zone
 
 ### Voyage Management
 
@@ -532,18 +532,18 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 
 - **FR-13:** Users can import GPX 1.1 files up to 400 MB via file picker on all platforms
 - **FR-14:** Users can import GPX files directly from Navionics via the OS share sheet on both iOS and Android
-- **FR-15:** Users who share a GPX file to Bosco without being authenticated are redirected to sign in, then returned to the import flow with the file preserved
+- **FR-15:** Users can share a GPX file to Bosco without being authenticated and be redirected to sign in, then returned to the import flow with the file preserved
 - **FR-16:** Users can preview track geometry, point count, distance, and duration before confirming import
 - **FR-17:** Users can select which tracks to import from a multi-track file
 - **FR-18:** Users can import selected tracks as separate legs or as a merged leg
-- **FR-19:** Imported tracks preserve visible tacks and course changes at zoom level 14 after simplification
+- **FR-19:** Users can view imported tracks that preserve visible tacks and course changes at zoom level 14 after simplification
 - **FR-20:** Users can view per-leg stats: distance (nm), duration, average speed (kts), max speed, timestamps
 - **FR-21:** Users can delete individual legs from a voyage
 
 ### Stopovers
 
-- **FR-22:** The system auto-detects stopovers from leg endpoints within a configurable radius
-- **FR-23:** The system assigns human-readable place names and country codes to stopovers via reverse geocoding
+- **FR-22:** Users can have stopovers auto-detected from leg endpoints within a configurable radius
+- **FR-23:** Users can see human-readable place names and country codes automatically assigned to stopovers via reverse geocoding
 - **FR-24:** Users can rename, reposition, delete, and merge stopovers
 - **FR-25:** Users can browse stopovers grouped by country
 
@@ -551,7 +551,7 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 
 - **FR-26:** Users can create journal entries with free-form text and photo attachments
 - **FR-27:** Users can link journal entries to a specific date, and optionally to a leg and/or stopover
-- **FR-28:** Photos are compressed to web-friendly size before storage
+- **FR-28:** Users can upload photos that are automatically compressed to under 1 MB before storage
 - **FR-29:** Users can view journal entries as a timeline on the voyage page
 - **FR-30:** Users can create and save journal entries while offline, with automatic sync on reconnect
 - **FR-31:** Users can queue photo attachments while offline, with automatic upload on reconnect
@@ -559,9 +559,9 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 
 ### Geo-Tagged Media on Map
 
-- **FR-33:** Photos attached to journal entries that are linked to a stopover or leg automatically appear as visual markers on the map at the associated location
+- **FR-33:** Users and visitors can see photos attached to journal entries as visual markers on the map at the associated stopover or leg location
 - **FR-34:** Users and visitors can tap photo markers to view photos in a lightbox
-- **FR-35:** Visitors can browse photos on the map without visual clutter regardless of zoom level
+- **FR-35:** Visitors can browse photos on the map with marker clustering when more than 15 markers are visible at the current zoom level
 
 ### Public Voyage Page
 
@@ -572,8 +572,8 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 - **FR-40:** Visitors can view a stats bar (distance, days, ports, countries)
 - **FR-41:** Visitors can browse stopovers by country via the ports panel
 - **FR-42:** Visitors can read journal entries in a timeline
-- **FR-43:** Public pages generate a dynamic OG image showing the real voyage map and route
-- **FR-44:** Public pages display a CTA for sailors ("Create your own voyage on Bosco") and a share button for visitors
+- **FR-43:** Visitors who share a voyage link can see a dynamic OG image showing the real voyage map and route
+- **FR-44:** Visitors can see a CTA for sailors ("Create your own voyage on Bosco") and use a share button to re-share the voyage
 
 ### Public Profile Page
 
@@ -582,24 +582,24 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 ### Social Sharing
 
 - **FR-46:** Users can share a voyage link via the native OS share sheet (iOS and Android)
-- **FR-47:** Shared links display a rich preview (dynamic OG image + title + stats) on WhatsApp, Facebook, Instagram, Messenger, and other platforms
-- **FR-48:** Deep links from `sailbosco.com` open in the native app when installed, or fall back to the web browser
+- **FR-47:** Users can share links that display a rich preview (dynamic OG image + title + stats) on WhatsApp, Facebook, Instagram, Messenger, and other platforms
+- **FR-48:** Users can tap links from `sailbosco.com` that open in the native app when installed, or fall back to the web browser
 
 ### Dashboard
 
 - **FR-49:** Users can view all their voyages with preview cards and stats summary
 - **FR-50:** Users can create a new voyage from the dashboard
 - **FR-51:** Users can navigate to profile editing from the dashboard
-- **FR-52:** New users with no voyages see a demonstration of a completed voyage with a CTA to create their first
+- **FR-52:** Users with no voyages can see a demonstration of a completed voyage with a CTA to create their first
 
 ### Onboarding
 
-- **FR-53:** New users are guided toward creating their first voyage immediately after completing profile setup
-- **FR-54:** The landing page communicates what Bosco does, shows a demo voyage, and links to app stores and sign up
+- **FR-53:** Users can be directed to create their first voyage immediately after completing profile setup
+- **FR-54:** Visitors can understand what Bosco does from the landing page, view a demo voyage, and access app store links and sign up
 
 ### Error Handling & Help
 
-- **FR-55:** Users receive clear, contextual error messages when an operation fails
+- **FR-55:** Users receive actionable error messages when an operation fails, stating what went wrong and how to recover
 - **FR-56:** Users who attempt to import an unsupported file format see an explanation and a guide for exporting GPX from Navionics
 
 ### Admin Zone
@@ -607,17 +607,17 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 - **FR-57:** Admins can view total users, active voyages, total legs, and new registrations
 - **FR-58:** Admins can browse a user list with per-user stats
 - **FR-59:** Admins can disable a user account
-- **FR-60:** Admins can view Sentry error digest and storage usage metrics
+- **FR-60:** Admins can view error monitoring digest and storage usage metrics
 
 ### App Store Distribution
 
-- **FR-61:** Bosco is available for download on the Apple App Store
-- **FR-62:** Bosco is available for download on the Google Play Store
-- **FR-63:** Core user flows (sign up, import GPX, view map, add journal, share) function identically on web, iOS, and Android
+- **FR-61:** Users can download Bosco from the Apple App Store
+- **FR-62:** Users can download Bosco from the Google Play Store
+- **FR-63:** Users can complete core flows (sign up, import GPX, view map, add journal, share) identically on web, iOS, and Android
 
 ### Internationalization
 
-- **FR-64:** The UI is available in English and French
+- **FR-64:** Users can use the UI in English and French
 - **FR-65:** Users can switch language from in-app settings
 
 ### Legal & Compliance
@@ -627,7 +627,7 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 
 ### Trophy (Preview)
 
-- **FR-68:** Public voyage pages display a "Coming Soon" section for the Bosco Trophy physical product
+- **FR-68:** Visitors can see a "Coming Soon" section for the Bosco Trophy physical product on public voyage pages
 
 ## Non-Functional Requirements
 
@@ -638,16 +638,16 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 - **NFR-3:** Map interactions maintain 60 fps on mid-range mobile devices (2022+)
 - **NFR-4:** Map renders simplified tracks with up to 100,000 points with interaction latency below 100 ms
 - **NFR-5:** Native app cold start reaches interactive state within 3 seconds on mid-range devices
-- **NFR-6:** Offline journal entry save completes immediately (local-first, no network dependency)
+- **NFR-6:** Offline journal entry save completes in under 200 ms (local-first, no network dependency)
 - **NFR-7:** Offline-to-online sync completes automatically within 30 seconds of network restoration
 
 ### Security
 
-- **NFR-8:** Authenticated users can read and modify only their own private data, enforced by RLS and Server Action checks
+- **NFR-8:** Authenticated users can read and modify only their own private data, enforced at both database and application layers
 - **NFR-9:** Unauthenticated visitors can access only voyages explicitly marked public
 - **NFR-10:** Image and file uploads are validated by type and size (max 10 MB per image, GPX up to 400 MB) before processing
-- **NFR-11:** Admin routes are protected by both middleware and Server Action authorization checks against `is_admin` flag
-- **NFR-12:** All data transmitted over HTTPS. Auth tokens stored securely (httpOnly cookies or Capacitor secure storage)
+- **NFR-11:** Admin routes are protected by both request-level and application-level authorization checks against administrator privileges
+- **NFR-12:** All data transmitted over HTTPS. Auth tokens stored securely using platform-appropriate secure storage
 - **NFR-13:** User account deletion cascades to all associated data (voyages, legs, stopovers, entries, photos, storage files) within 30 days per RGPD
 
 ### Mobile & Cross-Platform
@@ -667,7 +667,7 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 
 ### SEO & Social
 
-- **NFR-23:** Public voyage pages return complete, indexable HTML in the first response (SSR)
+- **NFR-23:** Public voyage pages return complete, indexable HTML in the first response via server-side rendering
 - **NFR-24:** Dynamic Open Graph images are generated per voyage showing the real map and route (1200x630px)
 - **NFR-25:** JSON-LD structured data is present and valid on all public voyage and profile pages
 - **NFR-26:** Shared links produce rich previews on WhatsApp, Facebook, Instagram, Messenger, and Twitter/X
@@ -675,14 +675,14 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 ### Reliability & Observability
 
 - **NFR-27:** Zero unhandled exceptions on the critical path (sign up → import → share) in production, measured via Sentry
-- **NFR-28:** All Server Actions return structured `{ data, error }` responses — no unhandled throws
-- **NFR-29:** Production errors are tracked in Sentry with context (action name, user id, input summary)
+- **NFR-28:** All server-side operations return structured success/error responses — no unhandled exceptions propagated to clients
+- **NFR-29:** Production errors are tracked in an error monitoring service with context (operation name, user id, input summary)
 - **NFR-30:** Uptime monitoring with alerting is operational for `sailbosco.com`
-- **NFR-31:** Supabase Pro daily backups are enabled and verified
+- **NFR-31:** Database daily backups are enabled and verified on the production tier
 - **NFR-32:** Offline sync failures are surfaced to the user with a retry mechanism — no silent data loss
 
 ### Internationalization
 
-- **NFR-33:** All user-facing strings are externalized (no inline string literals in components)
+- **NFR-33:** All user-facing strings are externalized in dedicated message files, not inlined in UI code
 - **NFR-34:** Date, time, and number formatting is locale-aware
-- **NFR-35:** Language switch takes effect immediately without page reload or re-authentication
+- **NFR-35:** Language switch takes effect in under 500 ms without page reload or re-authentication
