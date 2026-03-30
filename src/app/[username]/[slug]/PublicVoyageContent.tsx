@@ -12,6 +12,7 @@ import { JournalTimeline } from "@/components/log/JournalTimeline";
 import { PhotoLightbox } from "@/components/log/PhotoLightbox";
 import type { LogEntry } from "@/lib/data/log-entries";
 import type { Json } from "@/types/supabase";
+import { buildPhotoMarkers } from "@/components/map/photo-markers-utils";
 import {
   getLastKnownVoyagePosition,
   toVoyageRouteTracks,
@@ -33,6 +34,12 @@ const BoatMarker = dynamic(
 const StopoverMarker = dynamic(
   () =>
     import("@/components/map/StopoverMarker").then((m) => m.StopoverMarker),
+  { ssr: false },
+);
+
+const PhotoMarker = dynamic(
+  () =>
+    import("@/components/map/PhotoMarker").then((m) => m.PhotoMarker),
   { ssr: false },
 );
 
@@ -108,6 +115,11 @@ export default function PublicVoyageContent({
 
     return parseMapHash(window.location.hash);
   }, []);
+
+  const photoMarkers = useMemo(
+    () => buildPhotoMarkers(logEntries, stopovers, legs),
+    [logEntries, stopovers, legs],
+  );
 
   const routeTracks = useMemo(() => toVoyageRouteTracks(legs), [legs]);
 
@@ -276,6 +288,17 @@ export default function PublicVoyageContent({
               country={stopover.country}
               readOnly
               onSelect={() => handleSelectStopover(stopover)}
+            />
+          ))}
+
+          {/* Photo markers */}
+          {photoMarkers.map((m, i) => (
+            <PhotoMarker
+              key={`${m.entryId}-${i}`}
+              position={m.position}
+              photoUrl={m.photoUrl}
+              label={m.label}
+              onTap={handlePhotoTap}
             />
           ))}
 

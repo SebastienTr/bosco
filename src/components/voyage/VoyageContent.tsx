@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { Leg } from "@/lib/data/legs";
 import type { Stopover } from "@/lib/data/stopovers";
@@ -18,6 +18,13 @@ const StopoverMarkers = dynamic(
     import("@/components/map/StopoverMarkers").then((m) => m.StopoverMarkers),
   { ssr: false },
 );
+
+const PhotoMarker = dynamic(
+  () =>
+    import("@/components/map/PhotoMarker").then((m) => m.PhotoMarker),
+  { ssr: false },
+);
+import { buildPhotoMarkers } from "@/components/map/photo-markers-utils";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LegList } from "@/components/voyage/LegList";
 import { JournalSection } from "@/components/log/JournalSection";
@@ -63,6 +70,11 @@ export function VoyageContent({
       }
     });
   }, [stopovers, voyageId]);
+
+  const photoMarkers = useMemo(
+    () => buildPhotoMarkers(initialLogEntries, stopovers, legs),
+    [initialLogEntries, stopovers, legs],
+  );
 
   const tracks: GeoJSON.LineString[] = legs.map(
     (leg) => leg.track_geojson as unknown as GeoJSON.LineString,
@@ -131,6 +143,15 @@ export function VoyageContent({
         {stopovers.length > 0 && (
           <StopoverMarkers stopovers={stopovers} voyageId={voyageId} />
         )}
+        {photoMarkers.map((m, i) => (
+          <PhotoMarker
+            key={`${m.entryId}-${i}`}
+            position={m.position}
+            photoUrl={m.photoUrl}
+            label={m.label}
+            onTap={handlePhotoTap}
+          />
+        ))}
       </MapLoader>
 
       {/* Stopover list panel */}
