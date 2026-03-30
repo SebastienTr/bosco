@@ -2,8 +2,9 @@
 
 import { Marker } from "react-leaflet";
 import L from "leaflet";
-import type { LatLngExpression } from "leaflet";
-import { useMemo } from "react";
+import type { LatLngExpression, Marker as LeafletMarker } from "leaflet";
+import { useEffect, useMemo, useRef } from "react";
+import { applyPhotoMarkerAccessibility } from "./photoMarkerAccessibility";
 
 interface PhotoMarkerProps {
   /** [longitude, latitude] GeoJSON order */
@@ -24,6 +25,8 @@ export function PhotoMarker({
   label,
   onTap,
 }: PhotoMarkerProps) {
+  const markerRef = useRef<LeafletMarker | null>(null);
+
   // Convert GeoJSON [lng, lat] → Leaflet [lat, lng]
   const leafletPosition: LatLngExpression = [position[1], position[0]];
 
@@ -34,9 +37,6 @@ export function PhotoMarker({
         iconSize: [MARKER_SIZE, MARKER_SIZE],
         iconAnchor: [MARKER_SIZE / 2, MARKER_SIZE / 2],
         html: `<div
-          role="button"
-          aria-label="Photo at ${label.replace(/"/g, "&quot;")} — tap to view"
-          tabindex="0"
           style="
             width: ${MARKER_SIZE}px;
             height: ${MARKER_SIZE}px;
@@ -57,20 +57,43 @@ export function PhotoMarker({
           />
         </div>`,
       }),
-    [photoUrl, label],
+    [photoUrl],
   );
+
+  useEffect(() => {
+    const marker = markerRef.current;
+    if (!marker) return;
+
+    let cleanup: (() => void) | undefined;
+
+    const syncAccessibility = () => {
+      const element = marker.getElement();
+      if (!element) return;
+
+      cleanup?.();
+      cleanup = applyPhotoMarkerAccessibility({
+        element,
+        label,
+        onActivate: () => onTap?.(photoUrl),
+      });
+    };
+
+    syncAccessibility();
+    marker.on("add", syncAccessibility);
+
+    return () => {
+      marker.off("add", syncAccessibility);
+      cleanup?.();
+    };
+  }, [label, onTap, photoUrl]);
 
   return (
     <Marker
+      ref={markerRef}
       position={leafletPosition}
       icon={icon}
       eventHandlers={{
         click: () => onTap?.(photoUrl),
-        keypress: (e) => {
-          if (e.originalEvent.key === "Enter") {
-            onTap?.(photoUrl);
-          }
-        },
       }}
       bubblingMouseEvents={false}
     />

@@ -94,7 +94,40 @@ describe("buildPhotoMarkers", () => {
     expect(result[0]).toEqual({
       photoUrl: "https://example.com/photo2.jpg",
       position: [9.5, 41.5], // midpoint of 3-coord linestring
-      label: "Leg",
+      label: "Leg 1",
+      entryId: "entry-1",
+    });
+  });
+
+  it("uses the leg order to produce distinct leg labels", () => {
+    const entries = [
+      makeEntry({
+        photo_urls: ["https://example.com/photo2.jpg"],
+        leg_id: "leg-2",
+      }),
+    ];
+    const legs = [
+      makeLeg(),
+      makeLeg({
+        id: "leg-2",
+        track_geojson: {
+          type: "LineString",
+          coordinates: [
+            [10.0, 42.0],
+            [10.5, 42.5],
+            [11.0, 43.0],
+          ],
+        },
+      }),
+    ];
+
+    const result = buildPhotoMarkers(entries, [], legs);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toEqual({
+      photoUrl: "https://example.com/photo2.jpg",
+      position: [10.5, 42.5],
+      label: "Leg 2",
       entryId: "entry-1",
     });
   });

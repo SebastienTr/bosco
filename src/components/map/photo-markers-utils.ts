@@ -43,7 +43,9 @@ export function buildPhotoMarkers(
   legs: PhotoMarkerLeg[],
 ): PhotoMarkerData[] {
   const stopoverMap = new Map(stopovers.map((s) => [s.id, s]));
-  const legMap = new Map(legs.map((l) => [l.id, l]));
+  const legMap = new Map(
+    legs.map((leg, index) => [leg.id, { leg, label: `Leg ${index + 1}` }]),
+  );
   const markers: PhotoMarkerData[] = [];
 
   for (const entry of logEntries) {
@@ -74,7 +76,7 @@ function parsePhotoUrls(raw: unknown): string[] {
 function resolvePosition(
   entry: PhotoMarkerEntry,
   stopoverMap: Map<string, PhotoMarkerStopover>,
-  legMap: Map<string, PhotoMarkerLeg>,
+  legMap: Map<string, { leg: PhotoMarkerLeg; label: string }>,
 ): { position: [number, number]; label: string } | null {
   // Priority 1: stopover
   if (entry.stopover_id) {
@@ -91,11 +93,11 @@ function resolvePosition(
   if (entry.leg_id) {
     const leg = legMap.get(entry.leg_id);
     if (leg) {
-      const midpoint = getLegMidpoint(leg.track_geojson);
+      const midpoint = getLegMidpoint(leg.leg.track_geojson);
       if (midpoint) {
         return {
           position: midpoint,
-          label: `Leg`,
+          label: leg.label,
         };
       }
     }
