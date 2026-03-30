@@ -51,7 +51,7 @@ interface LandingMessages {
     stopovers: { title: string; description: string };
     share: { title: string; description: string };
   };
-  footer: { tagline: string };
+  footer: { tagline: string; privacy: string; terms: string };
 }
 
 export const landingMessages: Record<Lang, LandingMessages> = {
@@ -100,7 +100,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Beautiful public pages with animated route playback. Share with family, friends, and crew.",
       },
     },
-    footer: { tagline: "Made for sailors." },
+    footer: {
+      tagline: "Made for sailors.",
+      privacy: "Privacy Policy",
+      terms: "Terms of Service",
+    },
   },
 
   fr: {
@@ -148,7 +152,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "De belles pages publiques avec lecture animée de l'itinéraire. Partagez avec famille, amis et équipage.",
       },
     },
-    footer: { tagline: "Fait pour les marins." },
+    footer: {
+      tagline: "Fait pour les marins.",
+      privacy: "Politique de confidentialite",
+      terms: "Conditions d'utilisation",
+    },
   },
 
   es: {
@@ -196,7 +204,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Hermosas páginas públicas con reproducción animada de la ruta. Comparte con familia, amigos y tripulación.",
       },
     },
-    footer: { tagline: "Hecho para navegantes." },
+    footer: {
+      tagline: "Hecho para navegantes.",
+      privacy: "Politica de privacidad",
+      terms: "Terminos de servicio",
+    },
   },
 
   pt: {
@@ -244,7 +256,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Belas páginas públicas com reprodução animada da rota. Partilhe com família, amigos e tripulação.",
       },
     },
-    footer: { tagline: "Feito para velejadores." },
+    footer: {
+      tagline: "Feito para velejadores.",
+      privacy: "Politica de privacidade",
+      terms: "Termos de servico",
+    },
   },
 
   it: {
@@ -292,7 +308,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Belle pagine pubbliche con riproduzione animata del percorso. Condividi con famiglia, amici ed equipaggio.",
       },
     },
-    footer: { tagline: "Fatto per i velisti." },
+    footer: {
+      tagline: "Fatto per i velisti.",
+      privacy: "Informativa sulla privacy",
+      terms: "Termini di servizio",
+    },
   },
 
   de: {
@@ -340,7 +360,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Schöne öffentliche Seiten mit animierter Routenwiedergabe. Teile mit Familie, Freunden und Crew.",
       },
     },
-    footer: { tagline: "Gemacht für Segler." },
+    footer: {
+      tagline: "Gemacht für Segler.",
+      privacy: "Datenschutzerklarung",
+      terms: "Nutzungsbedingungen",
+    },
   },
 
   nl: {
@@ -388,7 +412,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Mooie openbare pagina's met geanimeerde route-weergave. Deel met familie, vrienden en bemanning.",
       },
     },
-    footer: { tagline: "Gemaakt voor zeilers." },
+    footer: {
+      tagline: "Gemaakt voor zeilers.",
+      privacy: "Privacybeleid",
+      terms: "Gebruiksvoorwaarden",
+    },
   },
 
   da: {
@@ -436,7 +464,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Smukke offentlige sider med animeret ruteafspilning. Del med familie, venner og besætning.",
       },
     },
-    footer: { tagline: "Lavet til sejlere." },
+    footer: {
+      tagline: "Lavet til sejlere.",
+      privacy: "Privatlivspolitik",
+      terms: "Vilkår for brug",
+    },
   },
 
   sv: {
@@ -484,7 +516,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Vackra publika sidor med animerad ruttuppspelning. Dela med familj, vänner och besättning.",
       },
     },
-    footer: { tagline: "Gjort för seglare." },
+    footer: {
+      tagline: "Gjort för seglare.",
+      privacy: "Integritetspolicy",
+      terms: "Anvandarvillkor",
+    },
   },
 
   no: {
@@ -532,7 +568,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Vakre offentlige sider med animert ruteavspilling. Del med familie, venner og mannskap.",
       },
     },
-    footer: { tagline: "Laget for seilere." },
+    footer: {
+      tagline: "Laget for seilere.",
+      privacy: "Personvernerklaring",
+      terms: "Vilkår for bruk",
+    },
   },
 
   ru: {
@@ -580,7 +620,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Красивые публичные страницы с анимированным воспроизведением маршрута. Делитесь с семьёй, друзьями и экипажем.",
       },
     },
-    footer: { tagline: "Создано для яхтсменов." },
+    footer: {
+      tagline: "Создано для яхтсменов.",
+      privacy: "Политика конфиденциальности",
+      terms: "Условия использования",
+    },
   },
 
   el: {
@@ -628,7 +672,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Όμορφες δημόσιες σελίδες με κινούμενη αναπαραγωγή διαδρομής. Μοιραστείτε με οικογένεια, φίλους και πλήρωμα.",
       },
     },
-    footer: { tagline: "Φτιαγμένο για ναυτικούς." },
+    footer: {
+      tagline: "Φτιαγμένο για ναυτικούς.",
+      privacy: "Πολιτική απορρήτου",
+      terms: "Όροι χρήσης",
+    },
   },
 
   ja: {
@@ -676,7 +724,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "アニメーションルート再生付きの美しい公開ページ。家族、友人、クルーとシェアしましょう。",
       },
     },
-    footer: { tagline: "セーラーのために。" },
+    footer: {
+      tagline: "セーラーのために。",
+      privacy: "プライバシーポリシー",
+      terms: "利用規約",
+    },
   },
 
   ga: {
@@ -724,7 +776,11 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Leathanaigh phoiblí áille le hathsheinm beoite bealaigh. Roinn le teaghlach, cairde agus criú.",
       },
     },
-    footer: { tagline: "Déanta do mhairnéalaigh." },
+    footer: {
+      tagline: "Déanta do mhairnéalaigh.",
+      privacy: "Polasaí príobháideachais",
+      terms: "Téarmaí seirbhíse",
+    },
   },
 
   br: {
@@ -772,6 +828,10 @@ export const landingMessages: Record<Lang, LandingMessages> = {
           "Pajennoù foran kaer gant adlenn bev ar roudenn. Rannit gant ho familh, mignoned ha skipailh.",
       },
     },
-    footer: { tagline: "Graet evit ar vartoloded." },
+    footer: {
+      tagline: "Graet evit ar vartoloded.",
+      privacy: "Politikerezh prevezded",
+      terms: "Termenoù implij",
+    },
   },
 };

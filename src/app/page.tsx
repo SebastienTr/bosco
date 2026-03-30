@@ -17,6 +17,7 @@ import {
   defaultLang,
   landingMessages,
 } from "./landing-messages";
+import { LegalLinks } from "@/components/legal/LegalLinks";
 
 const LANG_KEY = "bosco-lang";
 
@@ -141,9 +142,20 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-foam px-4 py-8 text-center">
-        <span className="font-heading text-h3 text-navy">Bosco</span>
-        <p className="mt-1 text-small text-mist">{t.footer.tagline}</p>
+      <footer className="border-t border-foam px-4 py-8">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
+          <div>
+            <span className="font-heading text-h3 text-navy">Bosco</span>
+            <p className="mt-1 text-small text-mist">{t.footer.tagline}</p>
+          </div>
+          <LegalLinks
+            labels={{
+              privacy: t.footer.privacy,
+              terms: t.footer.terms,
+            }}
+            className="justify-center sm:justify-end"
+          />
+        </div>
       </footer>
     </div>
   );

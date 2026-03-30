@@ -49,6 +49,13 @@ export const messages = {
     saving: "Saving...",
     signOut: "Sign out",
   },
+  legal: {
+    title: "Legal",
+    description:
+      "Review Bosco's privacy policy and terms of service before you share voyages publicly.",
+    privacy: "Privacy Policy",
+    terms: "Terms of Service",
+  },
   toast: {
     created: "Profile created",
     updated: "Profile updated",

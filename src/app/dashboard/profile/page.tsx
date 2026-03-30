@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth";
 import { getProfileByUserId } from "@/lib/data/profiles";
+import { LegalLinks } from "@/components/legal/LegalLinks";
 import { SharePendingRedirect } from "../SharePendingRedirect";
 import { ProfileForm } from "./ProfileForm";
 import { SignOutButton } from "./SignOutButton";
@@ -44,6 +45,22 @@ export default async function ProfilePage() {
         <div className="mt-8 border-t border-foam pt-6">
           <SignOutButton />
         </div>
+
+        <section className="mt-8 border-t border-foam pt-6">
+          <h2 className="font-heading text-h2 text-navy">
+            {messages.legal.title}
+          </h2>
+          <p className="mt-2 text-small text-slate">
+            {messages.legal.description}
+          </p>
+          <LegalLinks
+            labels={{
+              privacy: messages.legal.privacy,
+              terms: messages.legal.terms,
+            }}
+            className="mt-4"
+          />
+        </section>
       </div>
     </main>
   );
