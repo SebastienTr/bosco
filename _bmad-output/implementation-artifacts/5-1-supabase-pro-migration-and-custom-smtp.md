@@ -1,6 +1,6 @@
 # Story 5.1: Supabase Pro Migration & Custom SMTP
 
-Status: in-progress
+Status: done
 
 ## Story
 

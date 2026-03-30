@@ -84,7 +84,7 @@ development_status:
 
   # Epic 5: Production Infrastructure & Legal
   epic-5: in-progress
-  5-1-supabase-pro-migration-and-custom-smtp: in-progress
+  5-1-supabase-pro-migration-and-custom-smtp: done
   5-2-database-schema-updates-for-v1: backlog
   5-3-production-monitoring-and-observability: backlog
   5-4-privacy-policy-and-terms-of-service: backlog
