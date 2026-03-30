@@ -1,23 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { checkUsername, saveProfile, uploadPhoto } from "./actions";
+import { checkUsername, deleteAccount, saveProfile, uploadPhoto } from "./actions";
 import { messages } from "./messages";
 
 const mockRequireAuth = vi.fn();
+const mockSignOut = vi.fn();
 const mockCheckUsernameAvailability = vi.fn();
+const mockDisableProfile = vi.fn();
 const mockUpdateProfile = vi.fn();
 const mockUploadFile = vi.fn();
+const mockDeleteAccountData = vi.fn();
 
 vi.mock("@/lib/auth", () => ({
   requireAuth: (...args: unknown[]) => mockRequireAuth(...args),
+  signOut: (...args: unknown[]) => mockSignOut(...args),
 }));
 
 vi.mock("@/lib/data/profiles", () => ({
   checkUsernameAvailability: (...args: unknown[]) => mockCheckUsernameAvailability(...args),
+  disableProfile: (...args: unknown[]) => mockDisableProfile(...args),
   updateProfile: (...args: unknown[]) => mockUpdateProfile(...args),
 }));
 
 vi.mock("@/lib/storage", () => ({
   uploadFile: (...args: unknown[]) => mockUploadFile(...args),
+}));
+
+vi.mock("@/lib/data/account-deletion", () => ({
+  deleteAccountData: (...args: unknown[]) => mockDeleteAccountData(...args),
 }));
 
 const mockUser = { id: "user-123", email: "test@example.com" };
@@ -26,6 +35,11 @@ describe("profile actions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireAuth.mockResolvedValue({ data: mockUser, error: null });
+    mockDisableProfile.mockResolvedValue({
+      data: { disabledAt: "2026-03-30T08:00:00.000Z" },
+      error: null,
+    });
+    mockSignOut.mockResolvedValue({ data: null, error: null });
   });
 
   describe("checkUsername", () => {
@@ -313,6 +327,104 @@ describe("profile actions", () => {
 
       expect(result.data).toBeNull();
       expect(result.error?.code).toBe("EXTERNAL_SERVICE_ERROR");
+    });
+  });
+
+  describe("deleteAccount", () => {
+    it("deletes the current account after validating the destructive confirmation input", async () => {
+      mockDeleteAccountData.mockResolvedValue({
+        data: { success: true },
+        error: null,
+      });
+
+      const result = await deleteAccount({
+        confirmation: "delete-account",
+      });
+
+      expect(result).toEqual({
+        data: { success: true },
+        error: null,
+      });
+      expect(mockDisableProfile).toHaveBeenCalledWith("user-123");
+      expect(mockDeleteAccountData).toHaveBeenCalledWith("user-123");
+      expect(mockSignOut).toHaveBeenCalled();
+    });
+
+    it("returns a validation error when the destructive confirmation input is invalid", async () => {
+      const result = await deleteAccount({
+        confirmation: "keep-account",
+      });
+
+      expect(result).toEqual({
+        data: null,
+        error: {
+          code: "VALIDATION_ERROR",
+          message: messages.danger.validationConfirmation,
+        },
+      });
+      expect(mockDisableProfile).not.toHaveBeenCalled();
+      expect(mockDeleteAccountData).not.toHaveBeenCalled();
+    });
+
+    it("returns an unauthorized error when the user is not authenticated", async () => {
+      mockRequireAuth.mockResolvedValue({
+        data: null,
+        error: { code: "UNAUTHORIZED", message: "Not signed in" },
+      });
+
+      const result = await deleteAccount({
+        confirmation: "delete-account",
+      });
+
+      expect(result).toEqual({
+        data: null,
+        error: { code: "UNAUTHORIZED", message: "Not signed in" },
+      });
+      expect(mockDisableProfile).not.toHaveBeenCalled();
+    });
+
+    it("returns an external service error when storage cleanup fails", async () => {
+      mockDeleteAccountData.mockResolvedValue({
+        data: null,
+        error: {
+          code: "EXTERNAL_SERVICE_ERROR",
+          message: "Failed to delete uploaded media",
+        },
+      });
+
+      const result = await deleteAccount({
+        confirmation: "delete-account",
+      });
+
+      expect(result).toEqual({
+        data: null,
+        error: {
+          code: "EXTERNAL_SERVICE_ERROR",
+          message: "Failed to delete uploaded media",
+        },
+      });
+    });
+
+    it("returns an external service error when auth user deletion fails", async () => {
+      mockDeleteAccountData.mockResolvedValue({
+        data: null,
+        error: {
+          code: "EXTERNAL_SERVICE_ERROR",
+          message: "Failed to permanently delete auth user",
+        },
+      });
+
+      const result = await deleteAccount({
+        confirmation: "delete-account",
+      });
+
+      expect(result).toEqual({
+        data: null,
+        error: {
+          code: "EXTERNAL_SERVICE_ERROR",
+          message: "Failed to permanently delete auth user",
+        },
+      });
     });
   });
 });

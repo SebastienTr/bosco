@@ -56,12 +56,31 @@ export const messages = {
     privacy: "Privacy Policy",
     terms: "Terms of Service",
   },
+  danger: {
+    title: "Delete account",
+    description:
+      "Permanently delete your Bosco account and the voyages, journal data, and media tied to it.",
+    warning:
+      "This action cannot be undone. Bosco will permanently delete your account, voyages, journal entries, and uploaded media.",
+    trigger: "Delete my account",
+    validationConfirmation: "Invalid account deletion request",
+    dialog: {
+      title: "Delete your Bosco account?",
+      description:
+        "Your account, voyages, journal data, and uploaded media will be permanently deleted. This action is irreversible.",
+      cancel: "Keep account",
+      confirm: "Delete account",
+      deleting: "Deleting account...",
+    },
+  },
   toast: {
     created: "Profile created",
     updated: "Profile updated",
     photoUploaded: "Photo uploaded",
     error: "Failed to save profile",
     photoError: "Failed to upload photo",
+    accountDeletedSuccess: "Your account has been permanently deleted",
+    accountDeletedError: "Failed to delete your account",
   },
   validation: {
     usernameRequired: "Username is required",

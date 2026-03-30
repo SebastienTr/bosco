@@ -46,6 +46,7 @@ vi.mock("@/lib/supabase/server", () => ({
 
 const {
   checkUsernameAvailability,
+  disableProfile,
   getProfileByUserId,
   getPublicProfileByUsername,
   updateProfile,
@@ -143,6 +144,23 @@ describe("updateProfile", () => {
       expect.objectContaining({
         username: "new-user",
         boat_name: "New Boat",
+        updated_at: expect.any(String),
+      }),
+    );
+    expect(mockEq).toHaveBeenCalledWith("id", "user-123");
+  });
+});
+
+describe("disableProfile", () => {
+  it("sets disabled_at for the current profile", async () => {
+    mockEq.mockReturnValue({ error: null });
+
+    const result = await disableProfile("user-123");
+
+    expect(result.error).toBeNull();
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        disabled_at: expect.any(String),
         updated_at: expect.any(String),
       }),
     );

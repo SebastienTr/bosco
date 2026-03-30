@@ -63,5 +63,20 @@ export async function updateSession(
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) {
+    return { response: supabaseResponse, user: null };
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("disabled_at")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!profileError && profile?.disabled_at) {
+    await supabase.auth.signOut();
+    return { response: supabaseResponse, user: null };
+  }
+
   return { response: supabaseResponse, user };
 }

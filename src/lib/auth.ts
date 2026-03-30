@@ -3,6 +3,23 @@
 import type { ActionResponse } from "@/types";
 import { createClient, type User } from "@/lib/supabase/server";
 
+async function isProfileDisabled(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("disabled_at")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) {
+    return false;
+  }
+
+  return data?.disabled_at !== null;
+}
+
 export async function signIn(
   email: string,
   next?: string,
@@ -55,6 +72,14 @@ export async function getUser(): Promise<User | null> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  if (await isProfileDisabled(supabase, user.id)) {
+    return null;
+  }
 
   return user;
 }

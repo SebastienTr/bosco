@@ -31,6 +31,10 @@ vi.mock("./SignOutButton", () => ({
   SignOutButton: () => <button type="button">Sign out</button>,
 }));
 
+vi.mock("./DeleteAccountSection", () => ({
+  DeleteAccountSection: () => <div data-testid="delete-account-section" />,
+}));
+
 describe("ProfilePage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -44,12 +48,13 @@ describe("ProfilePage", () => {
     });
   });
 
-  it("keeps existing profile controls and adds a legal section", async () => {
+  it("keeps existing profile controls, adds the delete danger zone, and keeps the legal section", async () => {
     render(await ProfilePage());
 
     expect(screen.getByTestId("share-pending-redirect")).toBeTruthy();
     expect(screen.getByTestId("profile-form")).toBeTruthy();
     expect(screen.getByRole("button", { name: /sign out/i })).toBeTruthy();
+    expect(screen.getByTestId("delete-account-section")).toBeTruthy();
     expect(
       screen.getByRole("heading", {
         level: 2,

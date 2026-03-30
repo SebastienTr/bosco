@@ -35,7 +35,7 @@ export const langLabels: Record<Lang, { flag: string; label: string }> = {
 
 export const defaultLang: Lang = "en";
 
-interface LandingMessages {
+interface LandingMessagesBase {
   nav: { signIn: string };
   hero: { title: string; subtitle: string; cta: string };
   howItWorks: {
@@ -54,7 +54,11 @@ interface LandingMessages {
   footer: { tagline: string; privacy: string; terms: string };
 }
 
-export const landingMessages: Record<Lang, LandingMessages> = {
+interface LandingMessages extends LandingMessagesBase {
+  alerts: { accountDeleted: string };
+}
+
+const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
   en: {
     nav: { signIn: "Sign In" },
     hero: {
@@ -835,3 +839,33 @@ export const landingMessages: Record<Lang, LandingMessages> = {
     },
   },
 };
+
+const accountDeletedAlerts: Record<Lang, string> = {
+  en: "Your account and Bosco data have been permanently deleted.",
+  fr: "Votre compte et vos donnees Bosco ont ete supprimes definitivement.",
+  es: "Tu cuenta y tus datos de Bosco se han eliminado de forma permanente.",
+  pt: "A sua conta e os seus dados do Bosco foram eliminados permanentemente.",
+  it: "Il tuo account e i dati Bosco sono stati eliminati definitivamente.",
+  de: "Dein Konto und deine Bosco-Daten wurden dauerhaft geloescht.",
+  nl: "Je account en Bosco-gegevens zijn permanent verwijderd.",
+  da: "Din konto og dine Bosco-data er blevet slettet permanent.",
+  sv: "Ditt konto och dina Bosco-data har raderats permanent.",
+  no: "Kontoen din og Bosco-dataene dine er slettet permanent.",
+  ru: "Ваш аккаунт и данные Bosco были удалены навсегда.",
+  el: "Ο λογαριασμός σας και τα δεδομένα Bosco διαγράφηκαν οριστικά.",
+  ja: "アカウントとBoscoのデータは完全に削除されました。",
+  ga: "Scriosadh do chuntas agus do shonrai Bosco go buan.",
+  br: "Dilamet eo bet da gont hag ar roadennoù Bosco da vat.",
+};
+
+export const landingMessages: Record<Lang, LandingMessages> = Object.fromEntries(
+  Object.entries(landingMessagesBase).map(([lang, messages]) => [
+    lang,
+    {
+      ...messages,
+      alerts: {
+        accountDeleted: accountDeletedAlerts[lang as Lang],
+      },
+    },
+  ]),
+) as Record<Lang, LandingMessages>;

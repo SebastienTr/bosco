@@ -69,3 +69,33 @@ export async function updateProfile(userId: Profile["id"], data: ProfileUpdate) 
     .select()
     .single();
 }
+
+export async function disableProfile(
+  userId: Profile["id"],
+): Promise<ActionResponse<{ disabledAt: string }>> {
+  const supabase = await createClient();
+  const disabledAt = new Date().toISOString();
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      disabled_at: disabledAt,
+      updated_at: disabledAt,
+    })
+    .eq("id", userId);
+
+  if (error) {
+    return {
+      data: null,
+      error: {
+        code: "EXTERNAL_SERVICE_ERROR",
+        message: error.message,
+      },
+    };
+  }
+
+  return {
+    data: { disabledAt },
+    error: null,
+  };
+}

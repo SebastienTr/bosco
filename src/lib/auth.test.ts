@@ -4,6 +4,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 const mockSignInWithOtp = vi.fn();
 const mockSignOut = vi.fn();
 const mockGetUser = vi.fn();
+const mockSelect = vi.fn();
+const mockEq = vi.fn();
+const mockMaybeSingle = vi.fn();
 
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(async () => ({
@@ -12,6 +15,25 @@ vi.mock("@/lib/supabase/server", () => ({
       signOut: mockSignOut,
       getUser: mockGetUser,
     },
+    from: vi.fn((table: string) => {
+      if (table !== "profiles") {
+        throw new Error(`Unexpected table: ${table}`);
+      }
+
+      return {
+        select: (...args: unknown[]) => {
+          mockSelect(...args);
+          return {
+            eq: (...eqArgs: unknown[]) => {
+              mockEq(...eqArgs);
+              return {
+                maybeSingle: () => mockMaybeSingle(),
+              };
+            },
+          };
+        },
+      };
+    }),
   })),
 }));
 
@@ -22,6 +44,10 @@ const { signIn, signOut, getUser, requireAuth } = await import(
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockMaybeSingle.mockResolvedValue({
+    data: { disabled_at: null },
+    error: null,
+  });
 });
 
 describe("signIn", () => {
@@ -102,6 +128,21 @@ describe("getUser", () => {
     expect(user).toEqual(mockUser);
   });
 
+  it("returns null when the profile is disabled", async () => {
+    const mockUser = { id: "user-123", email: "test@example.com" };
+    mockGetUser.mockResolvedValue({ data: { user: mockUser } });
+    mockMaybeSingle.mockResolvedValue({
+      data: { disabled_at: "2026-03-30T08:00:00.000Z" },
+      error: null,
+    });
+
+    const user = await getUser();
+
+    expect(user).toBeNull();
+    expect(mockSelect).toHaveBeenCalledWith("disabled_at");
+    expect(mockEq).toHaveBeenCalledWith("id", "user-123");
+  });
+
   it("returns null when not authenticated", async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
 
@@ -123,6 +164,22 @@ describe("requireAuth", () => {
 
   it("returns UNAUTHORIZED error when not authenticated", async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } });
+
+    const result = await requireAuth();
+
+    expect(result).toEqual({
+      data: null,
+      error: { code: "UNAUTHORIZED", message: "You must be signed in" },
+    });
+  });
+
+  it("returns UNAUTHORIZED when the profile has been disabled", async () => {
+    const mockUser = { id: "user-123", email: "test@example.com" };
+    mockGetUser.mockResolvedValue({ data: { user: mockUser } });
+    mockMaybeSingle.mockResolvedValue({
+      data: { disabled_at: "2026-03-30T08:00:00.000Z" },
+      error: null,
+    });
 
     const result = await requireAuth();
 

@@ -1,11 +1,13 @@
 "use server";
 
 import type { ActionResponse } from "@/types";
-import { requireAuth } from "@/lib/auth";
+import { requireAuth, signOut } from "@/lib/auth";
 import {
   checkUsernameAvailability,
+  disableProfile,
   updateProfile,
 } from "@/lib/data/profiles";
+import { deleteAccountData } from "@/lib/data/account-deletion";
 import { uploadFile } from "@/lib/storage";
 import { messages } from "./messages";
 import {
@@ -15,6 +17,8 @@ import {
   normalizeFormValue,
 } from "./validation";
 import { withLogging } from "@/lib/logging";
+
+const DELETE_ACCOUNT_CONFIRMATION = "delete-account";
 
 const _checkUsername = async (
   formData: FormData,
@@ -173,3 +177,42 @@ const _uploadPhoto = async (
   return { data: { url: uploadResult.data.publicUrl }, error: null };
 };
 export const uploadPhoto = withLogging("uploadPhoto", _uploadPhoto);
+
+const _deleteAccount = async (input: {
+  confirmation: string;
+}): Promise<ActionResponse<{ success: true }>> => {
+  const auth = await requireAuth();
+  if (auth.error) {
+    return { data: null, error: auth.error };
+  }
+
+  if (input.confirmation !== DELETE_ACCOUNT_CONFIRMATION) {
+    return {
+      data: null,
+      error: {
+        code: "VALIDATION_ERROR",
+        message: messages.danger.validationConfirmation,
+      },
+    };
+  }
+
+  const disableResult = await disableProfile(auth.data.id);
+  if (disableResult.error) {
+    return { data: null, error: disableResult.error };
+  }
+
+  const signOutResult = await signOut();
+  if (signOutResult.error) {
+    console.warn(
+      `deleteAccount signOut failed for ${auth.data.id}: ${signOutResult.error.message}`,
+    );
+  }
+
+  const deletionResult = await deleteAccountData(auth.data.id);
+  if (deletionResult.error) {
+    return { data: null, error: deletionResult.error };
+  }
+
+  return { data: { success: true }, error: null };
+};
+export const deleteAccount = withLogging("deleteAccount", _deleteAccount);

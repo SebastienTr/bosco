@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Navigation,
   Anchor,
@@ -41,6 +42,7 @@ function getInitialLang(): Lang {
 
 export default function Home() {
   const [lang, setLang] = useState<Lang>(getInitialLang);
+  const searchParams = useSearchParams();
 
   function changeLang(next: Lang) {
     setLang(next);
@@ -48,6 +50,7 @@ export default function Home() {
   }
 
   const t = landingMessages[lang];
+  const showAccountDeleted = searchParams.get("accountDeleted") === "1";
   const steps = [t.howItWorks.steps.export, t.howItWorks.steps.import, t.howItWorks.steps.share];
 
   return (
@@ -65,6 +68,17 @@ export default function Home() {
           </Link>
         </div>
       </nav>
+
+      {showAccountDeleted ? (
+        <div className="px-4 pt-2 sm:px-6 lg:px-16">
+          <div
+            role="status"
+            className="mx-auto max-w-5xl rounded-[var(--radius-card)] border border-success/30 bg-success/10 px-4 py-3 text-small font-semibold text-navy"
+          >
+            {t.alerts.accountDeleted}
+          </div>
+        </div>
+      ) : null}
 
       {/* Hero */}
       <main className="flex flex-1 flex-col items-center gap-12 px-4 py-12 sm:px-6 lg:flex-row lg:gap-16 lg:px-16 lg:py-20">

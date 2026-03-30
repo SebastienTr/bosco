@@ -6,6 +6,7 @@ import { LegalLinks } from "@/components/legal/LegalLinks";
 import { SharePendingRedirect } from "../SharePendingRedirect";
 import { ProfileForm } from "./ProfileForm";
 import { SignOutButton } from "./SignOutButton";
+import { DeleteAccountSection } from "./DeleteAccountSection";
 import { messages } from "./messages";
 
 export const metadata: Metadata = {
@@ -45,6 +46,8 @@ export default async function ProfilePage() {
         <div className="mt-8 border-t border-foam pt-6">
           <SignOutButton />
         </div>
+
+        <DeleteAccountSection />
 
         <section className="mt-8 border-t border-foam pt-6">
           <h2 className="font-heading text-h2 text-navy">
