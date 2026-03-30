@@ -58,7 +58,7 @@ export default function MapCanvas({
   children,
 }: MapCanvasProps) {
   return (
-    <div className={className}>
+    <div className={`isolate ${className ?? ""}`}>
       <MapContainer
         center={center}
         zoom={zoom}
