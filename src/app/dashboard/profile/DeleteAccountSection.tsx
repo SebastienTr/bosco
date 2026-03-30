@@ -33,7 +33,7 @@ export function DeleteAccountSection() {
 
     if (result.error) {
       setIsDeleting(false);
-      toast.error(messages.toast.accountDeletedError);
+      toast.error(result.error.message || messages.toast.accountDeletedError);
       return;
     }
 

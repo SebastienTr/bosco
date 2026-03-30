@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { deleteAccountData } from "./account-deletion";
+import {
+  deleteAccountData,
+  validateAccountDeletionSetup,
+} from "./account-deletion";
 
 const mockDeleteFilesRecursively = vi.fn();
 const mockDeleteUser = vi.fn();
@@ -30,7 +33,7 @@ describe("deleteAccountData", () => {
     mockDeleteUser.mockResolvedValue({ data: { user: null }, error: null });
   });
 
-  it("disables the profile before deleting storage and the auth user", async () => {
+  it("deletes storage and the auth user when admin setup is available", async () => {
     const result = await deleteAccountData("user-123");
 
     expect(result).toEqual({ data: { success: true }, error: null });
@@ -89,6 +92,33 @@ describe("deleteAccountData", () => {
       error: {
         code: "EXTERNAL_SERVICE_ERROR",
         message: "Delete user failed",
+      },
+    });
+  });
+});
+
+describe("validateAccountDeletionSetup", () => {
+  it("returns success when the admin client can be created", async () => {
+    const result = await validateAccountDeletionSetup();
+
+    expect(result).toEqual({
+      data: { ready: true },
+      error: null,
+    });
+  });
+
+  it("returns a structured error when admin config is missing", async () => {
+    mockCreateAdminClient.mockImplementationOnce(() => {
+      throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY.");
+    });
+
+    const result = await validateAccountDeletionSetup();
+
+    expect(result).toEqual({
+      data: null,
+      error: {
+        code: "EXTERNAL_SERVICE_ERROR",
+        message: "Missing SUPABASE_SERVICE_ROLE_KEY.",
       },
     });
   });

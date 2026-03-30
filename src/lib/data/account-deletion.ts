@@ -8,25 +8,57 @@ const ACCOUNT_STORAGE_BUCKETS = [
   "log-photos",
 ] as const;
 
-export async function deleteAccountData(
-  userId: string,
-): Promise<ActionResponse<{ success: true }>> {
-  let adminClient: ReturnType<typeof createAdminClient>;
-
+function getAccountDeletionAdminClient() {
   try {
-    adminClient = createAdminClient();
+    return {
+      client: createAdminClient(),
+      error: null,
+    } as const;
   } catch (error) {
     return {
-      data: null,
+      client: null,
       error: {
-        code: "EXTERNAL_SERVICE_ERROR",
+        code: "EXTERNAL_SERVICE_ERROR" as const,
         message:
           error instanceof Error
             ? error.message
             : "Missing Supabase admin configuration",
       },
+    } as const;
+  }
+}
+
+export async function validateAccountDeletionSetup(): Promise<
+  ActionResponse<{ ready: true }>
+> {
+  const adminClientResult = getAccountDeletionAdminClient();
+
+  if (adminClientResult.error) {
+    return {
+      data: null,
+      error: adminClientResult.error,
     };
   }
+
+  return {
+    data: { ready: true },
+    error: null,
+  };
+}
+
+export async function deleteAccountData(
+  userId: string,
+): Promise<ActionResponse<{ success: true }>> {
+  const adminClientResult = getAccountDeletionAdminClient();
+
+  if (adminClientResult.error) {
+    return {
+      data: null,
+      error: adminClientResult.error,
+    };
+  }
+
+  const adminClient = adminClientResult.client;
 
   for (const bucket of ACCOUNT_STORAGE_BUCKETS) {
     const cleanupResult = await deleteFilesRecursively(bucket, userId, {

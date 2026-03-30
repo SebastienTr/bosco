@@ -7,7 +7,10 @@ import {
   disableProfile,
   updateProfile,
 } from "@/lib/data/profiles";
-import { deleteAccountData } from "@/lib/data/account-deletion";
+import {
+  deleteAccountData,
+  validateAccountDeletionSetup,
+} from "@/lib/data/account-deletion";
 import { uploadFile } from "@/lib/storage";
 import { messages } from "./messages";
 import {
@@ -194,6 +197,11 @@ const _deleteAccount = async (input: {
         message: messages.danger.validationConfirmation,
       },
     };
+  }
+
+  const setupResult = await validateAccountDeletionSetup();
+  if (setupResult.error) {
+    return { data: null, error: setupResult.error };
   }
 
   const disableResult = await disableProfile(auth.data.id);

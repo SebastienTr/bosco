@@ -9,6 +9,7 @@ const mockDisableProfile = vi.fn();
 const mockUpdateProfile = vi.fn();
 const mockUploadFile = vi.fn();
 const mockDeleteAccountData = vi.fn();
+const mockValidateAccountDeletionSetup = vi.fn();
 
 vi.mock("@/lib/auth", () => ({
   requireAuth: (...args: unknown[]) => mockRequireAuth(...args),
@@ -27,6 +28,7 @@ vi.mock("@/lib/storage", () => ({
 
 vi.mock("@/lib/data/account-deletion", () => ({
   deleteAccountData: (...args: unknown[]) => mockDeleteAccountData(...args),
+  validateAccountDeletionSetup: (...args: unknown[]) => mockValidateAccountDeletionSetup(...args),
 }));
 
 const mockUser = { id: "user-123", email: "test@example.com" };
@@ -37,6 +39,10 @@ describe("profile actions", () => {
     mockRequireAuth.mockResolvedValue({ data: mockUser, error: null });
     mockDisableProfile.mockResolvedValue({
       data: { disabledAt: "2026-03-30T08:00:00.000Z" },
+      error: null,
+    });
+    mockValidateAccountDeletionSetup.mockResolvedValue({
+      data: { ready: true },
       error: null,
     });
     mockSignOut.mockResolvedValue({ data: null, error: null });
@@ -345,6 +351,7 @@ describe("profile actions", () => {
         data: { success: true },
         error: null,
       });
+      expect(mockValidateAccountDeletionSetup).toHaveBeenCalled();
       expect(mockDisableProfile).toHaveBeenCalledWith("user-123");
       expect(mockDeleteAccountData).toHaveBeenCalledWith("user-123");
       expect(mockSignOut).toHaveBeenCalled();
@@ -362,6 +369,7 @@ describe("profile actions", () => {
           message: messages.danger.validationConfirmation,
         },
       });
+      expect(mockValidateAccountDeletionSetup).not.toHaveBeenCalled();
       expect(mockDisableProfile).not.toHaveBeenCalled();
       expect(mockDeleteAccountData).not.toHaveBeenCalled();
     });
@@ -380,7 +388,33 @@ describe("profile actions", () => {
         data: null,
         error: { code: "UNAUTHORIZED", message: "Not signed in" },
       });
+      expect(mockValidateAccountDeletionSetup).not.toHaveBeenCalled();
       expect(mockDisableProfile).not.toHaveBeenCalled();
+    });
+
+    it("fails fast when admin deletion setup is not available", async () => {
+      mockValidateAccountDeletionSetup.mockResolvedValue({
+        data: null,
+        error: {
+          code: "EXTERNAL_SERVICE_ERROR",
+          message: "Missing SUPABASE_SERVICE_ROLE_KEY.",
+        },
+      });
+
+      const result = await deleteAccount({
+        confirmation: "delete-account",
+      });
+
+      expect(result).toEqual({
+        data: null,
+        error: {
+          code: "EXTERNAL_SERVICE_ERROR",
+          message: "Missing SUPABASE_SERVICE_ROLE_KEY.",
+        },
+      });
+      expect(mockDisableProfile).not.toHaveBeenCalled();
+      expect(mockSignOut).not.toHaveBeenCalled();
+      expect(mockDeleteAccountData).not.toHaveBeenCalled();
     });
 
     it("returns an external service error when storage cleanup fails", async () => {
