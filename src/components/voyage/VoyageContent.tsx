@@ -76,8 +76,9 @@ export function VoyageContent({
     [initialLogEntries, stopovers, legs],
   );
 
-  const tracks: GeoJSON.LineString[] = legs.map(
-    (leg) => leg.track_geojson as unknown as GeoJSON.LineString,
+  const tracks = useMemo<GeoJSON.LineString[]>(
+    () => legs.map((leg) => leg.track_geojson as unknown as GeoJSON.LineString),
+    [legs],
   );
 
   const toggleOverlay = useCallback((overlay: Exclude<ActiveOverlay, null>) => {
