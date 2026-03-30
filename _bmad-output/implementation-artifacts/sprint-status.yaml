@@ -1,5 +1,5 @@
 # generated: 2026-03-15
-# last_updated: 2026-03-30T07:10:00
+# last_updated: 2026-03-30T07:39:00
 # project: bosco
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-15
-last_updated: 2026-03-30T07:10:00
+last_updated: 2026-03-30T07:39:00
 project: bosco
 project_key: NOKEY
 tracking_system: file-system
@@ -85,8 +85,8 @@ development_status:
   # Epic 5: Production Infrastructure & Legal
   epic-5: in-progress
   5-1-supabase-pro-migration-and-custom-smtp: done
-  5-2-database-schema-updates-for-v1: review
-  5-3-production-monitoring-and-observability: backlog
+  5-2-database-schema-updates-for-v1: done
+  5-3-production-monitoring-and-observability: review
   5-4-privacy-policy-and-terms-of-service: backlog
   5-5-account-deletion-with-data-cascade: backlog
   epic-5-retrospective: optional

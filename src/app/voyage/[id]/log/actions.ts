@@ -12,6 +12,7 @@ import type { LogEntry } from "@/lib/data/log-entries";
 import { uploadFile, deleteFile } from "@/lib/storage";
 import type { ActionResponse } from "@/types";
 import type { Voyage } from "@/lib/data/voyages";
+import { withLogging } from "@/lib/logging";
 import {
   CreateLogEntrySchema,
   UpdateLogEntrySchema,
@@ -125,9 +126,9 @@ async function verifyOwnership(
   return { voyage, error: null };
 }
 
-export async function createLogEntry(
+const _createLogEntry = async (
   formData: FormData,
-): Promise<ActionResponse<LogEntry>> {
+): Promise<ActionResponse<LogEntry>> => {
   const authResult = await requireAuth();
   if (authResult.error) {
     return { data: null, error: authResult.error };
@@ -185,11 +186,12 @@ export async function createLogEntry(
   }
 
   return { data, error: null };
-}
+};
+export const createLogEntry = withLogging("createLogEntry", _createLogEntry);
 
-export async function updateLogEntry(
+const _updateLogEntry = async (
   formData: FormData,
-): Promise<ActionResponse<LogEntry>> {
+): Promise<ActionResponse<LogEntry>> => {
   const authResult = await requireAuth();
   if (authResult.error) {
     return { data: null, error: authResult.error };
@@ -285,12 +287,13 @@ export async function updateLogEntry(
   }
 
   return { data, error: null };
-}
+};
+export const updateLogEntry = withLogging("updateLogEntry", _updateLogEntry);
 
-export async function deleteLogEntry(input: {
+const _deleteLogEntry = async (input: {
   id: string;
   voyageId: string;
-}): Promise<ActionResponse<null>> {
+}): Promise<ActionResponse<null>> => {
   const authResult = await requireAuth();
   if (authResult.error) {
     return { data: null, error: authResult.error };
@@ -356,13 +359,14 @@ export async function deleteLogEntry(input: {
   }
 
   return { data: null, error: null };
-}
+};
+export const deleteLogEntry = withLogging("deleteLogEntry", _deleteLogEntry);
 
-export async function deleteLogPhoto(input: {
+const _deleteLogPhoto = async (input: {
   voyageId: string;
   url: string;
   entryId?: string;
-}): Promise<ActionResponse<{ photoUrls: string[] | null }>> {
+}): Promise<ActionResponse<{ photoUrls: string[] | null }>> => {
   const authResult = await requireAuth();
   if (authResult.error) {
     return { data: null, error: authResult.error };
@@ -458,11 +462,12 @@ export async function deleteLogPhoto(input: {
   }
 
   return { data: { photoUrls: null }, error: null };
-}
+};
+export const deleteLogPhoto = withLogging("deleteLogPhoto", _deleteLogPhoto);
 
-export async function uploadLogPhoto(
+const _uploadLogPhoto = async (
   formData: FormData,
-): Promise<ActionResponse<{ url: string }>> {
+): Promise<ActionResponse<{ url: string }>> => {
   const authResult = await requireAuth();
   if (authResult.error) {
     return { data: null, error: authResult.error };
@@ -529,4 +534,5 @@ export async function uploadLogPhoto(
   }
 
   return { data: { url: uploadResult.data.publicUrl }, error: null };
-}
+};
+export const uploadLogPhoto = withLogging("uploadLogPhoto", _uploadLogPhoto);

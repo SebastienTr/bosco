@@ -4,14 +4,15 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 import type { ActionResponse } from "@/types";
 import { signIn, signOut } from "@/lib/auth";
+import { withLogging } from "@/lib/logging";
 
 const EmailSchema = z.object({
   email: z.email("Please enter a valid email address"),
 });
 
-export async function sendMagicLink(
+const _sendMagicLink = async (
   formData: FormData,
-): Promise<ActionResponse<{ email: string }>> {
+): Promise<ActionResponse<{ email: string }>> => {
   const next = formData.get("next");
   const parsed = EmailSchema.safeParse({
     email: formData.get("email"),
@@ -33,7 +34,8 @@ export async function sendMagicLink(
   return nextPath
     ? signIn(parsed.data.email, nextPath)
     : signIn(parsed.data.email);
-}
+};
+export const sendMagicLink = withLogging("sendMagicLink", _sendMagicLink);
 
 export async function signOutAction(): Promise<never> {
   await signOut();

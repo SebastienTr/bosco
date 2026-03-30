@@ -14,10 +14,11 @@ import {
   UsernameSchema,
   normalizeFormValue,
 } from "./validation";
+import { withLogging } from "@/lib/logging";
 
-export async function checkUsername(
+const _checkUsername = async (
   formData: FormData,
-): Promise<ActionResponse<{ available: boolean }>> {
+): Promise<ActionResponse<{ available: boolean }>> => {
   const username = normalizeFormValue(formData.get("username"));
   const result = UsernameSchema.safeParse(username);
 
@@ -39,11 +40,12 @@ export async function checkUsername(
   }
 
   return { data: { available: available.data }, error: null };
-}
+};
+export const checkUsername = withLogging("checkUsername", _checkUsername);
 
-export async function saveProfile(
+const _saveProfile = async (
   formData: FormData,
-): Promise<ActionResponse<{ username: string }>> {
+): Promise<ActionResponse<{ username: string }>> => {
   const auth = await requireAuth();
   if (auth.error) {
     return { data: null, error: auth.error };
@@ -100,11 +102,12 @@ export async function saveProfile(
   }
 
   return { data: { username: data.username ?? result.data.username }, error: null };
-}
+};
+export const saveProfile = withLogging("saveProfile", _saveProfile);
 
-export async function uploadPhoto(
+const _uploadPhoto = async (
   formData: FormData,
-): Promise<ActionResponse<{ url: string }>> {
+): Promise<ActionResponse<{ url: string }>> => {
   const auth = await requireAuth();
   if (auth.error) {
     return { data: null, error: auth.error };
@@ -168,4 +171,5 @@ export async function uploadPhoto(
   }
 
   return { data: { url: uploadResult.data.publicUrl }, error: null };
-}
+};
+export const uploadPhoto = withLogging("uploadPhoto", _uploadPhoto);

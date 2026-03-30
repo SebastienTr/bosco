@@ -11,6 +11,7 @@ import {
 import { uploadFile, deleteFile } from "@/lib/storage";
 import type { ActionResponse } from "@/types";
 import type { Voyage } from "@/lib/data/voyages";
+import { withLogging } from "@/lib/logging";
 import { messages } from "./messages";
 
 const UUID_REGEX =
@@ -86,9 +87,9 @@ async function verifyOwnership(
   return { voyage, error: null };
 }
 
-export async function updateVoyage(
+const _updateVoyage = async (
   formData: FormData,
-): Promise<ActionResponse<Voyage>> {
+): Promise<ActionResponse<Voyage>> => {
   const authResult = await requireAuth();
   if (authResult.error) {
     return { data: null, error: authResult.error };
@@ -154,11 +155,12 @@ export async function updateVoyage(
   }
 
   return { data, error: null };
-}
+};
+export const updateVoyage = withLogging("updateVoyage", _updateVoyage);
 
-export async function deleteVoyage(input: {
+const _deleteVoyage = async (input: {
   voyageId: string;
-}): Promise<ActionResponse<{ success: true }>> {
+}): Promise<ActionResponse<{ success: true }>> => {
   const authResult = await requireAuth();
   if (authResult.error) {
     return { data: null, error: authResult.error };
@@ -198,12 +200,13 @@ export async function deleteVoyage(input: {
   }
 
   return { data: { success: true }, error: null };
-}
+};
+export const deleteVoyage = withLogging("deleteVoyage", _deleteVoyage);
 
-export async function toggleVisibility(input: {
+const _toggleVisibility = async (input: {
   voyageId: string;
   isPublic: boolean;
-}): Promise<ActionResponse<Voyage>> {
+}): Promise<ActionResponse<Voyage>> => {
   const authResult = await requireAuth();
   if (authResult.error) {
     return { data: null, error: authResult.error };
@@ -233,11 +236,12 @@ export async function toggleVisibility(input: {
   }
 
   return { data, error: null };
-}
+};
+export const toggleVisibility = withLogging("toggleVisibility", _toggleVisibility);
 
-export async function uploadCoverImage(
+const _uploadCoverImage = async (
   formData: FormData,
-): Promise<ActionResponse<{ url: string }>> {
+): Promise<ActionResponse<{ url: string }>> => {
   const authResult = await requireAuth();
   if (authResult.error) {
     return { data: null, error: authResult.error };
@@ -312,4 +316,5 @@ export async function uploadCoverImage(
   }
 
   return { data: { url: uploadResult.data.publicUrl }, error: null };
-}
+};
+export const uploadCoverImage = withLogging("uploadCoverImage", _uploadCoverImage);

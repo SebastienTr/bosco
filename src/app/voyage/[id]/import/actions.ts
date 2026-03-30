@@ -7,6 +7,7 @@ import { insertLegs } from "@/lib/data/legs";
 import { persistStopovers } from "@/app/voyage/[id]/stopover/actions";
 import type { ActionResponse } from "@/types";
 import type { Leg } from "@/lib/data/legs";
+import { withLogging } from "@/lib/logging";
 
 const LegSchema = z.object({
   track_geojson: z.object({
@@ -39,9 +40,9 @@ const ImportTracksSchema = z.object({
   stopovers: z.array(StopoverInputSchema).optional(),
 });
 
-export async function importTracks(
+const _importTracks = async (
   input: z.input<typeof ImportTracksSchema>,
-): Promise<ActionResponse<Leg[]>> {
+): Promise<ActionResponse<Leg[]>> => {
   const authResult = await requireAuth();
   if (authResult.error) return { data: null, error: authResult.error };
 
@@ -101,4 +102,5 @@ export async function importTracks(
   }
 
   return { data, error: null };
-}
+};
+export const importTracks = withLogging("importTracks", _importTracks);

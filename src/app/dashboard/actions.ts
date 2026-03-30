@@ -9,6 +9,7 @@ import {
 import { generateSlug } from "@/lib/utils/slug";
 import type { ActionResponse } from "@/types";
 import type { Voyage } from "@/lib/data/voyages";
+import { withLogging } from "@/lib/logging";
 
 const DUPLICATE_SLUG_MESSAGE = "This slug is already used by another voyage";
 
@@ -34,9 +35,9 @@ function normalizeFormValue(value: FormDataEntryValue | null): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-export async function createVoyage(
+const _createVoyage = async (
   formData: FormData,
-): Promise<ActionResponse<Voyage>> {
+): Promise<ActionResponse<Voyage>> => {
   const authResult = await requireAuth();
   if (authResult.error) {
     return { data: null, error: authResult.error };
@@ -108,4 +109,5 @@ export async function createVoyage(
   }
 
   return { data, error: null };
-}
+};
+export const createVoyage = withLogging("createVoyage", _createVoyage);

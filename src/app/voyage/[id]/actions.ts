@@ -4,14 +4,15 @@ import { z } from "zod";
 import { requireAuth } from "@/lib/auth";
 import { deleteLeg as deleteLegDb } from "@/lib/data/legs";
 import type { ActionResponse } from "@/types";
+import { withLogging } from "@/lib/logging";
 
 const DeleteLegSchema = z.object({
   legId: z.string().uuid(),
 });
 
-export async function deleteLeg(
+const _deleteLeg = async (
   input: z.input<typeof DeleteLegSchema>,
-): Promise<ActionResponse<null>> {
+): Promise<ActionResponse<null>> => {
   const authResult = await requireAuth();
   if (authResult.error) return { data: null, error: authResult.error };
 
@@ -35,4 +36,5 @@ export async function deleteLeg(
   }
 
   return { data: null, error: null };
-}
+};
+export const deleteLeg = withLogging("deleteLeg", _deleteLeg);

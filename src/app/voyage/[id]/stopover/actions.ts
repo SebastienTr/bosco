@@ -16,6 +16,7 @@ import {
   reverseGeocodeBatchServer,
 } from "@/lib/geo/reverse-geocode";
 import type { ActionResponse } from "@/types";
+import { withLogging } from "@/lib/logging";
 
 const DEFAULT_MERGE_RADIUS_NM = 2.7; // ~5 km
 
@@ -76,9 +77,9 @@ async function verifyVoyageOwnership(
 
 // --- Actions ---
 
-export async function persistStopovers(
+const _persistStopovers = async (
   input: z.input<typeof PersistStopoversSchema>,
-): Promise<ActionResponse<Stopover[]>> {
+): Promise<ActionResponse<Stopover[]>> => {
   const authResult = await requireAuth();
   if (authResult.error) return { data: null, error: authResult.error };
 
@@ -237,11 +238,12 @@ export async function persistStopovers(
 
   const finalStopovers = allStopovers.filter((s) => !deletedIds.has(s.id));
   return { data: finalStopovers, error: null };
-}
+};
+export const persistStopovers = withLogging("persistStopovers", _persistStopovers);
 
-export async function renameStopover(
+const _renameStopover = async (
   input: z.input<typeof RenameStopoversSchema>,
-): Promise<ActionResponse<Stopover>> {
+): Promise<ActionResponse<Stopover>> => {
   const authResult = await requireAuth();
   if (authResult.error) return { data: null, error: authResult.error };
 
@@ -265,11 +267,12 @@ export async function renameStopover(
   }
 
   return { data, error: null };
-}
+};
+export const renameStopover = withLogging("renameStopover", _renameStopover);
 
-export async function repositionStopover(
+const _repositionStopover = async (
   input: z.input<typeof RepositionStopoverSchema>,
-): Promise<ActionResponse<Stopover>> {
+): Promise<ActionResponse<Stopover>> => {
   const authResult = await requireAuth();
   if (authResult.error) return { data: null, error: authResult.error };
 
@@ -304,11 +307,12 @@ export async function repositionStopover(
   }
 
   return { data, error: null };
-}
+};
+export const repositionStopover = withLogging("repositionStopover", _repositionStopover);
 
-export async function removeStopover(
+const _removeStopover = async (
   input: z.input<typeof DeleteStopoverSchema>,
-): Promise<ActionResponse<null>> {
+): Promise<ActionResponse<null>> => {
   const authResult = await requireAuth();
   if (authResult.error) return { data: null, error: authResult.error };
 
@@ -329,11 +333,12 @@ export async function removeStopover(
   }
 
   return { data: null, error: null };
-}
+};
+export const removeStopover = withLogging("removeStopover", _removeStopover);
 
-export async function mergeStopovers(
+const _mergeStopovers = async (
   input: z.input<typeof MergeStopoversSchema>,
-): Promise<ActionResponse<Stopover>> {
+): Promise<ActionResponse<Stopover>> => {
   const authResult = await requireAuth();
   if (authResult.error) return { data: null, error: authResult.error };
 
@@ -394,15 +399,16 @@ export async function mergeStopovers(
   await deleteStopoverDb(s2.id);
 
   return { data: updated, error: null };
-}
+};
+export const mergeStopovers = withLogging("mergeStopovers", _mergeStopovers);
 
 const RegeocodeSchema = z.object({
   voyageId: z.string().uuid(),
 });
 
-export async function regeocodeUnnamed(
+const _regeocodeUnnamed = async (
   input: z.input<typeof RegeocodeSchema>,
-): Promise<ActionResponse<Stopover[]>> {
+): Promise<ActionResponse<Stopover[]>> => {
   const authResult = await requireAuth();
   if (authResult.error) return { data: null, error: authResult.error };
 
@@ -451,4 +457,5 @@ export async function regeocodeUnnamed(
   const updatedMap = new Map(updated.map((s) => [s.id, s]));
   const result = stopovers.map((s) => updatedMap.get(s.id) ?? s);
   return { data: result, error: null };
-}
+};
+export const regeocodeUnnamed = withLogging("regeocodeUnnamed", _regeocodeUnnamed);
