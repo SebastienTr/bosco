@@ -19,12 +19,19 @@ function collectText(value: unknown): string {
   return "";
 }
 
+function expectPublishedLegalCopy(text: string, effectiveDate: string) {
+  expect(effectiveDate).toMatch(/^[A-Z][a-z]+ \d{1,2}, \d{4}$/);
+  expect(text).not.toMatch(/\b(todo|tbd|placeholder|draft)\b/i);
+  expect(text).not.toContain("insert approved");
+  expect(text).not.toContain("before publication");
+}
+
 describe("legal content", () => {
   it("covers Bosco-specific privacy disclosures", () => {
     const privacy = legalDocuments.privacy;
     const text = collectText(privacy).toLowerCase();
 
-    expect(privacy.effectiveDate).toBeTruthy();
+    expectPublishedLegalCopy(collectText(privacy), privacy.effectiveDate);
     expect(text).toContain("auth email");
     expect(text).toContain("profile");
     expect(text).toContain("gpx");
@@ -48,7 +55,7 @@ describe("legal content", () => {
     const terms = legalDocuments.terms;
     const text = collectText(terms).toLowerCase();
 
-    expect(terms.effectiveDate).toBeTruthy();
+    expectPublishedLegalCopy(collectText(terms), terms.effectiveDate);
     expect(text).toContain("service");
     expect(text).toContain("account");
     expect(text).toContain("content");

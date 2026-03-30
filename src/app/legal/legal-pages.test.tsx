@@ -24,7 +24,7 @@ describe("legal pages", () => {
   it("renders the privacy policy with a direct link to the terms", async () => {
     const { default: PrivacyPage } = await import("./privacy/page");
 
-    render(<PrivacyPage />);
+    const { container } = render(<PrivacyPage />);
 
     expect(
       screen.getByRole("heading", {
@@ -37,12 +37,13 @@ describe("legal pages", () => {
         name: /terms of service/i,
       }).getAttribute("href"),
     ).toBe("/legal/terms");
+    expect(container.textContent).not.toMatch(/\b(todo|tbd|placeholder|draft)\b/i);
   });
 
   it("renders the terms with a direct link back to the privacy policy", async () => {
     const { default: TermsPage } = await import("./terms/page");
 
-    render(<TermsPage />);
+    const { container } = render(<TermsPage />);
 
     expect(
       screen.getByRole("heading", {
@@ -55,5 +56,6 @@ describe("legal pages", () => {
         name: /privacy policy/i,
       }).getAttribute("href"),
     ).toBe("/legal/privacy");
+    expect(container.textContent).not.toMatch(/\b(todo|tbd|placeholder|draft)\b/i);
   });
 });

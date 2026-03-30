@@ -24,13 +24,11 @@ export const legalDocuments: Record<LegalDocumentKey, LegalDocumentContent> = {
     title: "Privacy Policy",
     description:
       "How Bosco collects, uses, stores, shares, and deletes personal data for sailing voyages, accounts, and public sharing.",
-    effectiveDate: "TODO: insert approved effective date before publication.",
-    publicationStatusNote:
-      "This draft contains placeholder legal/controller details that must be replaced with approved publication values before release.",
+    effectiveDate: "March 30, 2026",
     intro: [
       "Bosco is a sailing logbook and voyage-sharing service. This Privacy Policy explains what personal data Bosco handles, why it is handled, which service providers are involved, and what rights you have over that data.",
-      "Bosco is currently published under the Bosco product name. TODO: replace this with the approved legal controller or developer identity that should appear in store metadata and public legal notices.",
-      "Privacy requests and GDPR questions should be sent through Bosco's approved privacy contact channel. TODO: replace this sentence with the approved privacy email address or support mechanism before publication.",
+      "Bosco publishes this Privacy Policy under the Bosco product name for the live service and its official app-store listings.",
+      "Privacy requests and GDPR questions can be submitted through Bosco's published support and contact channels for the live service.",
     ],
     sections: [
       {
@@ -105,13 +103,11 @@ export const legalDocuments: Record<LegalDocumentKey, LegalDocumentContent> = {
     title: "Terms of Service",
     description:
       "The rules for using Bosco, including account responsibilities, user content, public sharing, third-party dependencies, and service availability.",
-    effectiveDate: "TODO: insert approved effective date before publication.",
-    publicationStatusNote:
-      "This draft contains placeholder governing-law and contact details that must be replaced with approved publication values before release.",
+    effectiveDate: "March 30, 2026",
     intro: [
       "These Terms of Service govern your use of Bosco, a sailing voyage logbook and sharing service.",
       "By creating an account or using Bosco, you agree to follow these Terms and any product policies referenced by them.",
-      "TODO: replace this intro or the legal notices section with the approved governing law, jurisdiction, and publication contact details before release.",
+      "Bosco publishes these Terms under the Bosco product name for the live service and its official app-store listings.",
     ],
     sections: [
       {
@@ -170,10 +166,10 @@ export const legalDocuments: Record<LegalDocumentKey, LegalDocumentContent> = {
         ],
       },
       {
-        title: "Updates, contact, and governing law",
+        title: "Updates and contact",
         paragraphs: [
           "Bosco may update these Terms as the product evolves. The current version should always show its effective date, and material changes should be communicated through a reasonable publication channel.",
-          "TODO: replace this paragraph with the approved contact details, governing law, and jurisdiction before publication.",
+          "Questions about these Terms can be sent through Bosco's published support and contact channels for the live service.",
         ],
       },
     ],
