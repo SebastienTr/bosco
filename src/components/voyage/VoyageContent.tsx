@@ -19,9 +19,11 @@ const StopoverMarkers = dynamic(
   { ssr: false },
 );
 
-const PhotoMarker = dynamic(
+const PhotoMarkerCluster = dynamic(
   () =>
-    import("@/components/map/PhotoMarker").then((m) => m.PhotoMarker),
+    import("@/components/map/PhotoMarkerCluster").then(
+      (m) => m.PhotoMarkerCluster,
+    ),
   { ssr: false },
 );
 import { buildPhotoMarkers } from "@/components/map/photo-markers-utils";
@@ -144,15 +146,10 @@ export function VoyageContent({
         {stopovers.length > 0 && (
           <StopoverMarkers stopovers={stopovers} voyageId={voyageId} />
         )}
-        {photoMarkers.map((m, i) => (
-          <PhotoMarker
-            key={`${m.entryId}-${i}`}
-            position={m.position}
-            photoUrl={m.photoUrl}
-            label={m.label}
-            onTap={handlePhotoTap}
-          />
-        ))}
+        <PhotoMarkerCluster
+          photoMarkers={photoMarkers}
+          onTap={handlePhotoTap}
+        />
       </MapLoader>
 
       {/* Stopover list panel */}

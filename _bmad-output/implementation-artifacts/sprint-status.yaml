@@ -1,5 +1,5 @@
 # generated: 2026-03-15
-# last_updated: 2026-03-30T13:41:39+0200
+# last_updated: 2026-03-30T14:52:00+0200
 # project: bosco
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-15
-last_updated: 2026-03-30T13:41:39+0200
+last_updated: 2026-03-30T14:52:00+0200
 project: bosco
 project_key: NOKEY
 tracking_system: file-system
@@ -94,7 +94,7 @@ development_status:
   # Epic 7: Visual Storytelling — Photos, OG & Sharing
   epic-7: in-progress
   7-1-photo-markers-on-map: done
-  7-2-photo-marker-clustering: backlog
+  7-2-photo-marker-clustering: review
   7-3-photo-lightbox-viewer: backlog
   7-4-dynamic-og-image-generation: backlog
   7-5-native-share-and-share-button: backlog

@@ -37,9 +37,11 @@ const StopoverMarker = dynamic(
   { ssr: false },
 );
 
-const PhotoMarker = dynamic(
+const PhotoMarkerCluster = dynamic(
   () =>
-    import("@/components/map/PhotoMarker").then((m) => m.PhotoMarker),
+    import("@/components/map/PhotoMarkerCluster").then(
+      (m) => m.PhotoMarkerCluster,
+    ),
   { ssr: false },
 );
 
@@ -293,15 +295,10 @@ export default function PublicVoyageContent({
           ))}
 
           {/* Photo markers */}
-          {photoMarkers.map((m, i) => (
-            <PhotoMarker
-              key={`${m.entryId}-${i}`}
-              position={m.position}
-              photoUrl={m.photoUrl}
-              label={m.label}
-              onTap={handlePhotoTap}
-            />
-          ))}
+          <PhotoMarkerCluster
+            photoMarkers={photoMarkers}
+            onTap={handlePhotoTap}
+          />
 
           {/* Boat marker */}
           {boatPosition && <BoatMarker position={boatPosition} />}
