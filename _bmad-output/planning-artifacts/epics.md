@@ -241,10 +241,11 @@ This document provides the complete epic and story breakdown for Bosco v1.0, dec
 **v1.0 (Epics 5-10) — New Work:**
 - FR-3: Epic 5 (Custom SMTP)
 - FR-66, FR-67: Epic 5 (Legal/RGPD)
-- FR-4: Epic 6 (Cross-platform auth)
-- FR-14, FR-15: Epic 6 (Share sheet import iOS + Android)
-- FR-48: Epic 6 (Deep linking)
-- FR-61, FR-62, FR-63: Epic 6 (App store distribution)
+- FR-14 (Android): Epic 6A (Android share target intent filter)
+- FR-4: Epic 6B (Cross-platform auth — requires iOS)
+- FR-14 (iOS), FR-15: Epic 6B (iOS share extension + file preservation)
+- FR-48: Epic 6B (Deep linking)
+- FR-61, FR-62, FR-63: Epic 6B (App store distribution + QA)
 - FR-33, FR-34, FR-35: Epic 7 (Photo markers + lightbox)
 - FR-43, FR-44: Epic 7 (Dynamic OG + dual CTA)
 - FR-46, FR-47: Epic 7 (Native share + rich previews)
@@ -269,11 +270,20 @@ Bosco runs on production infrastructure with branded auth emails, RGPD complianc
 **NFRs addressed:** NFR-27→32
 **Priority:** Must-Have
 
-### Epic 6: App Store Distribution & Native Import
-Sailors can download Bosco from the Apple App Store and Google Play Store, and import GPX files directly from Navionics via the OS share sheet on both iOS and Android. Deep links open in the native app when installed.
-**FRs covered:** FR-4, FR-14, FR-15, FR-48, FR-61, FR-62, FR-63
-**ARs covered:** AR-2→6, AR-17, AR-18
-**Implementation note:** Android Intent filter first (rapid), iOS Share Extension second (complex). App on stores without share sheet has no differentiating value — ship together.
+### Epic 6A: Android App & Native Import
+Capacitor project setup with Android build and GPX share target via intent filter. Validates the native wrapper approach before iOS.
+**FRs covered:** FR-14 (Android only)
+**ARs covered:** AR-2, AR-4, AR-6
+**Stories:** 6.1, 6.2
+**Priority:** Must-Have
+
+### Epic 6B: iOS App, Store Distribution & Cross-Platform QA
+iOS build, Share Extension, deep linking, cross-platform auth, app store submission, and QA across all platforms. Includes Story 8.2 (Native App Onboarding) moved from Epic 8.
+**FRs covered:** FR-4, FR-14 (iOS), FR-15, FR-48, FR-53, FR-61, FR-62, FR-63
+**ARs covered:** AR-3, AR-5, AR-17, AR-18
+**UX-DRs covered:** UX-DR2, UX-DR3
+**Stories:** 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 8.2
+**Deferred:** Requires physical iPhone for testing. See sprint-change-proposal-2026-03-30.md
 **Priority:** Must-Have
 
 ### Epic 7: Visual Storytelling — Photos, OG & Sharing
@@ -285,8 +295,9 @@ Photos appear as markers on the voyage map with clustering and lightbox. Shared 
 
 ### Epic 8: Landing Page & Onboarding
 New sailors discover Bosco through a compelling landing page with live demo, complete onboarding without assistance, and get clear help when something goes wrong. Enhanced empty states guide first-time users.
-**FRs covered:** FR-52, FR-53, FR-54, FR-55, FR-56
-**UX-DRs covered:** UX-DR1, UX-DR2, UX-DR17, UX-DR18, UX-DR19
+**FRs covered:** FR-52, FR-54, FR-55, FR-56
+**UX-DRs covered:** UX-DR1, UX-DR17, UX-DR18, UX-DR19
+**Note:** Story 8.2 (Native App Onboarding, FR-53, UX-DR2) moved to Epic 6B
 **Priority:** Must-Have
 
 ### Epic 9: Offline & Internationalization — Polish & Reach
@@ -389,9 +400,11 @@ So that I can exercise my RGPD right to erasure.
 
 ---
 
-## Epic 6: App Store Distribution & Native Import
+## Epic 6A: Android App & Native Import
 
-Sailors can download Bosco from both app stores and import GPX files directly from Navionics via the OS share sheet on iOS and Android.
+> **Split from original Epic 6** — iOS stories deferred to Epic 6B (no iPhone for testing). See sprint-change-proposal-2026-03-30.md.
+
+Capacitor project setup with Android build and GPX share target via intent filter.
 
 ### Story 6.1: Capacitor Project Setup & Android Build
 
@@ -424,97 +437,6 @@ So that I can import tracks without manual file picking.
 **And** the import preview screen shows with the received file pre-loaded
 **And** the import flow completes identically to the file picker flow
 **And** `application/gpx+xml` and `.gpx` file extensions are handled
-
-### Story 6.3: iOS Project Setup & Basic Build
-
-As a developer,
-I want the iOS Capacitor build working,
-So that we can submit to the App Store.
-
-**Acceptance Criteria:**
-
-**Given** the Capacitor project
-**When** `npx cap sync ios` runs
-**Then** `ios/` directory contains a valid Xcode project
-**And** the app builds in Xcode without errors
-**And** the app runs in iOS Simulator and loads sailbosco.com
-**And** status bar and splash screen are correctly styled
-
-### Story 6.4: iOS Share Extension for GPX Import
-
-As a sailor on iOS,
-I want to share a GPX file from Navionics directly to Bosco,
-So that I can import tracks without manual file picking on iPhone.
-
-**Acceptance Criteria:**
-
-**Given** the iOS app is installed
-**When** the user exports from Navionics and selects "Bosco" in the iOS share sheet
-**Then** the Share Extension activates with "Opening in Bosco..." indicator
-**And** the GPX file is stored in the App Group shared container
-**And** the main app opens and detects the pending import file
-**And** the import preview screen shows with the received file pre-loaded
-**And** the flow works for single and multiple GPX files
-
-### Story 6.5: Deep Linking (Universal Links & App Links)
-
-As a user,
-I want tapping a sailbosco.com link to open in the native app when installed,
-So that I get the native experience for shared voyage links.
-
-**Acceptance Criteria:**
-
-**Given** the native app is installed on the user's device
-**When** the user taps a `sailbosco.com/Seb/goteborg-to-nice` link
-**Then** the link opens in the Bosco app on the correct voyage page
-**And** `public/.well-known/apple-app-site-association` is served correctly
-**And** `public/.well-known/assetlinks.json` is served correctly
-**And** if the app is NOT installed, the link opens in the web browser
-
-### Story 6.6: Cross-Platform Auth & File Preservation
-
-As a sailor,
-I want to sign in on iOS, Android, or web with the same account,
-So that my voyages are accessible everywhere.
-
-**Acceptance Criteria:**
-
-**Given** a user with an existing account
-**When** they sign in via magic link on any platform (web, iOS, Android)
-**Then** authentication succeeds and their voyages are accessible
-**And** auth tokens are stored securely (Capacitor secure storage on native, httpOnly cookies on web)
-**And** sessions persist across app relaunches until explicit logout
-**And** if a GPX file was shared before authentication, the file is preserved and the import flow resumes after sign-in (FR-15)
-
-### Story 6.7: App Store Submission & Listings
-
-As a sailor,
-I want to find and download Bosco on the App Store and Play Store,
-So that I can install it on my device.
-
-**Acceptance Criteria:**
-
-**Given** the iOS and Android apps are built and tested
-**When** submitted to the respective stores
-**Then** Bosco is listed on the Apple App Store with screenshots, description, and privacy labels
-**And** Bosco is listed on Google Play Store with screenshots, description, and data safety section
-**And** store listings are optimized for keywords: "sailing", "voyage tracker", "GPS track", "logbook", "Navionics"
-**And** age rating is set appropriately (4+ / Everyone)
-
-### Story 6.8: Cross-Platform QA & Parity
-
-As a sailor,
-I want core flows to work identically on web, iOS, and Android,
-So that I have a consistent experience regardless of platform.
-
-**Acceptance Criteria:**
-
-**Given** the app is deployed on all 3 platforms
-**When** a user completes: sign up → create voyage → import GPX → view map → add journal → share
-**Then** all steps complete successfully on web, iOS app, and Android app
-**And** zero Sentry errors on the critical path across all platforms
-**And** map interactions (zoom, pan, tap markers) work on all platforms
-**And** native capabilities (share sheet, file picker) degrade gracefully on web
 
 ---
 
@@ -639,21 +561,7 @@ So that I download the app or sign up.
 **And** the page is fully responsive (stacks vertically on mobile)
 **And** the page loads with FMP <2s on 4G
 
-### Story 8.2: Native App Onboarding Flow
-
-As a new sailor who just installed Bosco,
-I want to be guided to create my first voyage quickly,
-So that I experience the core value immediately.
-
-**Acceptance Criteria:**
-
-**Given** a new user launching the app for the first time
-**When** the app opens
-**Then** a splash screen displays for max 1.5s
-**And** if not authenticated: a condensed landing with "Sign in with email" is shown
-**And** after authentication: profile setup (username + boat name) is presented
-**And** after profile setup: "Create your first voyage" is prompted immediately
-**And** the onboarding flow requires no more than 4 screens to reach the voyage map
+> **Story 8.2 (Native App Onboarding Flow) moved to Epic 6B** — requires native Capacitor app.
 
 ### Story 8.3: Enhanced Empty State with Demo Voyage
 
@@ -886,3 +794,121 @@ So that I can see more information at a glance.
 **And** cards show last import date: "Last track: 3 days ago"
 **And** cards show journal count and country flags
 **And** quick actions are available on hover/long-press: "View", "Import track", "Settings"
+
+---
+
+## Epic 6B: iOS App, Store Distribution & Cross-Platform QA
+
+> **Deferred from original Epic 6** — requires physical iPhone for testing. See sprint-change-proposal-2026-03-30.md.
+> Includes Story 8.2 (Native App Onboarding) moved from Epic 8.
+
+iOS build, Share Extension, deep linking, cross-platform auth, app store submission, and QA across all platforms.
+
+### Story 6.3: iOS Project Setup & Basic Build
+
+As a developer,
+I want the iOS Capacitor build working,
+So that we can submit to the App Store.
+
+**Acceptance Criteria:**
+
+**Given** the Capacitor project
+**When** `npx cap sync ios` runs
+**Then** `ios/` directory contains a valid Xcode project
+**And** the app builds in Xcode without errors
+**And** the app runs in iOS Simulator and loads sailbosco.com
+**And** status bar and splash screen are correctly styled
+
+### Story 6.4: iOS Share Extension for GPX Import
+
+As a sailor on iOS,
+I want to share a GPX file from Navionics directly to Bosco,
+So that I can import tracks without manual file picking on iPhone.
+
+**Acceptance Criteria:**
+
+**Given** the iOS app is installed
+**When** the user exports from Navionics and selects "Bosco" in the iOS share sheet
+**Then** the Share Extension activates with "Opening in Bosco..." indicator
+**And** the GPX file is stored in the App Group shared container
+**And** the main app opens and detects the pending import file
+**And** the import preview screen shows with the received file pre-loaded
+**And** the flow works for single and multiple GPX files
+
+### Story 6.5: Deep Linking (Universal Links & App Links)
+
+As a user,
+I want tapping a sailbosco.com link to open in the native app when installed,
+So that I get the native experience for shared voyage links.
+
+**Acceptance Criteria:**
+
+**Given** the native app is installed on the user's device
+**When** the user taps a `sailbosco.com/Seb/goteborg-to-nice` link
+**Then** the link opens in the Bosco app on the correct voyage page
+**And** `public/.well-known/apple-app-site-association` is served correctly
+**And** `public/.well-known/assetlinks.json` is served correctly
+**And** if the app is NOT installed, the link opens in the web browser
+
+### Story 6.6: Cross-Platform Auth & File Preservation
+
+As a sailor,
+I want to sign in on iOS, Android, or web with the same account,
+So that my voyages are accessible everywhere.
+
+**Acceptance Criteria:**
+
+**Given** a user with an existing account
+**When** they sign in via magic link on any platform (web, iOS, Android)
+**Then** authentication succeeds and their voyages are accessible
+**And** auth tokens are stored securely (Capacitor secure storage on native, httpOnly cookies on web)
+**And** sessions persist across app relaunches until explicit logout
+**And** if a GPX file was shared before authentication, the file is preserved and the import flow resumes after sign-in (FR-15)
+
+### Story 6.7: App Store Submission & Listings
+
+As a sailor,
+I want to find and download Bosco on the App Store and Play Store,
+So that I can install it on my device.
+
+**Acceptance Criteria:**
+
+**Given** the iOS and Android apps are built and tested
+**When** submitted to the respective stores
+**Then** Bosco is listed on the Apple App Store with screenshots, description, and privacy labels
+**And** Bosco is listed on Google Play Store with screenshots, description, and data safety section
+**And** store listings are optimized for keywords: "sailing", "voyage tracker", "GPS track", "logbook", "Navionics"
+**And** age rating is set appropriately (4+ / Everyone)
+
+### Story 6.8: Cross-Platform QA & Parity
+
+As a sailor,
+I want core flows to work identically on web, iOS, and Android,
+So that I have a consistent experience regardless of platform.
+
+**Acceptance Criteria:**
+
+**Given** the app is deployed on all 3 platforms
+**When** a user completes: sign up → create voyage → import GPX → view map → add journal → share
+**Then** all steps complete successfully on web, iOS app, and Android app
+**And** zero Sentry errors on the critical path across all platforms
+**And** map interactions (zoom, pan, tap markers) work on all platforms
+**And** native capabilities (share sheet, file picker) degrade gracefully on web
+
+### Story 8.2: Native App Onboarding Flow
+
+> Moved from Epic 8 — requires native Capacitor app to be functional.
+
+As a new sailor who just installed Bosco,
+I want to be guided to create my first voyage quickly,
+So that I experience the core value immediately.
+
+**Acceptance Criteria:**
+
+**Given** a new user launching the app for the first time
+**When** the app opens
+**Then** a splash screen displays for max 1.5s
+**And** if not authenticated: a condensed landing with "Sign in with email" is shown
+**And** after authentication: profile setup (username + boat name) is presented
+**And** after profile setup: "Create your first voyage" is prompted immediately
+**And** the onboarding flow requires no more than 4 screens to reach the voyage map

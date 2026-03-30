@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+const mockGetPublicProfileByUsername = vi.fn();
 import {
   insertVoyage,
   getVoyagesByUserId,
@@ -10,6 +11,11 @@ import {
   getPublicVoyageBySlug,
   getPublicVoyagesByUserId,
 } from "./voyages";
+
+vi.mock("./profiles", () => ({
+  getPublicProfileByUsername: (...args: unknown[]) =>
+    mockGetPublicProfileByUsername(...args),
+}));
 
 // Mock supabase server client
 const mockSingle = vi.fn();
@@ -33,6 +39,18 @@ vi.mock("@/lib/supabase/server", () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockGetPublicProfileByUsername.mockResolvedValue({
+    data: {
+      id: "p-1",
+      username: "sailor",
+      boat_name: "Bosco",
+      boat_type: "Catamaran",
+      bio: null,
+      profile_photo_url: null,
+      boat_photo_url: null,
+    },
+    error: null,
+  });
 
   // Default chain setup
   mockFrom.mockReturnValue({
@@ -199,7 +217,6 @@ describe("getPublicVoyageBySlug", () => {
       name: "Mediterranean Cruise",
       slug: "med-cruise",
       is_public: true,
-      profiles: { id: "p-1", username: "sailor", boat_name: "Bosco", boat_type: "Catamaran", profile_photo_url: null },
       legs: [{ id: "l-1", track_geojson: {}, distance_nm: 120 }],
       stopovers: [{ id: "s-1", name: "Marseille", country: "France" }],
     };
@@ -207,12 +224,37 @@ describe("getPublicVoyageBySlug", () => {
 
     const result = await getPublicVoyageBySlug("sailor", "med-cruise");
 
+    expect(mockGetPublicProfileByUsername).toHaveBeenCalledWith("sailor");
     expect(mockFrom).toHaveBeenCalledWith("voyages");
-    expect(result.data).toEqual(voyage);
+    expect(result.data).toEqual({
+      ...voyage,
+      profiles: {
+        id: "p-1",
+        username: "sailor",
+        boat_name: "Bosco",
+        boat_type: "Catamaran",
+        profile_photo_url: null,
+      },
+    });
     expect(result.error).toBeNull();
   });
 
-  it("should return error when voyage not found", async () => {
+  it("should return not found when the public profile does not exist", async () => {
+    mockGetPublicProfileByUsername.mockResolvedValue({
+      data: null,
+      error: { code: "PGRST116", message: "No rows found" },
+    });
+
+    const result = await getPublicVoyageBySlug("nobody", "nonexistent");
+
+    expect(result).toEqual({
+      data: null,
+      error: { code: "NOT_FOUND", message: "No rows found" },
+    });
+    expect(mockFrom).not.toHaveBeenCalled();
+  });
+
+  it("should return not found when voyage not found", async () => {
     mockSingle.mockResolvedValue({
       data: null,
       error: { code: "PGRST116", message: "No rows found" },
@@ -221,10 +263,13 @@ describe("getPublicVoyageBySlug", () => {
     const result = await getPublicVoyageBySlug("nobody", "nonexistent");
 
     expect(result.data).toBeNull();
-    expect(result.error).toBeTruthy();
+    expect(result.error).toEqual({
+      code: "NOT_FOUND",
+      message: "No rows found",
+    });
   });
 
-  it("should return error for private voyage (is_public = false)", async () => {
+  it("should return not found for private voyage (is_public = false)", async () => {
     mockSingle.mockResolvedValue({
       data: null,
       error: { code: "PGRST116", message: "No rows found" },
@@ -233,7 +278,10 @@ describe("getPublicVoyageBySlug", () => {
     const result = await getPublicVoyageBySlug("sailor", "private-voyage");
 
     expect(result.data).toBeNull();
-    expect(result.error).toBeTruthy();
+    expect(result.error).toEqual({
+      code: "NOT_FOUND",
+      message: "No rows found",
+    });
   });
 });
 

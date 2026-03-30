@@ -10,7 +10,7 @@ vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(async () => ({
     rpc: (...args: unknown[]) => mockRpc(...args),
     from: vi.fn((table: string) => {
-      if (table !== "profiles") {
+      if (!["profiles", "public_profiles"].includes(table)) {
         throw new Error(`Unexpected table: ${table}`);
       }
 
@@ -88,9 +88,7 @@ describe("getPublicProfileByUsername", () => {
     const result = await getPublicProfileByUsername("skipper");
 
     expect(result).toEqual({ data: mockProfile, error: null });
-    expect(mockSelect).toHaveBeenCalledWith(
-      "id, username, boat_name, boat_type, bio, profile_photo_url, boat_photo_url",
-    );
+    expect(mockSelect).toHaveBeenCalledWith("*");
     expect(mockEq).toHaveBeenCalledWith("username", "skipper");
   });
 });

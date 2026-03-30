@@ -3,9 +3,10 @@ import type { ActionResponse } from "@/types";
 import type { Tables, TablesUpdate } from "@/types/supabase";
 
 export type Profile = Tables<"profiles">;
+export type PublicProfile = Tables<"public_profiles">;
 export type ProfileUpdate = Omit<
   TablesUpdate<"profiles">,
-  "created_at" | "id" | "updated_at"
+  "created_at" | "id" | "updated_at" | "is_admin" | "disabled_at"
 >;
 
 export async function getProfileByUserId(userId: Profile["id"]) {
@@ -18,10 +19,8 @@ export async function getPublicProfileByUsername(username: string) {
   const supabase = await createClient();
 
   return supabase
-    .from("profiles")
-    .select(
-      "id, username, boat_name, boat_type, bio, profile_photo_url, boat_photo_url",
-    )
+    .from("public_profiles")
+    .select("*")
     .eq("username", username)
     .single();
 }

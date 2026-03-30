@@ -1,5 +1,5 @@
 # generated: 2026-03-15
-# last_updated: 2026-03-30T20:00:00
+# last_updated: 2026-03-30T07:10:00
 # project: bosco
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-15
-last_updated: 2026-03-30T20:00:00
+last_updated: 2026-03-30T07:10:00
 project: bosco
 project_key: NOKEY
 tracking_system: file-system
@@ -85,23 +85,11 @@ development_status:
   # Epic 5: Production Infrastructure & Legal
   epic-5: in-progress
   5-1-supabase-pro-migration-and-custom-smtp: done
-  5-2-database-schema-updates-for-v1: backlog
+  5-2-database-schema-updates-for-v1: review
   5-3-production-monitoring-and-observability: backlog
   5-4-privacy-policy-and-terms-of-service: backlog
   5-5-account-deletion-with-data-cascade: backlog
   epic-5-retrospective: optional
-
-  # Epic 6: App Store Distribution & Native Import
-  epic-6: backlog
-  6-1-capacitor-project-setup-and-android-build: backlog
-  6-2-android-gpx-share-target-intent-filter: backlog
-  6-3-ios-project-setup-and-basic-build: backlog
-  6-4-ios-share-extension-for-gpx-import: backlog
-  6-5-deep-linking-universal-links-and-app-links: backlog
-  6-6-cross-platform-auth-and-file-preservation: backlog
-  6-7-app-store-submission-and-listings: backlog
-  6-8-cross-platform-qa-and-parity: backlog
-  epic-6-retrospective: optional
 
   # Epic 7: Visual Storytelling — Photos, OG & Sharing
   epic-7: backlog
@@ -116,11 +104,20 @@ development_status:
   # Epic 8: Landing Page & Onboarding
   epic-8: backlog
   8-1-landing-page-redesign: backlog
-  8-2-native-app-onboarding-flow: backlog
+  # 8-2 moved to Epic 6B (requires native app)
   8-3-enhanced-empty-state-with-demo-voyage: backlog
   8-4-actionable-error-messages-and-recovery-ux: backlog
   8-5-navionics-gpx-export-guide: backlog
   epic-8-retrospective: optional
+
+  # Epic 6A: Android App & Native Import
+  # Split from Epic 6 — iOS deferred to Epic 6B (no iPhone for testing)
+  # Moved after Epics 7-8 (web-first features have higher immediate value)
+  # See sprint-change-proposal-2026-03-30.md
+  epic-6a: backlog
+  6-1-capacitor-project-setup-and-android-build: backlog
+  6-2-android-gpx-share-target-intent-filter: backlog
+  epic-6a-retrospective: optional
 
   # Epic 9: Offline & Internationalization — Polish & Reach
   epic-9: backlog
@@ -140,3 +137,21 @@ development_status:
   10-5-trophy-coming-soon-preview: backlog
   10-6-enhanced-dashboard-voyage-cards: backlog
   epic-10-retrospective: optional
+
+  # ============================================
+  # DEFERRED — iOS & APP STORE (requires iPhone)
+  # ============================================
+
+  # Epic 6B: iOS App, Store Distribution & Cross-Platform QA
+  # Deferred: requires physical iPhone for testing
+  # Includes Story 8.2 (Native App Onboarding) moved from Epic 8
+  # See sprint-change-proposal-2026-03-30.md
+  epic-6b: backlog
+  6-3-ios-project-setup-and-basic-build: backlog
+  6-4-ios-share-extension-for-gpx-import: backlog
+  6-5-deep-linking-universal-links-and-app-links: backlog
+  6-6-cross-platform-auth-and-file-preservation: backlog
+  6-7-app-store-submission-and-listings: backlog
+  6-8-cross-platform-qa-and-parity: backlog
+  8-2-native-app-onboarding-flow: backlog
+  epic-6b-retrospective: optional

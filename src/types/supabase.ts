@@ -173,7 +173,10 @@ export type Database = {
           boat_photo_url: string | null
           boat_type: string | null
           created_at: string
+          disabled_at: string | null
           id: string
+          is_admin: boolean
+          preferred_language: string
           profile_photo_url: string | null
           updated_at: string
           username: string | null
@@ -184,7 +187,10 @@ export type Database = {
           boat_photo_url?: string | null
           boat_type?: string | null
           created_at?: string
+          disabled_at?: string | null
           id: string
+          is_admin?: boolean
+          preferred_language?: string
           profile_photo_url?: string | null
           updated_at?: string
           username?: string | null
@@ -195,7 +201,10 @@ export type Database = {
           boat_photo_url?: string | null
           boat_type?: string | null
           created_at?: string
+          disabled_at?: string | null
           id?: string
+          is_admin?: boolean
+          preferred_language?: string
           profile_photo_url?: string | null
           updated_at?: string
           username?: string | null
@@ -295,7 +304,18 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          bio: string | null
+          boat_name: string | null
+          boat_photo_url: string | null
+          boat_type: string | null
+          id: string
+          profile_photo_url: string | null
+          username: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_pseudo_availability: {
@@ -437,4 +457,3 @@ export const Constants = {
     Enums: {},
   },
 } as const
-
