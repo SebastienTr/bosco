@@ -250,11 +250,23 @@ export function LogEntryForm({
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 font-body text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2"
           >
             <option value="">{messages.form.legNone}</option>
-            {legs.map((leg, index) => (
-              <option key={leg.id} value={leg.id}>
-                Leg {index + 1}
-              </option>
-            ))}
+            {legs.map((leg, index) => {
+              const from = stopovers[index]?.name;
+              const to = stopovers[index + 1]?.name;
+              const label =
+                from && to
+                  ? `${from} → ${to}`
+                  : from
+                    ? `${from} → …`
+                    : to
+                      ? `… → ${to}`
+                      : `Leg ${index + 1}`;
+              return (
+                <option key={leg.id} value={leg.id}>
+                  {label}
+                </option>
+              );
+            })}
           </select>
         </div>
       )}

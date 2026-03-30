@@ -41,7 +41,13 @@ export function JournalSection({
   function getLegLabel(legId: string | null): string | null {
     if (!legId) return null;
     const index = legs.findIndex((l) => l.id === legId);
-    return index >= 0 ? `Leg ${index + 1}` : null;
+    if (index < 0) return null;
+    const from = stopovers[index]?.name;
+    const to = stopovers[index + 1]?.name;
+    if (from && to) return `${from} → ${to}`;
+    if (from) return `${from} → …`;
+    if (to) return `… → ${to}`;
+    return `Leg ${index + 1}`;
   }
 
   function getStopoverName(stopoverId: string | null): string | null {

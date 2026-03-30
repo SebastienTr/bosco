@@ -63,12 +63,23 @@ export function JournalTimeline({
   ariaLabel,
 }: JournalTimelineProps) {
   const legLabelsById = useMemo(() => {
+    const sorted = [...legs].sort(compareLegs);
     return new Map(
-      [...legs]
-        .sort(compareLegs)
-        .map((leg, index) => [leg.id, `Leg ${index + 1}`] as const),
+      sorted.map((leg, index) => {
+        const from = stopovers[index]?.name;
+        const to = stopovers[index + 1]?.name;
+        const label =
+          from && to
+            ? `${from} → ${to}`
+            : from
+              ? `${from} → …`
+              : to
+                ? `… → ${to}`
+                : `Leg ${index + 1}`;
+        return [leg.id, label] as const;
+      }),
     );
-  }, [legs]);
+  }, [legs, stopovers]);
 
   if (entries.length === 0) return null;
 
