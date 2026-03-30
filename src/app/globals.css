@@ -210,4 +210,15 @@
     outline: 2px solid var(--color-ocean);
     outline-offset: 2px;
   }
+
+  .bosco-photo-cluster-marker {
+    cursor: pointer;
+    border-radius: 50%;
+  }
+
+  .bosco-photo-cluster-marker:focus,
+  .bosco-photo-cluster-marker:focus-visible {
+    outline: 2px solid var(--color-ocean);
+    outline-offset: 2px;
+  }
 }
