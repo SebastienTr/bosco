@@ -4,6 +4,7 @@ import { requireAuth } from "@/lib/auth";
 import { getProfileByUserId } from "@/lib/data/profiles";
 import { SharePendingRedirect } from "../SharePendingRedirect";
 import { ProfileForm } from "./ProfileForm";
+import { SignOutButton } from "./SignOutButton";
 import { messages } from "./messages";
 
 export const metadata: Metadata = {
@@ -39,6 +40,10 @@ export default async function ProfilePage() {
           profile={profile}
           isEdit={isEdit}
         />
+
+        <div className="mt-8 border-t border-foam pt-6">
+          <SignOutButton />
+        </div>
       </div>
     </main>
   );

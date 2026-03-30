@@ -47,6 +47,7 @@ export const messages = {
     save: "Save profile",
     update: "Update profile",
     saving: "Saving...",
+    signOut: "Sign out",
   },
   toast: {
     created: "Profile created",
