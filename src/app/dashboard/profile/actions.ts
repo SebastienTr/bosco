@@ -4,10 +4,10 @@ import type { ActionResponse } from "@/types";
 import { requireAuth, signOut } from "@/lib/auth";
 import {
   checkUsernameAvailability,
-  disableProfile,
   updateProfile,
 } from "@/lib/data/profiles";
 import {
+  disableAccountProfile,
   deleteAccountData,
   validateAccountDeletionSetup,
 } from "@/lib/data/account-deletion";
@@ -204,7 +204,7 @@ const _deleteAccount = async (input: {
     return { data: null, error: setupResult.error };
   }
 
-  const disableResult = await disableProfile(auth.data.id);
+  const disableResult = await disableAccountProfile(auth.data.id);
   if (disableResult.error) {
     return { data: null, error: disableResult.error };
   }

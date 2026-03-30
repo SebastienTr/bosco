@@ -5,11 +5,11 @@ import { messages } from "./messages";
 const mockRequireAuth = vi.fn();
 const mockSignOut = vi.fn();
 const mockCheckUsernameAvailability = vi.fn();
-const mockDisableProfile = vi.fn();
 const mockUpdateProfile = vi.fn();
 const mockUploadFile = vi.fn();
 const mockDeleteAccountData = vi.fn();
 const mockValidateAccountDeletionSetup = vi.fn();
+const mockDisableAccountProfile = vi.fn();
 
 vi.mock("@/lib/auth", () => ({
   requireAuth: (...args: unknown[]) => mockRequireAuth(...args),
@@ -18,7 +18,6 @@ vi.mock("@/lib/auth", () => ({
 
 vi.mock("@/lib/data/profiles", () => ({
   checkUsernameAvailability: (...args: unknown[]) => mockCheckUsernameAvailability(...args),
-  disableProfile: (...args: unknown[]) => mockDisableProfile(...args),
   updateProfile: (...args: unknown[]) => mockUpdateProfile(...args),
 }));
 
@@ -27,6 +26,7 @@ vi.mock("@/lib/storage", () => ({
 }));
 
 vi.mock("@/lib/data/account-deletion", () => ({
+  disableAccountProfile: (...args: unknown[]) => mockDisableAccountProfile(...args),
   deleteAccountData: (...args: unknown[]) => mockDeleteAccountData(...args),
   validateAccountDeletionSetup: (...args: unknown[]) => mockValidateAccountDeletionSetup(...args),
 }));
@@ -37,7 +37,7 @@ describe("profile actions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockRequireAuth.mockResolvedValue({ data: mockUser, error: null });
-    mockDisableProfile.mockResolvedValue({
+    mockDisableAccountProfile.mockResolvedValue({
       data: { disabledAt: "2026-03-30T08:00:00.000Z" },
       error: null,
     });
@@ -352,7 +352,7 @@ describe("profile actions", () => {
         error: null,
       });
       expect(mockValidateAccountDeletionSetup).toHaveBeenCalled();
-      expect(mockDisableProfile).toHaveBeenCalledWith("user-123");
+      expect(mockDisableAccountProfile).toHaveBeenCalledWith("user-123");
       expect(mockDeleteAccountData).toHaveBeenCalledWith("user-123");
       expect(mockSignOut).toHaveBeenCalled();
     });
@@ -370,7 +370,7 @@ describe("profile actions", () => {
         },
       });
       expect(mockValidateAccountDeletionSetup).not.toHaveBeenCalled();
-      expect(mockDisableProfile).not.toHaveBeenCalled();
+      expect(mockDisableAccountProfile).not.toHaveBeenCalled();
       expect(mockDeleteAccountData).not.toHaveBeenCalled();
     });
 
@@ -389,7 +389,7 @@ describe("profile actions", () => {
         error: { code: "UNAUTHORIZED", message: "Not signed in" },
       });
       expect(mockValidateAccountDeletionSetup).not.toHaveBeenCalled();
-      expect(mockDisableProfile).not.toHaveBeenCalled();
+      expect(mockDisableAccountProfile).not.toHaveBeenCalled();
     });
 
     it("fails fast when admin deletion setup is not available", async () => {
@@ -412,7 +412,7 @@ describe("profile actions", () => {
           message: "Missing SUPABASE_SERVICE_ROLE_KEY.",
         },
       });
-      expect(mockDisableProfile).not.toHaveBeenCalled();
+      expect(mockDisableAccountProfile).not.toHaveBeenCalled();
       expect(mockSignOut).not.toHaveBeenCalled();
       expect(mockDeleteAccountData).not.toHaveBeenCalled();
     });

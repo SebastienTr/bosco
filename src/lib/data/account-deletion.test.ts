@@ -1,11 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  disableAccountProfile,
   deleteAccountData,
   validateAccountDeletionSetup,
 } from "./account-deletion";
 
 const mockDeleteFilesRecursively = vi.fn();
 const mockDeleteUser = vi.fn();
+const mockUpdate = vi.fn();
+const mockEq = vi.fn();
 const mockCreateAdminClient = vi.fn();
 
 vi.mock("@/lib/storage", () => ({
@@ -20,6 +23,17 @@ describe("deleteAccountData", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCreateAdminClient.mockReturnValue({
+      from: vi.fn(() => ({
+        update: (...args: unknown[]) => {
+          mockUpdate(...args);
+          return {
+            eq: (...eqArgs: unknown[]) => {
+              mockEq(...eqArgs);
+              return { error: null };
+            },
+          };
+        },
+      })),
       auth: {
         admin: {
           deleteUser: mockDeleteUser,
@@ -119,6 +133,48 @@ describe("validateAccountDeletionSetup", () => {
       error: {
         code: "EXTERNAL_SERVICE_ERROR",
         message: "Missing SUPABASE_SERVICE_ROLE_KEY.",
+      },
+    });
+  });
+});
+
+describe("disableAccountProfile", () => {
+  it("uses the admin client to set disabled_at", async () => {
+    const result = await disableAccountProfile("user-123");
+
+    expect(result.error).toBeNull();
+    expect(mockUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        disabled_at: expect.any(String),
+        updated_at: expect.any(String),
+      }),
+    );
+    expect(mockEq).toHaveBeenCalledWith("id", "user-123");
+  });
+
+  it("returns an error when the privileged profile update fails", async () => {
+    mockCreateAdminClient.mockReturnValueOnce({
+      from: vi.fn(() => ({
+        update: () => ({
+          eq: () => ({
+            error: { message: "new row violates row-level security policy" },
+          }),
+        }),
+      })),
+      auth: {
+        admin: {
+          deleteUser: mockDeleteUser,
+        },
+      },
+    });
+
+    const result = await disableAccountProfile("user-123");
+
+    expect(result).toEqual({
+      data: null,
+      error: {
+        code: "EXTERNAL_SERVICE_ERROR",
+        message: "new row violates row-level security policy",
       },
     });
   });

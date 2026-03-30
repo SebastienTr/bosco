@@ -46,6 +46,43 @@ export async function validateAccountDeletionSetup(): Promise<
   };
 }
 
+export async function disableAccountProfile(
+  userId: string,
+): Promise<ActionResponse<{ disabledAt: string }>> {
+  const adminClientResult = getAccountDeletionAdminClient();
+
+  if (adminClientResult.error) {
+    return {
+      data: null,
+      error: adminClientResult.error,
+    };
+  }
+
+  const disabledAt = new Date().toISOString();
+  const { error } = await adminClientResult.client
+    .from("profiles")
+    .update({
+      disabled_at: disabledAt,
+      updated_at: disabledAt,
+    })
+    .eq("id", userId);
+
+  if (error) {
+    return {
+      data: null,
+      error: {
+        code: "EXTERNAL_SERVICE_ERROR",
+        message: error.message,
+      },
+    };
+  }
+
+  return {
+    data: { disabledAt },
+    error: null,
+  };
+}
+
 export async function deleteAccountData(
   userId: string,
 ): Promise<ActionResponse<{ success: true }>> {
