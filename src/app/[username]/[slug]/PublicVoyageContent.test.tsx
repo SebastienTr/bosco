@@ -67,7 +67,6 @@ describe("PublicVoyageContent", () => {
     portsCount: 0,
     countriesCount: 0,
     boatName: "Selkie",
-    boatType: "Sloop",
     username: "seb",
     logEntries: [
       {

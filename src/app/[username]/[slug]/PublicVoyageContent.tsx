@@ -3,8 +3,8 @@
 import { useCallback, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import MapLoader from "@/components/map/MapLoader";
+import Link from "next/link";
 import { StatsBar } from "@/components/voyage/StatsBar";
-import { BoatBadge } from "@/components/voyage/BoatBadge";
 import { StopoverSheet } from "@/components/voyage/StopoverSheet";
 import { PortsPanel } from "@/components/voyage/PortsPanel";
 import { ActionFAB } from "@/components/voyage/ActionFAB";
@@ -90,7 +90,6 @@ interface PublicVoyageContentProps {
   portsCount: number;
   countriesCount: number;
   boatName: string | null;
-  boatType: string | null;
   username: string;
   logEntries: LogEntry[];
 }
@@ -104,7 +103,6 @@ export default function PublicVoyageContent({
   portsCount,
   countriesCount,
   boatName,
-  boatType,
   username,
   logEntries,
 }: PublicVoyageContentProps) {
@@ -243,15 +241,18 @@ export default function PublicVoyageContent({
 
       {/* Map fills remaining space */}
       <div className="relative flex-1">
-        <header className="pointer-events-none absolute inset-x-0 top-4 z-[350] flex justify-center px-4">
-          <div className="max-w-[min(28rem,calc(100vw-8rem))] rounded-2xl bg-navy/75 px-4 py-3 text-center text-white shadow-overlay backdrop-blur-[12px]">
+        <header className="absolute inset-x-0 top-4 z-[350] flex justify-center px-4">
+          <Link
+            href={`/${username}`}
+            className="max-w-[min(28rem,calc(100vw-8rem))] rounded-2xl bg-navy/75 px-4 py-3 text-center text-white shadow-overlay backdrop-blur-[12px] transition-colors hover:bg-navy/85"
+          >
             <h1 className="font-heading text-h3 leading-tight">
               {voyageName}
             </h1>
             <p className="mt-1 truncate font-sans text-xs uppercase tracking-[0.2em] text-white/80">
               {boatName ?? voyageName} · @{username}
             </p>
-          </div>
+          </Link>
         </header>
 
         <MapLoader
@@ -305,14 +306,6 @@ export default function PublicVoyageContent({
           {/* Boat marker */}
           {boatPosition && <BoatMarker position={boatPosition} />}
         </MapLoader>
-
-        {/* Overlays */}
-        <BoatBadge
-          boatName={boatName}
-          boatType={boatType}
-          username={username}
-          voyageName={voyageName}
-        />
 
         <StatsBar
           totalDistanceNm={totalDistanceNm}

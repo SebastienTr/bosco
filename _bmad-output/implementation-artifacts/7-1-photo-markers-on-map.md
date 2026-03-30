@@ -1,6 +1,6 @@
 # Story 7.1: Photo Markers on Map
 
-Status: review
+Status: done
 
 ## Story
 

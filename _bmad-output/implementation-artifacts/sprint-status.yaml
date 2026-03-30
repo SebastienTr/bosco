@@ -93,7 +93,7 @@ development_status:
 
   # Epic 7: Visual Storytelling — Photos, OG & Sharing
   epic-7: in-progress
-  7-1-photo-markers-on-map: review
+  7-1-photo-markers-on-map: done
   7-2-photo-marker-clustering: backlog
   7-3-photo-lightbox-viewer: backlog
   7-4-dynamic-og-image-generation: backlog
