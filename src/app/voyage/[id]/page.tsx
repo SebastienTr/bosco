@@ -95,7 +95,7 @@ export default async function VoyagePage({
                 copied: messages.share.copied,
                 copyFailed: messages.share.copyFailed,
               }}
-              ogImageUrl={`${siteUrl}/${username}/${voyage.slug}/opengraph-image`}
+              ogImageUrl={`${siteUrl}/${username}/${voyage.slug}/story-image`}
               className="bg-ocean/10 text-ocean backdrop-blur-none hover:bg-ocean/20"
             />
           )}
