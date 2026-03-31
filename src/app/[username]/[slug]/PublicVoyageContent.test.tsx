@@ -54,8 +54,8 @@ vi.mock("@/components/voyage/ActionFAB", () => ({
 }));
 
 vi.mock("@/components/voyage/DualCTA", () => ({
-  DualCTA: ({ shareText }: { shareText: string }) => (
-    <div data-testid="dual-cta">{shareText}</div>
+  DualCTA: ({ messages }: { messages: { headline: string } }) => (
+    <div data-testid="dual-cta">{messages.headline}</div>
   ),
 }));
 
@@ -171,11 +171,11 @@ describe("PublicVoyageContent", () => {
     expect(screen.getByText(/1 April 2026/)).toBeTruthy();
   });
 
-  it("renders the visitor CTA with externalized share text for non-owners", () => {
+  it("renders the visitor CTA for non-owners", () => {
     render(<PublicVoyageContent {...props} />);
 
     expect(screen.getByTestId("dual-cta").textContent).toBe(
-      messages.share.text(props.voyageName, props.username),
+      messages.dualCTA.headline,
     );
   });
 

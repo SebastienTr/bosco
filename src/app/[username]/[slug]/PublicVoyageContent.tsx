@@ -446,13 +446,7 @@ export default function PublicVoyageContent({
         )}
 
         {!isOwner && (
-          <DualCTA
-            publicUrl={publicUrl}
-            shareTitle={voyageName}
-            shareText={messages.share.text(voyageName, username)}
-            messages={messages.dualCTA}
-            shareMessages={messages.share}
-          />
+          <DualCTA messages={messages.dualCTA} />
         )}
       </div>
     </div>

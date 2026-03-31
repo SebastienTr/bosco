@@ -18,30 +18,6 @@ vi.mock("next/link", () => ({
   ),
 }));
 
-// Mock ShareButton
-vi.mock("./ShareButton", () => ({
-  ShareButton: ({
-    url,
-    title,
-    text,
-    messages,
-  }: {
-    url: string;
-    title: string;
-    text: string;
-    messages: { label: string };
-  }) => (
-    <button
-      data-testid="share-button"
-      data-url={url}
-      data-title={title}
-      data-text={text}
-    >
-      {messages.label}
-    </button>
-  ),
-}));
-
 import { DualCTA, type DualCTAMessages } from "./DualCTA";
 
 const defaultMessages: DualCTAMessages = {
@@ -51,18 +27,8 @@ const defaultMessages: DualCTAMessages = {
   ariaLabel: "Create your own voyage on Bosco",
 };
 
-const shareMessages = {
-  label: "Share this voyage",
-  copied: "Link copied!",
-  copyFailed: "Could not copy link",
-};
-
 const defaultProps = {
-  publicUrl: "https://sailbosco.com/captain/atlantic",
-  shareTitle: "Atlantic Crossing",
-  shareText: "Check out this sailing voyage: Atlantic Crossing by @captain",
   messages: defaultMessages,
-  shareMessages,
 };
 
 let mockStorage: Record<string, string> = {};
@@ -87,10 +53,11 @@ describe("DualCTA", () => {
     vi.unstubAllGlobals();
   });
 
-  it("is not rendered before 10s timer", () => {
+  it("is not visible initially before 10s timer", () => {
     render(<DualCTA {...defaultProps} />);
 
-    expect(screen.queryByTestId("dual-cta")).toBeNull();
+    const bar = screen.getByTestId("dual-cta");
+    expect(bar.className).toContain("opacity-0");
   });
 
   it("becomes visible after 10s timer fires", () => {
@@ -100,12 +67,9 @@ describe("DualCTA", () => {
       vi.advanceTimersByTime(10_000);
     });
 
-    act(() => {
-      vi.advanceTimersToNextTimer();
-    });
-
     const bar = screen.getByTestId("dual-cta");
-    expect(bar.className).toContain("translate-y-0");
+    expect(bar.className).toContain("opacity-100");
+    expect(bar.className).not.toContain("opacity-0");
   });
 
   it("renders create CTA with correct href /auth/login", () => {
@@ -115,28 +79,17 @@ describe("DualCTA", () => {
       vi.advanceTimersByTime(10_000);
     });
 
-    act(() => {
-      vi.advanceTimersToNextTimer();
-    });
-
     const createLink = screen.getByTestId("dual-cta-create");
     expect(createLink.getAttribute("href")).toBe("/auth/login");
     expect(createLink.textContent).toBe("Get started");
   });
 
-  it("renders ShareButton with correct props", () => {
+  it("renders headline text", () => {
     render(<DualCTA {...defaultProps} />);
 
-    act(() => {
-      vi.advanceTimersByTime(10_000);
-      vi.runOnlyPendingTimers();
-    });
-
-    const shareButton = screen.getByTestId("share-button");
-    expect(shareButton.getAttribute("data-url")).toBe(
-      "https://sailbosco.com/captain/atlantic",
-    );
-    expect(shareButton.getAttribute("data-title")).toBe("Atlantic Crossing");
+    expect(
+      screen.getByText("Sail too? Create your own voyage"),
+    ).toBeTruthy();
   });
 
   it("dismiss button hides the bar and sets sessionStorage", () => {
@@ -144,10 +97,6 @@ describe("DualCTA", () => {
 
     act(() => {
       vi.advanceTimersByTime(10_000);
-    });
-
-    act(() => {
-      vi.advanceTimersToNextTimer();
     });
 
     const dismissBtn = screen.getByTestId("dual-cta-dismiss");
@@ -176,30 +125,10 @@ describe("DualCTA", () => {
   it("has correct aria-label and role attributes", () => {
     render(<DualCTA {...defaultProps} />);
 
-    act(() => {
-      vi.advanceTimersByTime(10_000);
-    });
-
-    act(() => {
-      vi.advanceTimersToNextTimer();
-    });
-
     const bar = screen.getByTestId("dual-cta");
     expect(bar.getAttribute("role")).toBe("complementary");
     expect(bar.getAttribute("aria-label")).toBe(
       "Create your own voyage on Bosco",
     );
-  });
-
-  it("passes the externalized share text to ShareButton", () => {
-    render(<DualCTA {...defaultProps} />);
-
-    act(() => {
-      vi.advanceTimersByTime(10_000);
-      vi.runOnlyPendingTimers();
-    });
-
-    const shareButton = screen.getByTestId("share-button");
-    expect(shareButton.getAttribute("data-text")).toBe(defaultProps.shareText);
   });
 });
