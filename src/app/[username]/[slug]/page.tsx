@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getPublicVoyageBySlug } from "@/lib/data/voyages";
 import { getLogEntriesByVoyageId } from "@/lib/data/log-entries";
+import { getUser } from "@/lib/auth";
 import { formatDistanceNm } from "@/lib/utils/format";
 import { getVoyageMetrics } from "@/lib/utils/voyage-metrics";
 import { siteUrl } from "@/lib/utils/site-url";
@@ -65,11 +66,13 @@ export default async function PublicVoyagePage({ params }: Props) {
     getVoyageMetrics(legs, stopovers);
 
   const { data: logEntries } = await getLogEntriesByVoyageId(voyage.id);
+  const user = await getUser();
 
   const description = voyage.description
     ? `${voyage.description} · ${formatDistanceNm(totalDistanceNm)}`
     : messages.meta.descriptionFallback(username, totalDistanceNm);
   const publicUrl = `${siteUrl}/${username}/${slug}`;
+  const isOwner = user?.id === profile.id;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -120,6 +123,7 @@ export default async function PublicVoyagePage({ params }: Props) {
         username={profile.username ?? username}
         publicUrl={publicUrl}
         logEntries={logEntries ?? []}
+        isOwner={isOwner}
       />
     </>
   );

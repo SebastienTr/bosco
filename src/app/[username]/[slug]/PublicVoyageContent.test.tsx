@@ -53,6 +53,12 @@ vi.mock("@/components/voyage/ActionFAB", () => ({
   ActionFAB: () => <button type="button">Ports</button>,
 }));
 
+vi.mock("@/components/voyage/DualCTA", () => ({
+  DualCTA: ({ shareText }: { shareText: string }) => (
+    <div data-testid="dual-cta">{shareText}</div>
+  ),
+}));
+
 describe("PublicVoyageContent", () => {
   const props = {
     voyageName: "Atlantic Loop",
@@ -93,6 +99,7 @@ describe("PublicVoyageContent", () => {
         photo_urls: [],
       } as never,
     ],
+    isOwner: false,
   };
 
   it("renders the journal panel only when the toggle is clicked", () => {
@@ -162,5 +169,19 @@ describe("PublicVoyageContent", () => {
     expect(screen.getByText("Second matching photo")).toBeTruthy();
     expect(screen.queryByText("First matching photo")).toBeNull();
     expect(screen.getByText(/1 April 2026/)).toBeTruthy();
+  });
+
+  it("renders the visitor CTA with externalized share text for non-owners", () => {
+    render(<PublicVoyageContent {...props} />);
+
+    expect(screen.getByTestId("dual-cta").textContent).toBe(
+      messages.share.text(props.voyageName, props.username),
+    );
+  });
+
+  it("does not render the visitor CTA for voyage owners", () => {
+    render(<PublicVoyageContent {...props} isOwner />);
+
+    expect(screen.queryByTestId("dual-cta")).toBeNull();
   });
 });

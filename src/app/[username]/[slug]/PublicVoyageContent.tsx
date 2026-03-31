@@ -9,6 +9,7 @@ import { StopoverSheet } from "@/components/voyage/StopoverSheet";
 import { PortsPanel } from "@/components/voyage/PortsPanel";
 import { ActionFAB } from "@/components/voyage/ActionFAB";
 import { ShareButton } from "@/components/voyage/ShareButton";
+import { DualCTA } from "@/components/voyage/DualCTA";
 import { JournalTimeline } from "@/components/log/JournalTimeline";
 import { PhotoLightbox } from "@/components/log/PhotoLightbox";
 import type { LogEntry } from "@/lib/data/log-entries";
@@ -99,6 +100,7 @@ interface PublicVoyageContentProps {
   username: string;
   publicUrl: string;
   logEntries: LogEntry[];
+  isOwner: boolean;
 }
 
 export default function PublicVoyageContent({
@@ -113,6 +115,7 @@ export default function PublicVoyageContent({
   username,
   publicUrl,
   logEntries,
+  isOwner,
 }: PublicVoyageContentProps) {
   const initialMapView = useMemo(() => {
     if (typeof window === "undefined") {
@@ -439,6 +442,16 @@ export default function PublicVoyageContent({
             photos={lightboxPhotos}
             initialIndex={lightboxIndex}
             onClose={handleCloseLightbox}
+          />
+        )}
+
+        {!isOwner && (
+          <DualCTA
+            publicUrl={publicUrl}
+            shareTitle={voyageName}
+            shareText={messages.share.text(voyageName, username)}
+            messages={messages.dualCTA}
+            shareMessages={messages.share}
           />
         )}
       </div>

@@ -1,6 +1,6 @@
 # Story 7.5: Native Share & Share Button
 
-Status: review
+Status: done
 
 ## Story
 

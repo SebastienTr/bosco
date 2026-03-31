@@ -1,5 +1,5 @@
 # generated: 2026-03-15
-# last_updated: 2026-03-31T13:30:00+0200
+# last_updated: 2026-03-31T17:25:00+0200
 # project: bosco
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-15
-last_updated: 2026-03-31T13:30:00+0200
+last_updated: 2026-03-31T17:25:00+0200
 project: bosco
 project_key: NOKEY
 tracking_system: file-system
@@ -97,8 +97,8 @@ development_status:
   7-2-photo-marker-clustering: done
   7-3-photo-lightbox-viewer: done
   7-4-dynamic-og-image-generation: done
-  7-5-native-share-and-share-button: review
-  7-6-dual-cta-on-public-pages: backlog
+  7-5-native-share-and-share-button: done
+  7-6-dual-cta-on-public-pages: review
   epic-7-retrospective: optional
 
   # Epic 8: Landing Page & Onboarding
