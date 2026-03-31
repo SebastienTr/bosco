@@ -11,7 +11,9 @@ import {
   Upload,
   Share2,
 } from "lucide-react";
-import { HeroIllustration } from "@/components/landing/HeroIllustration";
+import { HeroMapDemo } from "@/components/landing/HeroMapDemo";
+import { VoyageShowcase } from "@/components/landing/VoyageShowcase";
+import { AppStoreBadges } from "@/components/landing/AppStoreBadges";
 import { LanguageSelector } from "@/components/landing/LanguageSelector";
 import {
   type Lang,
@@ -89,17 +91,18 @@ export default function Home() {
           <p className="mt-6 text-h3 leading-relaxed text-slate">
             {t.hero.subtitle}
           </p>
-          <div className="mt-8">
+          <div className="mt-8 flex flex-col items-center gap-4 lg:items-start">
             <Link
               href="/auth"
               className="inline-flex min-h-[44px] items-center rounded-[var(--radius-button)] bg-coral px-8 py-3 text-body font-semibold text-white shadow-card transition-colors hover:bg-coral/90"
             >
               {t.hero.cta}
             </Link>
+            <AppStoreBadges messages={t.appBadges} />
           </div>
         </div>
         <div className="w-full max-w-lg flex-1">
-          <HeroIllustration />
+          <HeroMapDemo />
         </div>
       </main>
 
@@ -108,15 +111,15 @@ export default function Home() {
         <h2 className="text-center font-heading text-h1 text-navy sm:text-display">
           {t.howItWorks.title}
         </h2>
-        <div className="mx-auto mt-12 grid max-w-3xl gap-8 sm:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-3xl gap-10 sm:grid-cols-3">
           {steps.map((step, i) => {
             const Icon = stepIcons[i];
             return (
               <div key={i} className="flex flex-col items-center text-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-coral/10">
-                  <Icon className="h-6 w-6 text-coral" />
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-coral/10">
+                  <Icon className="h-7 w-7 text-coral" />
                 </div>
-                <span className="mt-1 text-small font-bold text-coral">
+                <span className="mt-2 text-body font-bold text-coral">
                   {i + 1}
                 </span>
                 <h3 className="mt-2 font-heading text-h2 text-navy">
@@ -127,6 +130,11 @@ export default function Home() {
             );
           })}
         </div>
+      </section>
+
+      {/* Voyage Showcase */}
+      <section className="px-4 py-16 sm:px-6 lg:px-8">
+        <VoyageShowcase messages={t.showcase} />
       </section>
 
       {/* Features */}

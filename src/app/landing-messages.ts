@@ -51,6 +51,8 @@ interface LandingMessagesBase {
     stopovers: { title: string; description: string };
     share: { title: string; description: string };
   };
+  showcase: { title: string; stats: string; cta: string; caption: string };
+  appBadges: { appStore: string; googlePlay: string; comingSoon: string };
   footer: { tagline: string; privacy: string; terms: string };
 }
 
@@ -104,6 +106,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           "Beautiful public pages with animated route playback. Share with family, friends, and crew.",
       },
     },
+    showcase: {
+      title: "A Real Voyage",
+      stats: "1,689 nm · 45 ports · 7 countries",
+      cta: "Explore this voyage",
+      caption: "Göteborg to Nice — a Mediterranean sailing adventure.",
+    },
+    appBadges: {
+      appStore: "Download on the App Store",
+      googlePlay: "Get it on Google Play",
+      comingSoon: "Apps coming soon",
+    },
     footer: {
       tagline: "Made for sailors.",
       privacy: "Privacy Policy",
@@ -155,6 +168,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
         description:
           "De belles pages publiques avec lecture animée de l'itinéraire. Partagez avec famille, amis et équipage.",
       },
+    },
+    showcase: {
+      title: "Un Vrai Voyage",
+      stats: "1 689 nm · 45 ports · 7 pays",
+      cta: "Explorer ce voyage",
+      caption: "Göteborg à Nice — une aventure méditerranéenne à la voile.",
+    },
+    appBadges: {
+      appStore: "Télécharger sur l'App Store",
+      googlePlay: "Disponible sur Google Play",
+      comingSoon: "Apps bientôt disponibles",
     },
     footer: {
       tagline: "Fait pour les marins.",
@@ -208,6 +232,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           "Hermosas páginas públicas con reproducción animada de la ruta. Comparte con familia, amigos y tripulación.",
       },
     },
+    showcase: {
+      title: "Un Viaje Real",
+      stats: "1.689 mn · 45 puertos · 7 países",
+      cta: "Explorar este viaje",
+      caption: "Gotemburgo a Niza — una aventura mediterránea a vela.",
+    },
+    appBadges: {
+      appStore: "Descargar en el App Store",
+      googlePlay: "Disponible en Google Play",
+      comingSoon: "Apps próximamente",
+    },
     footer: {
       tagline: "Hecho para navegantes.",
       privacy: "Politica de privacidad",
@@ -259,6 +294,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
         description:
           "Belas páginas públicas com reprodução animada da rota. Partilhe com família, amigos e tripulação.",
       },
+    },
+    showcase: {
+      title: "Uma Viagem Real",
+      stats: "1.689 mn · 45 portos · 7 países",
+      cta: "Explorar esta viagem",
+      caption: "Gotemburgo a Nice — uma aventura mediterrânica à vela.",
+    },
+    appBadges: {
+      appStore: "Transferir na App Store",
+      googlePlay: "Disponível no Google Play",
+      comingSoon: "Apps em breve",
     },
     footer: {
       tagline: "Feito para velejadores.",
@@ -312,6 +358,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           "Belle pagine pubbliche con riproduzione animata del percorso. Condividi con famiglia, amici ed equipaggio.",
       },
     },
+    showcase: {
+      title: "Un Viaggio Reale",
+      stats: "1.689 mn · 45 porti · 7 paesi",
+      cta: "Esplora questo viaggio",
+      caption: "Göteborg a Nizza — un'avventura mediterranea a vela.",
+    },
+    appBadges: {
+      appStore: "Scarica dall'App Store",
+      googlePlay: "Disponibile su Google Play",
+      comingSoon: "App in arrivo",
+    },
     footer: {
       tagline: "Fatto per i velisti.",
       privacy: "Informativa sulla privacy",
@@ -363,6 +420,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
         description:
           "Schöne öffentliche Seiten mit animierter Routenwiedergabe. Teile mit Familie, Freunden und Crew.",
       },
+    },
+    showcase: {
+      title: "Eine Echte Reise",
+      stats: "1.689 sm · 45 Häfen · 7 Länder",
+      cta: "Diese Reise entdecken",
+      caption: "Göteborg nach Nizza — ein mediterranes Segelabenteuer.",
+    },
+    appBadges: {
+      appStore: "Laden im App Store",
+      googlePlay: "Jetzt bei Google Play",
+      comingSoon: "Apps demnächst verfügbar",
     },
     footer: {
       tagline: "Gemacht für Segler.",
@@ -416,6 +484,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           "Mooie openbare pagina's met geanimeerde route-weergave. Deel met familie, vrienden en bemanning.",
       },
     },
+    showcase: {
+      title: "Een Echte Reis",
+      stats: "1.689 nm · 45 havens · 7 landen",
+      cta: "Ontdek deze reis",
+      caption: "Göteborg naar Nice — een mediterraan zeilavontuur.",
+    },
+    appBadges: {
+      appStore: "Download in de App Store",
+      googlePlay: "Ontdek het op Google Play",
+      comingSoon: "Apps binnenkort beschikbaar",
+    },
     footer: {
       tagline: "Gemaakt voor zeilers.",
       privacy: "Privacybeleid",
@@ -467,6 +546,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
         description:
           "Smukke offentlige sider med animeret ruteafspilning. Del med familie, venner og besætning.",
       },
+    },
+    showcase: {
+      title: "En Rigtig Rejse",
+      stats: "1.689 nm · 45 havne · 7 lande",
+      cta: "Udforsk denne rejse",
+      caption: "Göteborg til Nice — et middelhavs sejleventyr.",
+    },
+    appBadges: {
+      appStore: "Hent i App Store",
+      googlePlay: "Hent den på Google Play",
+      comingSoon: "Apps kommer snart",
     },
     footer: {
       tagline: "Lavet til sejlere.",
@@ -520,6 +610,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           "Vackra publika sidor med animerad ruttuppspelning. Dela med familj, vänner och besättning.",
       },
     },
+    showcase: {
+      title: "En Riktig Resa",
+      stats: "1 689 nm · 45 hamnar · 7 länder",
+      cta: "Utforska denna resa",
+      caption: "Göteborg till Nice — ett medelhavsseglingsäventyr.",
+    },
+    appBadges: {
+      appStore: "Ladda ned från App Store",
+      googlePlay: "Hämta den på Google Play",
+      comingSoon: "Appar kommer snart",
+    },
     footer: {
       tagline: "Gjort för seglare.",
       privacy: "Integritetspolicy",
@@ -571,6 +672,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
         description:
           "Vakre offentlige sider med animert ruteavspilling. Del med familie, venner og mannskap.",
       },
+    },
+    showcase: {
+      title: "En Ekte Reise",
+      stats: "1 689 nm · 45 havner · 7 land",
+      cta: "Utforsk denne reisen",
+      caption: "Göteborg til Nice — et middelhavs seilingseventyr.",
+    },
+    appBadges: {
+      appStore: "Last ned fra App Store",
+      googlePlay: "Tilgjengelig på Google Play",
+      comingSoon: "Apper kommer snart",
     },
     footer: {
       tagline: "Laget for seilere.",
@@ -624,6 +736,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           "Красивые публичные страницы с анимированным воспроизведением маршрута. Делитесь с семьёй, друзьями и экипажем.",
       },
     },
+    showcase: {
+      title: "Реальное Путешествие",
+      stats: "1 689 мм · 45 портов · 7 стран",
+      cta: "Исследовать путешествие",
+      caption: "Гётеборг — Ницца: средиземноморское парусное приключение.",
+    },
+    appBadges: {
+      appStore: "Загрузить в App Store",
+      googlePlay: "Доступно в Google Play",
+      comingSoon: "Приложения скоро",
+    },
     footer: {
       tagline: "Создано для яхтсменов.",
       privacy: "Политика конфиденциальности",
@@ -675,6 +798,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
         description:
           "Όμορφες δημόσιες σελίδες με κινούμενη αναπαραγωγή διαδρομής. Μοιραστείτε με οικογένεια, φίλους και πλήρωμα.",
       },
+    },
+    showcase: {
+      title: "Ένα Αληθινό Ταξίδι",
+      stats: "1.689 νμ · 45 λιμάνια · 7 χώρες",
+      cta: "Εξερευνήστε αυτό το ταξίδι",
+      caption: "Γκέτεμποργκ στη Νίκαια — μια μεσογειακή ιστιοπλοϊκή περιπέτεια.",
+    },
+    appBadges: {
+      appStore: "Λήψη στο App Store",
+      googlePlay: "Διαθέσιμο στο Google Play",
+      comingSoon: "Εφαρμογές σύντομα",
     },
     footer: {
       tagline: "Φτιαγμένο για ναυτικούς.",
@@ -728,6 +862,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           "アニメーションルート再生付きの美しい公開ページ。家族、友人、クルーとシェアしましょう。",
       },
     },
+    showcase: {
+      title: "本物の航海",
+      stats: "1,689 nm · 45 港 · 7 カ国",
+      cta: "この航海を探索",
+      caption: "ヨーテボリからニースへ — 地中海のセーリングアドベンチャー。",
+    },
+    appBadges: {
+      appStore: "App Storeからダウンロード",
+      googlePlay: "Google Playで入手",
+      comingSoon: "アプリ近日公開",
+    },
     footer: {
       tagline: "セーラーのために。",
       privacy: "プライバシーポリシー",
@@ -780,6 +925,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           "Leathanaigh phoiblí áille le hathsheinm beoite bealaigh. Roinn le teaghlach, cairde agus criú.",
       },
     },
+    showcase: {
+      title: "Aistear Fíor",
+      stats: "1,689 nm · 45 calafort · 7 dtír",
+      cta: "Fiosraigh an t-aistear seo",
+      caption: "Göteborg go Nice — eachtra seoltóireachta sa Mheánmhuir.",
+    },
+    appBadges: {
+      appStore: "Íoslódáil ón App Store",
+      googlePlay: "Faigh ar Google Play",
+      comingSoon: "Aipeanna ag teacht go luath",
+    },
     footer: {
       tagline: "Déanta do mhairnéalaigh.",
       privacy: "Polasaí príobháideachais",
@@ -831,6 +987,17 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
         description:
           "Pajennoù foran kaer gant adlenn bev ar roudenn. Rannit gant ho familh, mignoned ha skipailh.",
       },
+    },
+    showcase: {
+      title: "Ur Veaj Gwir",
+      stats: "1 689 nm · 45 porzh · 7 bro",
+      cta: "Furchal ar veaj-mañ",
+      caption: "Göteborg da Nice — un taol-trumm merdeiñ er Mor Kreiz.",
+    },
+    appBadges: {
+      appStore: "Pellgargañ war an App Store",
+      googlePlay: "Kaout war Google Play",
+      comingSoon: "Arloadoù a zeu a-benn nebeut",
     },
     footer: {
       tagline: "Graet evit ar vartoloded.",

@@ -278,29 +278,52 @@ Claude Opus 4.6 (1M context)
 
 ### Debug Log References
 
-- All 385 tests pass (7 new + 378 existing), zero regressions
+- All 378 tests pass, zero regressions
 - TypeScript strict mode passes cleanly
 - No new lint issues introduced
 
 ### Completion Notes List
 
-- Created `DualCTA` component with 10s delayed slide-up animation and session-persistent dismiss
-- Glass morphism style (`bg-navy/75 backdrop-blur-[12px] shadow-overlay rounded-t-2xl`) matches StatsBar
-- Left CTA "Get started" links to `/auth/login` (coral pill button), right CTA reuses `ShareButton`
-- Dismiss (X) button stores `bosco-cta-dismissed` in `sessionStorage` with try/catch for private browsing
-- `z-[420]` positions bar between StatsBar (400) and PortsPanel (450)
-- Safe area padding via `pb-[env(safe-area-inset-bottom,1rem)]` for iOS
-- 7 unit tests covering: initial hidden state, timer visibility, CTA href, ShareButton props, dismiss + sessionStorage, pre-dismissed mount, accessibility attributes
-- Props include separate `messages` (DualCTAMessages) and `shareMessages` (ShareButtonMessages) for clean i18n separation
-- PublicVoyageContent renders DualCTA for all visitors (page is only accessible to non-owners)
+**DualCTA — Created then removed by user decision:**
+- Initially created `DualCTA` component with 10s delayed slide-up animation, session-persistent dismiss, glass morphism, coral "Get started" CTA + ShareButton reuse
+- Full-width bottom bar was too invasive on both mobile and desktop (tested on production)
+- Redesigned as compact floating card — still too invasive, overlapping with StatsBar on mobile
+- **User decision: feature removed entirely** — the public page is already effective without a conversion bar; the ShareButton in the header is sufficient
+- DualCTA component, tests, messages, and integration code all deleted
+- Story file retained for potential future reactivation with a better UX approach
+
+**Leaflet attribution minimized:**
+- Removed "Leaflet |" prefix via `attributionControl={false}` + `<AttributionControl prefix={false} />`
+- Hidden flag icon via CSS (`.leaflet-attribution-flag { display: none }`)
+- Reduced font to 9px, semi-transparent background — much more discreet while respecting OSM license
+
+**Route animation z-index bug fixed:**
+- After route animation completed, blue polylines rendered ON TOP of orange stopover markers
+- Root cause: static polylines added to `overlayPane` (z-index 400) after markers already existed in same pane — SVG render order put routes on top
+- Fix: created custom `routePane` (z-index 350) for all route polylines (both static `RouteLayer` and animated `RouteAnimation`)
+- Markers in `overlayPane` (400) now always render above routes regardless of timing
+
+**Landing page redirect for authenticated users:**
+- Users opening sailbosco.com while logged in now redirect to `/dashboard` instead of seeing the landing page
+- Added `pathname === "/"` to existing auth redirect in middleware
 
 ### File List
 
-- `src/components/voyage/DualCTA.tsx` — NEW: Dual CTA conversion bar with create + share
-- `src/components/voyage/DualCTA.test.tsx` — NEW: 7 unit tests
-- `src/app/[username]/[slug]/PublicVoyageContent.tsx` — MODIFIED: added DualCTA import and render
-- `src/app/[username]/[slug]/messages.ts` — MODIFIED: added dualCTA message keys
+- `src/components/voyage/DualCTA.tsx` — CREATED then DELETED (feature removed)
+- `src/components/voyage/DualCTA.test.tsx` — CREATED then DELETED (feature removed)
+- `src/app/[username]/[slug]/PublicVoyageContent.tsx` — MODIFIED: DualCTA added then removed (net: no change from pre-story)
+- `src/app/[username]/[slug]/PublicVoyageContent.test.tsx` — MODIFIED: DualCTA tests added then removed (net: no change from pre-story)
+- `src/app/[username]/[slug]/messages.ts` — MODIFIED: dualCTA messages added then removed (net: no change from pre-story)
+- `src/app/globals.css` — MODIFIED: added minimal Leaflet attribution CSS
+- `src/components/map/MapCanvas.tsx` — MODIFIED: custom `routePane` creation, attribution prefix removal
+- `src/components/map/RouteLayer.tsx` — MODIFIED: polylines use `routePane`
+- `src/components/map/RouteAnimation.tsx` — MODIFIED: animated polylines use `routePane`
+- `src/middleware.ts` — MODIFIED: redirect `/` → `/dashboard` for authenticated users
 
 ### Change Log
 
-- 2026-03-31: Story 7.6 implemented — Dual CTA on Public Pages with 10s delay, glass morphism, session-persistent dismiss
+- 2026-03-31: Story 7.6 — DualCTA component created (full-width bar, then compact card)
+- 2026-03-31: DualCTA removed by user decision — too invasive on mobile and desktop, no satisfactory placement found
+- 2026-03-31: Leaflet attribution minimized — prefix removed, flag hidden, 9px font, semi-transparent
+- 2026-03-31: Route animation z-index fix — custom `routePane` (z-350) ensures routes always render below markers
+- 2026-03-31: Middleware — authenticated users on `/` redirect to `/dashboard`
