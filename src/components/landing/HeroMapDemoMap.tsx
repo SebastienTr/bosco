@@ -7,62 +7,31 @@ import { MapContainer, TileLayer, Polyline, useMap } from "react-leaflet";
 import type { LatLngExpression, LatLngBoundsExpression } from "leaflet";
 
 /**
- * Demo sailing track: Cassis → Porquerolles, beating upwind.
+ * Real sailing track from Seb's voyage — Øresund strait (Denmark/Sweden).
+ * Extracted from legs 6+7+8 which show clear tacking in open water.
  * Coordinates are [lat, lng] for Leaflet.
- * The zigzag pattern shows close-hauled tacking — Bosco's core value prop.
  */
 const DEMO_ROUTE: LatLngExpression[] = [
-  // Depart Cassis heading SE
-  [43.214, 5.537],
-  [43.195, 5.56],
-  // Tack 1 — heading SSW
-  [43.17, 5.54],
-  [43.15, 5.52],
-  // Tack 2 — heading SSE
-  [43.13, 5.56],
-  [43.115, 5.60],
-  // Tack 3 — heading SSW
-  [43.095, 5.57],
-  [43.08, 5.54],
-  // Tack 4 — heading SE toward La Ciotat
-  [43.065, 5.59],
-  [43.055, 5.64],
-  // Rounding La Ciotat, easing off
-  [43.05, 5.69],
-  [43.045, 5.74],
-  // Tack 5 — short tack south
-  [43.025, 5.72],
-  [43.01, 5.70],
-  // Tack 6 — back toward coast
-  [43.0, 5.75],
-  [42.995, 5.81],
-  // Reaching past Bandol
-  [42.99, 5.87],
-  [42.985, 5.93],
-  [42.98, 5.99],
-  // Approaching Toulon — slight tack
-  [42.965, 5.97],
-  [42.95, 5.95],
-  // Tack back east
-  [42.94, 6.01],
-  [42.935, 6.07],
-  // Open water — freer wind
-  [42.93, 6.14],
-  [42.935, 6.21],
-  // Tack toward Hyères
-  [42.95, 6.19],
-  [42.965, 6.22],
-  // Final approach to Porquerolles
-  [42.975, 6.20],
-  [42.99, 6.22],
-  [43.0, 6.19],
-  // Anchoring at Porquerolles
-  [42.995, 6.215],
+  [56.0426, 12.623], [56.0415, 12.6339], [56.0406, 12.6472],
+  [56.0414, 12.639], [56.0275, 12.6189], [55.9765, 12.5614],
+  [55.9612, 12.5769], [55.9371, 12.6333], [55.9115, 12.6361],
+  [55.8824, 12.6355], [55.8464, 12.6268], [55.7973, 12.616],
+  [55.7402, 12.5942], [55.7264, 12.5934], [55.7166, 12.5898],
+  [55.716, 12.588], [55.6871, 12.6461], [55.6699, 12.6653],
+  [55.6412, 12.6882], [55.6003, 12.6951], [55.5711, 12.6701],
+  [55.5388, 12.6283], [55.5152, 12.6036], [55.4434, 12.5496],
+  [55.3847, 12.5117], [55.3283, 12.4797], [55.2794, 12.4601],
+  [55.2657, 12.4367], [55.2525, 12.3749], [55.2329, 12.3542],
+  [55.1954, 12.2358], [55.1722, 12.3061], [55.1272, 12.2538],
+  [55.1047, 12.1966], [55.0788, 12.1677], [55.055, 12.1574],
+  [55.0174, 12.1738], [54.9924, 12.1731], [54.9779, 12.1579],
+  [54.9914, 12.1665], [54.9952, 12.1665], [54.995, 12.1665],
+  [54.9972, 12.1589],
 ];
 
 const BOUNDS: LatLngBoundsExpression = [
-  [42.91, 5.49],
-  [43.24, 6.27],
+  [54.95, 12.1],
+  [56.08, 12.72],
 ];
 
 const OSM_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
