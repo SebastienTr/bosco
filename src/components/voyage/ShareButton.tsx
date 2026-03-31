@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 export interface ShareButtonMessages {
@@ -67,6 +67,8 @@ export function ShareButton({
   ogImageUrl,
   className = "",
 }: ShareButtonProps) {
+  const [loading, setLoading] = useState(false);
+
   const copyToClipboard = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(url);
@@ -77,6 +79,8 @@ export function ShareButton({
   }, [url, messages.copied, messages.copyFailed]);
 
   const handleShare = useCallback(async () => {
+    setLoading(true);
+    try {
     const isMobile = isLikelyMobileDevice();
     const hasNativeShare =
       typeof navigator !== "undefined" &&
@@ -121,29 +125,48 @@ export function ShareButton({
         await copyToClipboard();
       }
     }
+    } finally {
+      setLoading(false);
+    }
   }, [title, text, url, ogImageUrl, copyToClipboard]);
 
   return (
     <button
       type="button"
       onClick={handleShare}
+      disabled={loading}
       aria-label={messages.label}
-      className={`flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-navy/80 text-white shadow-overlay backdrop-blur-[12px] transition-all active:scale-95 hover:bg-navy/90 focus-visible:outline-2 focus-visible:outline-ocean focus-visible:outline-offset-2 ${className}`}
+      className={`flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-navy/80 text-white shadow-overlay backdrop-blur-[12px] transition-all active:scale-95 hover:bg-navy/90 focus-visible:outline-2 focus-visible:outline-ocean focus-visible:outline-offset-2 disabled:pointer-events-none ${className}`}
     >
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
-        <polyline points="16 6 12 2 8 6" />
-        <line x1="12" y1="2" x2="12" y2="15" />
-      </svg>
+      {loading ? (
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          className="animate-spin"
+        >
+          <circle cx="12" cy="12" r="10" strokeOpacity="0.3" />
+          <path d="M12 2a10 10 0 0 1 10 10" />
+        </svg>
+      ) : (
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+          <polyline points="16 6 12 2 8 6" />
+          <line x1="12" y1="2" x2="12" y2="15" />
+        </svg>
+      )}
     </button>
   );
 }

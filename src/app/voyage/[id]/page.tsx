@@ -96,7 +96,7 @@ export default async function VoyagePage({
                 copyFailed: messages.share.copyFailed,
               }}
               ogImageUrl={`${siteUrl}/${username}/${voyage.slug}/story-image`}
-              className="bg-ocean/10 text-ocean backdrop-blur-none hover:bg-ocean/20"
+              className="bg-ocean/15 text-ocean backdrop-blur-none hover:bg-ocean/25 ring-1 ring-ocean/30"
             />
           )}
           {(legs ?? []).length > 0 && (
