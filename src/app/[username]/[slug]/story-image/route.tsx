@@ -210,7 +210,7 @@ export async function GET(
                   color: "rgba(255,255,255,0.50)",
                 }}
               >
-                sailbosco.com
+                sailbosco.com/{profile.username ?? username}/{slug}
               </span>
             </div>
           </div>

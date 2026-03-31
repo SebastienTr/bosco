@@ -128,7 +128,7 @@ export function ShareButton({
       type="button"
       onClick={handleShare}
       aria-label={messages.label}
-      className={`flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-navy/60 text-white shadow-overlay backdrop-blur-[12px] transition-transform active:scale-95 focus-visible:outline-2 focus-visible:outline-ocean focus-visible:outline-offset-2 ${className}`}
+      className={`flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-navy/80 text-white shadow-overlay backdrop-blur-[12px] transition-all active:scale-95 hover:bg-navy/90 focus-visible:outline-2 focus-visible:outline-ocean focus-visible:outline-offset-2 ${className}`}
     >
       <svg
         width="20"
