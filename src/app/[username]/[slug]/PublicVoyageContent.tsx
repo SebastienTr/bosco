@@ -12,7 +12,10 @@ import { JournalTimeline } from "@/components/log/JournalTimeline";
 import { PhotoLightbox } from "@/components/log/PhotoLightbox";
 import type { LogEntry } from "@/lib/data/log-entries";
 import type { Json } from "@/types/supabase";
-import { buildPhotoMarkers } from "@/components/map/photo-markers-utils";
+import {
+  buildPhotoMarkers,
+  buildLightboxPhotos,
+} from "@/components/map/photo-markers-utils";
 import {
   getLastKnownVoyagePosition,
   toVoyageRouteTracks,
@@ -121,6 +124,11 @@ export default function PublicVoyageContent({
     [logEntries, stopovers, legs],
   );
 
+  const lightboxPhotos = useMemo(
+    () => buildLightboxPhotos(logEntries, stopovers, legs),
+    [logEntries, stopovers, legs],
+  );
+
   const routeTracks = useMemo(() => toVoyageRouteTracks(legs), [legs]);
 
   const tracks: GeoJSON.LineString[] = useMemo(
@@ -152,7 +160,7 @@ export default function PublicVoyageContent({
   const [selectedStopover, setSelectedStopover] =
     useState<StopoverData | null>(null);
   const [activeOverlay, setActiveOverlay] = useState<ActiveOverlay>(null);
-  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const handleAnimationComplete = useCallback(() => {
     setAnimationComplete(true);
@@ -206,14 +214,18 @@ export default function PublicVoyageContent({
     });
   }, []);
 
-  const handlePhotoTap = useCallback((url: string) => {
-    setLightboxUrl(url);
-    setSelectedStopover(null);
-    setActiveOverlay("lightbox");
-  }, []);
+  const handlePhotoTap = useCallback(
+    (photoId: string) => {
+      const index = lightboxPhotos.findIndex((p) => p.id === photoId);
+      if (index < 0) return;
+      setLightboxIndex(index);
+      setSelectedStopover(null);
+      setActiveOverlay("lightbox");
+    },
+    [lightboxPhotos],
+  );
 
   const handleCloseLightbox = useCallback(() => {
-    setLightboxUrl(null);
     setActiveOverlay(null);
   }, []);
 
@@ -412,7 +424,11 @@ export default function PublicVoyageContent({
 
         {/* Photo Lightbox */}
         {activeOverlay === "lightbox" && (
-          <PhotoLightbox url={lightboxUrl} onClose={handleCloseLightbox} />
+          <PhotoLightbox
+            photos={lightboxPhotos}
+            initialIndex={lightboxIndex}
+            onClose={handleCloseLightbox}
+          />
         )}
       </div>
     </div>

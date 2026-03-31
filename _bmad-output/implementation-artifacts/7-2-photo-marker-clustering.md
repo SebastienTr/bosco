@@ -1,6 +1,6 @@
 # Story 7.2: Photo Marker Clustering
 
-Status: review
+Status: done
 
 ## Story
 

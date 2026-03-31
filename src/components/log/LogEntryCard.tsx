@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { LogEntry } from "@/lib/data/log-entries";
 import { messages } from "@/app/voyage/[id]/log/messages";
+import { createLightboxPhotoId } from "@/components/map/photo-markers-utils";
 
 interface LogEntryCardProps {
   entry: LogEntry;
@@ -22,7 +23,7 @@ interface LogEntryCardProps {
   legLabel?: string | null;
   onEdit?: () => void;
   onDelete?: () => void;
-  onPhotoTap?: (url: string) => void;
+  onPhotoTap?: (photoId: string) => void;
 }
 
 function formatDate(dateStr: string): string {
@@ -75,12 +76,14 @@ export function LogEntryCard({
       {/* Photos */}
       {photoUrls.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {photoUrls.slice(0, 4).map((url, index) =>
-            onPhotoTap ? (
+          {photoUrls.slice(0, 4).map((url, index) => {
+            const photoId = createLightboxPhotoId(entry.id, index);
+
+            return onPhotoTap ? (
               <button
-                key={url}
+                key={photoId}
                 type="button"
-                onClick={() => onPhotoTap(url)}
+                onClick={() => onPhotoTap(photoId)}
                 aria-label={messages.photos.openLabel(index + 1)}
                 aria-haspopup="dialog"
                 className="h-12 w-12 overflow-hidden rounded focus-visible:outline-2 focus-visible:outline-ocean focus-visible:outline-offset-2"
@@ -95,15 +98,15 @@ export function LogEntryCard({
               </button>
             ) : (
               <Image
-                key={url}
+                key={photoId}
                 src={url}
                 alt=""
                 width={48}
                 height={48}
                 className="h-12 w-12 rounded object-cover"
               />
-            ),
-          )}
+            );
+          })}
           {photoUrls.length > 4 && (
             <div className="flex h-12 w-12 items-center justify-center rounded bg-navy/10 font-body text-xs font-semibold text-navy">
               +{photoUrls.length - 4}

@@ -14,7 +14,7 @@ interface JournalTimelineProps {
   entries: LogEntry[];
   stopovers: { id: string; name: string | null }[];
   legs: TimelineLeg[];
-  onPhotoTap?: (url: string) => void;
+  onPhotoTap?: (photoId: string) => void;
   ariaLabel?: string;
 }
 

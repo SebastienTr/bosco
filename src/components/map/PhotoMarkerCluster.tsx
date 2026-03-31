@@ -10,6 +10,7 @@ import { PhotoMarker } from "./PhotoMarker";
 
 interface PhotoMarkerData {
   entryId: string;
+  photoId: string;
   position: [number, number];
   photoUrl: string;
   label: string;
@@ -17,7 +18,7 @@ interface PhotoMarkerData {
 
 interface PhotoMarkerClusterProps {
   photoMarkers: PhotoMarkerData[];
-  onTap: (photoUrl: string) => void;
+  onTap: (photoId: string) => void;
 }
 
 export const PHOTO_CLUSTER_THRESHOLD = 15;
@@ -164,6 +165,7 @@ export function PhotoMarkerCluster({
         {photoMarkers.map((m, i) => (
           <PhotoMarker
             key={`${m.entryId}-${i}`}
+            photoId={m.photoId}
             position={m.position}
             photoUrl={m.photoUrl}
             label={m.label}
@@ -186,6 +188,7 @@ export function PhotoMarkerCluster({
       {photoMarkers.map((m, i) => (
         <PhotoMarker
           key={`${m.entryId}-${i}`}
+          photoId={m.photoId}
           position={m.position}
           photoUrl={m.photoUrl}
           label={m.label}

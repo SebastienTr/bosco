@@ -5,6 +5,16 @@ import type { Json } from "@/types/supabase";
 import PublicVoyageContent from "./PublicVoyageContent";
 import { messages } from "./messages";
 
+vi.mock("next/image", () => ({
+  default: ({
+    src,
+    alt,
+  }: {
+    src: string;
+    alt: string;
+  }) => <img src={src} alt={alt} />,
+}));
+
 vi.mock("next/dynamic", () => ({
   default: () => () => null,
 }));
@@ -110,5 +120,42 @@ describe("PublicVoyageContent", () => {
 
     const desktopSidebar = container.firstElementChild?.firstElementChild;
     expect(desktopSidebar?.className).toContain("lg:block");
+  });
+
+  it("opens the tapped journal photo even when it has no map position and shares a URL", () => {
+    render(
+      <PublicVoyageContent
+        {...props}
+        logEntries={[
+          {
+            id: "entry-1",
+            entry_date: "2026-03-01",
+            text: "First matching photo",
+            leg_id: null,
+            stopover_id: null,
+            photo_urls: ["https://example.com/shared.jpg"],
+          } as never,
+          {
+            id: "entry-2",
+            entry_date: "2026-04-01",
+            text: "Second matching photo",
+            leg_id: null,
+            stopover_id: null,
+            photo_urls: ["https://example.com/shared.jpg"],
+          } as never,
+        ]}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", { name: messages.journal.openLabel }),
+    );
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Open photo 1" })[1]);
+
+    expect(screen.getByRole("dialog", { name: "Photo viewer" })).toBeTruthy();
+    expect(screen.getByText("Second matching photo")).toBeTruthy();
+    expect(screen.queryByText("First matching photo")).toBeNull();
+    expect(screen.getByText(/1 April 2026/)).toBeTruthy();
   });
 });

@@ -26,7 +26,10 @@ const PhotoMarkerCluster = dynamic(
     ),
   { ssr: false },
 );
-import { buildPhotoMarkers } from "@/components/map/photo-markers-utils";
+import {
+  buildPhotoMarkers,
+  buildLightboxPhotos,
+} from "@/components/map/photo-markers-utils";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LegList } from "@/components/voyage/LegList";
 import { JournalSection } from "@/components/log/JournalSection";
@@ -50,7 +53,7 @@ export function VoyageContent({
 }: VoyageContentProps) {
   const [legs, setLegs] = useState(initialLegs);
   const [activeOverlay, setActiveOverlay] = useState<ActiveOverlay>(null);
-  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const regeocodeTriggered = useRef(false);
 
   // Auto-detect unnamed stopovers and trigger geocoding
@@ -78,6 +81,11 @@ export function VoyageContent({
     [initialLogEntries, stopovers, legs],
   );
 
+  const lightboxPhotos = useMemo(
+    () => buildLightboxPhotos(initialLogEntries, stopovers, legs),
+    [initialLogEntries, stopovers, legs],
+  );
+
   const tracks = useMemo<GeoJSON.LineString[]>(
     () => legs.map((leg) => leg.track_geojson as unknown as GeoJSON.LineString),
     [legs],
@@ -91,13 +99,17 @@ export function VoyageContent({
     setActiveOverlay(null);
   }, []);
 
-  const handlePhotoTap = useCallback((url: string) => {
-    setLightboxUrl(url);
-    setActiveOverlay("lightbox");
-  }, []);
+  const handlePhotoTap = useCallback(
+    (photoId: string) => {
+      const index = lightboxPhotos.findIndex((p) => p.id === photoId);
+      if (index < 0) return;
+      setLightboxIndex(index);
+      setActiveOverlay("lightbox");
+    },
+    [lightboxPhotos],
+  );
 
   const handleCloseLightbox = useCallback(() => {
-    setLightboxUrl(null);
     setActiveOverlay(null);
   }, []);
 
@@ -188,7 +200,11 @@ export function VoyageContent({
 
       {/* Photo Lightbox */}
       {activeOverlay === "lightbox" && (
-        <PhotoLightbox url={lightboxUrl} onClose={handleCloseLightbox} />
+        <PhotoLightbox
+          photos={lightboxPhotos}
+          initialIndex={lightboxIndex}
+          onClose={handleCloseLightbox}
+        />
       )}
 
       {/* EmptyState overlay when no tracks */}

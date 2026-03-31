@@ -4,7 +4,7 @@ import L from "leaflet";
 import "leaflet.markercluster";
 
 const mockBounds = {
-  contains: vi.fn(() => true),
+  contains: vi.fn((_: L.LatLng) => true),
 };
 
 const mockMap = {
@@ -43,12 +43,14 @@ describe("PhotoMarkerCluster", () => {
   const sampleMarkers = [
     {
       entryId: "e1",
+      photoId: "e1:0",
       position: [9.5, 41.0] as [number, number],
       photoUrl: "https://example.com/photo1.jpg",
       label: "Porto Cervo",
     },
     {
       entryId: "e2",
+      photoId: "e2:0",
       position: [10.0, 42.0] as [number, number],
       photoUrl: "https://example.com/photo2.jpg",
       label: "Leg 1",
@@ -69,6 +71,7 @@ describe("PhotoMarkerCluster", () => {
   function makeMarkers(count: number) {
     return Array.from({ length: count }, (_, index) => ({
       entryId: `e${index + 1}`,
+      photoId: `e${index + 1}:0`,
       position: [9.5 + index * 0.01, 41.0 + index * 0.01] as [number, number],
       photoUrl: `https://example.com/photo-${index + 1}.jpg`,
       label: `Photo ${index + 1}`,
@@ -155,6 +158,7 @@ describe("createClusterIcon", () => {
           { length: PHOTO_CLUSTER_THRESHOLD + 1 },
           (_, index) => ({
             entryId: `e${index + 1}`,
+            photoId: `e${index + 1}:0`,
             position: [index, index],
             photoUrl: `https://example.com/photo-${index + 1}.jpg`,
             label: `Test ${index + 1}`,

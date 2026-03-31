@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { LogEntryCard } from "./LogEntryCard";
+import { createLightboxPhotoId } from "@/components/map/photo-markers-utils";
 
 vi.mock("next/image", () => ({
   default: () => null,
@@ -28,6 +29,8 @@ describe("LogEntryCard", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Open photo 1" }));
 
-    expect(onPhotoTap).toHaveBeenCalledWith("https://example.com/photo-1.jpg");
+    expect(onPhotoTap).toHaveBeenCalledWith(
+      createLightboxPhotoId("entry-1", 0),
+    );
   });
 });

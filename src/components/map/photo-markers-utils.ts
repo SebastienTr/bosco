@@ -3,6 +3,8 @@ export interface PhotoMarkerEntry {
   photo_urls: unknown;
   stopover_id: string | null;
   leg_id: string | null;
+  text: string;
+  entry_date: string;
 }
 
 export interface PhotoMarkerStopover {
@@ -18,14 +20,39 @@ export interface PhotoMarkerLeg {
 }
 
 export interface PhotoMarkerData {
+  /** Stable photo instance ID */
+  photoId: string;
   /** Supabase Storage public URL */
   photoUrl: string;
+  /** Photo index within the entry */
+  photoIndex: number;
   /** [longitude, latitude] GeoJSON order */
   position: [number, number];
   /** Stopover name or leg label for accessibility */
   label: string;
   /** The log entry ID this photo belongs to */
   entryId: string;
+  /** Journal entry text */
+  entryText: string;
+  /** Journal entry date (ISO string) */
+  entryDate: string;
+}
+
+export interface LightboxPhoto {
+  id: string;
+  url: string;
+  caption: {
+    text: string;
+    location: string;
+    date: string;
+  };
+}
+
+export function createLightboxPhotoId(
+  entryId: string,
+  photoIndex: number,
+): string {
+  return `${entryId}:${photoIndex}`;
 }
 
 /**
@@ -55,12 +82,16 @@ export function buildPhotoMarkers(
     const resolved = resolvePosition(entry, stopoverMap, legMap);
     if (!resolved) continue;
 
-    for (const photoUrl of photoUrls) {
+    for (const [photoIndex, photoUrl] of photoUrls.entries()) {
       markers.push({
+        photoId: createLightboxPhotoId(entry.id, photoIndex),
         photoUrl,
+        photoIndex,
         position: resolved.position,
         label: resolved.label,
         entryId: entry.id,
+        entryText: entry.text,
+        entryDate: entry.entry_date,
       });
     }
   }
@@ -104,6 +135,83 @@ function resolvePosition(
   }
 
   return null;
+}
+
+/**
+ * Builds lightbox-compatible items from every voyage photo, including
+ * journal photos that do not have a map position.
+ */
+export function buildLightboxPhotos(
+  logEntries: PhotoMarkerEntry[],
+  stopovers: PhotoMarkerStopover[],
+  legs: PhotoMarkerLeg[],
+): LightboxPhoto[] {
+  const stopoverMap = new Map(stopovers.map((s) => [s.id, s]));
+  const legMap = new Map(
+    legs.map((leg, index) => [leg.id, { leg, label: `Leg ${index + 1}` }]),
+  );
+  const photos: LightboxPhoto[] = [];
+
+  for (const entry of logEntries) {
+    const photoUrls = parsePhotoUrls(entry.photo_urls);
+    const location = resolveLocationLabel(entry, stopoverMap, legMap);
+
+    for (const [photoIndex, photoUrl] of photoUrls.entries()) {
+      photos.push({
+        id: createLightboxPhotoId(entry.id, photoIndex),
+        url: photoUrl,
+        caption: {
+          text: toCaptionExcerpt(entry.text),
+          location,
+          date: formatCaptionDate(entry.entry_date),
+        },
+      });
+    }
+  }
+
+  return photos;
+}
+
+function resolveLocationLabel(
+  entry: PhotoMarkerEntry,
+  stopoverMap: Map<string, PhotoMarkerStopover>,
+  legMap: Map<string, { leg: PhotoMarkerLeg; label: string }>,
+): string {
+  if (entry.stopover_id) {
+    const stopover = stopoverMap.get(entry.stopover_id);
+    if (stopover) {
+      return stopover.name || "Stopover";
+    }
+  }
+
+  if (entry.leg_id) {
+    const leg = legMap.get(entry.leg_id);
+    if (leg) {
+      return leg.label;
+    }
+  }
+
+  return "";
+}
+
+function toCaptionExcerpt(text: string): string {
+  const normalized = text.trim().replace(/\s+/g, " ");
+  if (normalized.length <= 100) return normalized;
+
+  return `${normalized.slice(0, 97).trimEnd()}...`;
+}
+
+function formatCaptionDate(entryDate: string): string {
+  const parsedDate = new Date(`${entryDate}T00:00:00`);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return entryDate;
+  }
+
+  return parsedDate.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 function getLegMidpoint(trackGeojson: unknown): [number, number] | null {

@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { buildPhotoMarkers } from "./photo-markers-utils";
+import {
+  buildPhotoMarkers,
+  buildLightboxPhotos,
+  createLightboxPhotoId,
+} from "./photo-markers-utils";
 import type { LogEntry } from "@/lib/data/log-entries";
 import type { Stopover } from "@/lib/data/stopovers";
 import type { Leg } from "@/lib/data/legs";
@@ -72,10 +76,14 @@ describe("buildPhotoMarkers", () => {
 
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({
+      photoId: createLightboxPhotoId("entry-1", 0),
       photoUrl: "https://example.com/photo1.jpg",
+      photoIndex: 0,
       position: [9.5285, 41.0831],
       label: "Porto Cervo",
       entryId: "entry-1",
+      entryText: "A journal entry",
+      entryDate: "2026-03-30",
     });
   });
 
@@ -92,10 +100,14 @@ describe("buildPhotoMarkers", () => {
 
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({
+      photoId: createLightboxPhotoId("entry-1", 0),
       photoUrl: "https://example.com/photo2.jpg",
+      photoIndex: 0,
       position: [9.5, 41.5], // midpoint of 3-coord linestring
       label: "Leg 1",
       entryId: "entry-1",
+      entryText: "A journal entry",
+      entryDate: "2026-03-30",
     });
   });
 
@@ -125,10 +137,14 @@ describe("buildPhotoMarkers", () => {
 
     expect(result).toHaveLength(1);
     expect(result[0]).toEqual({
+      photoId: createLightboxPhotoId("entry-1", 0),
       photoUrl: "https://example.com/photo2.jpg",
+      photoIndex: 0,
       position: [10.5, 42.5],
       label: "Leg 2",
       entryId: "entry-1",
+      entryText: "A journal entry",
+      entryDate: "2026-03-30",
     });
   });
 
@@ -251,5 +267,117 @@ describe("buildPhotoMarkers", () => {
     // Only the first URL is valid (non-empty)
     expect(result).toHaveLength(1);
     expect(result[0].photoUrl).toBe("https://example.com/photo.jpg");
+  });
+
+  it("populates entryText and entryDate from log entry", () => {
+    const entries = [
+      makeEntry({
+        text: "Sunset at the marina",
+        entry_date: "2026-04-01",
+        photo_urls: ["https://example.com/sunset.jpg"],
+        stopover_id: "stop-1",
+      }),
+    ];
+    const stopovers = [makeStopover()];
+
+    const result = buildPhotoMarkers(entries, stopovers, []);
+
+    expect(result[0].entryText).toBe("Sunset at the marina");
+    expect(result[0].entryDate).toBe("2026-04-01");
+  });
+});
+
+describe("buildLightboxPhotos", () => {
+  it("maps all entry photos to lightbox photos with stable IDs and formatted captions", () => {
+    const entries = [
+      makeEntry({
+        id: "entry-1",
+        text: "Beautiful harbor view",
+        entry_date: "2026-03-30",
+        photo_urls: ["https://example.com/photo1.jpg"],
+        stopover_id: "stop-1",
+      }),
+      makeEntry({
+        id: "entry-2",
+        text: "Under sail",
+        entry_date: "2026-03-31",
+        photo_urls: ["https://example.com/photo2.jpg"],
+        leg_id: "leg-1",
+      }),
+    ];
+
+    const result = buildLightboxPhotos(entries, [makeStopover()], [makeLeg()]);
+
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual({
+      id: createLightboxPhotoId("entry-1", 0),
+      url: "https://example.com/photo1.jpg",
+      caption: {
+        text: "Beautiful harbor view",
+        location: "Porto Cervo",
+        date: "30 March 2026",
+      },
+    });
+    expect(result[1]).toEqual({
+      id: createLightboxPhotoId("entry-2", 0),
+      url: "https://example.com/photo2.jpg",
+      caption: {
+        text: "Under sail",
+        location: "Leg 1",
+        date: "31 March 2026",
+      },
+    });
+  });
+
+  it("includes photos even when the entry has no map position", () => {
+    const entries = [
+      makeEntry({
+        id: "entry-1",
+        text: "A photo from an unlinked journal entry",
+        entry_date: "2026-04-01",
+        photo_urls: ["https://example.com/off-map.jpg"],
+      }),
+    ];
+
+    const result = buildLightboxPhotos(entries, [], []);
+
+    expect(result).toEqual([
+      {
+        id: createLightboxPhotoId("entry-1", 0),
+        url: "https://example.com/off-map.jpg",
+        caption: {
+          text: "A photo from an unlinked journal entry",
+          location: "",
+          date: "1 April 2026",
+        },
+      },
+    ]);
+  });
+
+  it("keeps duplicate URLs distinct by photo ID", () => {
+    const entries = [
+      makeEntry({
+        id: "entry-1",
+        text: "First matching photo",
+        photo_urls: ["https://example.com/shared.jpg"],
+      }),
+      makeEntry({
+        id: "entry-2",
+        text: "Second matching photo",
+        photo_urls: ["https://example.com/shared.jpg"],
+      }),
+    ];
+
+    const result = buildLightboxPhotos(entries, [], []);
+
+    expect(result.map((photo) => photo.id)).toEqual([
+      createLightboxPhotoId("entry-1", 0),
+      createLightboxPhotoId("entry-2", 0),
+    ]);
+  });
+
+  it("returns empty array for empty markers", () => {
+    const result = buildLightboxPhotos([], [], []);
+    expect(result).toHaveLength(0);
   });
 });

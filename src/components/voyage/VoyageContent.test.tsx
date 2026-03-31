@@ -59,15 +59,28 @@ vi.mock("@/components/log/JournalSection", () => ({
   JournalSection: ({
     isOpen,
     onToggle,
+    onPhotoTap,
   }: {
     isOpen: boolean;
     onToggle: () => void;
+    onPhotoTap?: (photoId: string) => void;
   }) => (
     <div>
       <button onClick={onToggle}>toggle-journal</button>
+      <button onClick={() => onPhotoTap?.("entry-2:0")}>open-photo</button>
       <span>{isOpen ? "journal-open" : "journal-closed"}</span>
     </div>
   ),
+}));
+
+vi.mock("@/components/log/PhotoLightbox", () => ({
+  PhotoLightbox: ({
+    photos,
+    initialIndex,
+  }: {
+    photos: Array<{ caption: { text: string } }>;
+    initialIndex: number;
+  }) => <div>{photos[initialIndex]?.caption.text ?? "missing-photo"}</div>,
 }));
 
 vi.mock("@/app/voyage/[id]/actions", () => ({
@@ -127,5 +140,40 @@ describe("VoyageContent", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "toggle-journal" }));
     expect(screen.getByText("journal-closed")).toBeTruthy();
+  });
+
+  it("opens the tapped journal photo from the full voyage photo list", () => {
+    render(
+      <VoyageContent
+        initialLegs={[]}
+        stopovers={[]}
+        voyageId="voyage-1"
+        initialLogEntries={
+          [
+            {
+              id: "entry-1",
+              entry_date: "2026-03-01",
+              text: "First matching photo",
+              leg_id: null,
+              stopover_id: null,
+              photo_urls: ["https://example.com/shared.jpg"],
+            } as never,
+            {
+              id: "entry-2",
+              entry_date: "2026-04-01",
+              text: "Second matching photo",
+              leg_id: null,
+              stopover_id: null,
+              photo_urls: ["https://example.com/shared.jpg"],
+            } as never,
+          ]
+        }
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "open-photo" }));
+
+    expect(screen.getByText("Second matching photo")).toBeTruthy();
+    expect(screen.queryByText("First matching photo")).toBeNull();
   });
 });

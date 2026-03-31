@@ -19,7 +19,7 @@ interface JournalSectionProps {
   isOpen: boolean;
   onToggle: () => void;
   onClose: () => void;
-  onPhotoTap?: (url: string) => void;
+  onPhotoTap?: (photoId: string) => void;
 }
 
 export function JournalSection({

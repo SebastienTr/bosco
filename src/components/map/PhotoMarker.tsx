@@ -9,18 +9,21 @@ import { applyPhotoMarkerAccessibility } from "./photoMarkerAccessibility";
 interface PhotoMarkerProps {
   /** [longitude, latitude] GeoJSON order */
   position: [number, number];
+  /** Stable photo instance ID */
+  photoId: string;
   /** Supabase Storage public URL */
   photoUrl: string;
   /** For aria-label: "Photo at {label}" */
   label: string;
   /** Callback when marker is tapped (opens lightbox) */
-  onTap?: (photoUrl: string) => void;
+  onTap?: (photoId: string) => void;
 }
 
 const MARKER_SIZE = 32;
 
 export function PhotoMarker({
   position,
+  photoId,
   photoUrl,
   label,
   onTap,
@@ -74,7 +77,7 @@ export function PhotoMarker({
       cleanup = applyPhotoMarkerAccessibility({
         element,
         label,
-        onActivate: () => onTap?.(photoUrl),
+        onActivate: () => onTap?.(photoId),
       });
     };
 
@@ -85,7 +88,7 @@ export function PhotoMarker({
       marker.off("add", syncAccessibility);
       cleanup?.();
     };
-  }, [label, onTap, photoUrl]);
+  }, [label, onTap, photoId]);
 
   return (
     <Marker
@@ -93,7 +96,7 @@ export function PhotoMarker({
       position={leafletPosition}
       icon={icon}
       eventHandlers={{
-        click: () => onTap?.(photoUrl),
+        click: () => onTap?.(photoId),
       }}
       bubblingMouseEvents={false}
     />
