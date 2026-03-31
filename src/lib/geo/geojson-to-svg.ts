@@ -158,8 +158,17 @@ export function geojsonToSvgPaths(
     return emptyResult;
   }
 
-  const normalizeLng = createLongitudeNormalizer(allLegCoords);
-  const normalizedLegCoords = allLegCoords.map((coords) =>
+  // Downsample each leg to max ~300 points — keeps OG image generation fast
+  // (WhatsApp has strict timeouts; Satori struggles with very long SVG paths)
+  const maxPointsPerLeg = 300;
+  const downsampledCoords = allLegCoords.map((coords) =>
+    coords.length <= maxPointsPerLeg
+      ? coords
+      : downsample(coords, maxPointsPerLeg),
+  );
+
+  const normalizeLng = createLongitudeNormalizer(downsampledCoords);
+  const normalizedLegCoords = downsampledCoords.map((coords) =>
     coords.map(([lng, lat]) => [normalizeLng(normalizeLongitude(lng)), lat] as [number, number]),
   );
 
@@ -231,6 +240,21 @@ export function geojsonToSvgPaths(
     width: targetWidth,
     height: targetHeight,
   };
+}
+
+/** Evenly sample `maxPoints` from `coords`, always keeping first and last. */
+function downsample(
+  coords: [number, number][],
+  maxPoints: number,
+): [number, number][] {
+  if (coords.length <= maxPoints || maxPoints < 2) return coords;
+  const result: [number, number][] = [coords[0]];
+  const step = (coords.length - 1) / (maxPoints - 1);
+  for (let i = 1; i < maxPoints - 1; i++) {
+    result.push(coords[Math.round(i * step)]);
+  }
+  result.push(coords[coords.length - 1]);
+  return result;
 }
 
 function computeBoundingBox(allCoords: [number, number][][]): BoundingBox {

@@ -89,7 +89,7 @@ export default async function Image({
             position: "absolute",
             inset: 0,
             background: coverImageSrc
-              ? "linear-gradient(135deg, rgba(15, 26, 46, 0.55) 0%, rgba(15, 26, 46, 0.88) 55%, rgba(8, 13, 24, 0.95) 100%)"
+              ? "linear-gradient(135deg, rgba(15, 26, 46, 0.75) 0%, rgba(15, 26, 46, 0.92) 55%, rgba(8, 13, 24, 0.97) 100%)"
               : "linear-gradient(135deg, #1B2D4F 0%, #0f1a2e 100%)",
           }}
         />
@@ -105,8 +105,8 @@ export default async function Image({
                 key={i}
                 d={d}
                 fill="none"
-                stroke="rgba(255,255,255,0.25)"
-                strokeWidth={3}
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth={2.5}
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
