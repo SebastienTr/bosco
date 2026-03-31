@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 const STEPS = ["parsing", "simplifying", "detecting", "geocoding", "ready"] as const;
 type Step = (typeof STEPS)[number];
 
@@ -11,9 +13,15 @@ const STEP_LABELS: Record<Step, string> = {
   ready: "Preparing preview...",
 };
 
+export interface ImportErrorInfo {
+  title: string;
+  description: string;
+  helpLink?: { label: string; href: string };
+}
+
 interface ImportProgressProps {
   currentStep: Step;
-  error?: string | null;
+  error?: string | ImportErrorInfo | null;
   onRetry: () => void;
 }
 
@@ -26,6 +34,11 @@ export function ImportProgress({
   const progressPercent = ((currentIndex + 1) / STEPS.length) * 100;
 
   if (error) {
+    const errorInfo: ImportErrorInfo =
+      typeof error === "string"
+        ? { title: "Processing failed", description: error }
+        : error;
+
     return (
       <div
         className="flex h-full flex-col items-center justify-center gap-6 px-6"
@@ -51,8 +64,16 @@ export function ImportProgress({
           </svg>
         </div>
         <div className="text-center">
-          <p className="font-heading text-h2 text-navy">Processing failed</p>
-          <p className="mt-2 text-body text-mist">{error}</p>
+          <p className="font-heading text-h2 text-navy">{errorInfo.title}</p>
+          <p className="mt-2 text-body text-mist">{errorInfo.description}</p>
+          {errorInfo.helpLink && (
+            <Link
+              href={errorInfo.helpLink.href}
+              className="mt-2 inline-block text-body font-semibold text-ocean hover:underline"
+            >
+              {errorInfo.helpLink.label}
+            </Link>
+          )}
         </div>
         <button
           onClick={onRetry}

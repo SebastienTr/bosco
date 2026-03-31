@@ -11,7 +11,9 @@ import { parseGpx } from "@/lib/gpx/parser";
 import { importTracks } from "@/app/voyage/[id]/import/actions";
 import { mergeTracksToSingleLeg, statsToLegData } from "@/lib/gpx/import";
 import { reverseGeocode } from "@/lib/geo/reverse-geocode-client";
-import { ImportProgress } from "./ImportProgress";
+import { messages as importMessages } from "@/app/voyage/[id]/import/messages";
+import { showActionError } from "@/lib/toast-helpers";
+import { ImportProgress, type ImportErrorInfo } from "./ImportProgress";
 import { TrackPreview } from "./TrackPreview";
 
 type ProgressStep = "parsing" | "simplifying" | "detecting" | "geocoding" | "ready";
@@ -23,24 +25,46 @@ interface StopoverGeoInfo {
   country_code: string | null;
 }
 
-type ImportState =
+/** @internal Exported for testing only */
+export type ImportState =
   | { step: "idle" }
   | { step: "processing"; progress: ProgressStep }
   | { step: "preview"; result: ProcessingResult; geoNames: StopoverGeoInfo[] }
   | { step: "importing"; result: ProcessingResult; geoNames: StopoverGeoInfo[] }
-  | { step: "error"; message: string };
+  | { step: "processing-error"; errorInfo: ImportErrorInfo }
+  | { step: "import-error"; result: ProcessingResult; geoNames: StopoverGeoInfo[] };
 
 type ImportAction =
   | { type: "FILE_SELECTED" }
   | { type: "PROGRESS"; progress: ProgressStep }
   | { type: "PROCESSING_COMPLETE"; result: ProcessingResult; geoNames: StopoverGeoInfo[] }
-  | { type: "PROCESSING_ERROR"; message: string }
+  | { type: "PROCESSING_ERROR"; errorInfo: ImportErrorInfo }
   | { type: "IMPORT_START"; result: ProcessingResult; geoNames: StopoverGeoInfo[] }
   | { type: "IMPORT_COMPLETE" }
-  | { type: "IMPORT_ERROR"; message: string }
+  | { type: "IMPORT_ERROR"; result: ProcessingResult; geoNames: StopoverGeoInfo[] }
   | { type: "RETRY" };
 
-function reducer(_state: ImportState, action: ImportAction): ImportState {
+/** @internal Exported for testing only */
+export function classifyProcessingError(message: string): ImportErrorInfo {
+  const lower = message.toLowerCase();
+  if (lower.includes("not a valid gpx") || lower.includes("no <trk>") || lower.includes("invalid xml") || lower.includes("no tracks")) {
+    return {
+      title: importMessages.error.notGpx.title,
+      description: importMessages.error.notGpx.description,
+      helpLink: {
+        label: importMessages.error.notGpx.helpLink,
+        href: importMessages.error.notGpx.helpHref,
+      },
+    };
+  }
+  return {
+    title: importMessages.error.processingFailed.title,
+    description: importMessages.error.processingFailed.description,
+  };
+}
+
+/** @internal Exported for testing only */
+export function importReducer(state: ImportState, action: ImportAction): ImportState {
   switch (action.type) {
     case "FILE_SELECTED":
       return { step: "processing", progress: "parsing" };
@@ -49,14 +73,19 @@ function reducer(_state: ImportState, action: ImportAction): ImportState {
     case "PROCESSING_COMPLETE":
       return { step: "preview", result: action.result, geoNames: action.geoNames };
     case "PROCESSING_ERROR":
-      return { step: "error", message: action.message };
+      return { step: "processing-error", errorInfo: action.errorInfo };
     case "IMPORT_START":
       return { step: "importing", result: action.result, geoNames: action.geoNames };
     case "IMPORT_COMPLETE":
       return { step: "idle" };
     case "IMPORT_ERROR":
-      return { step: "error", message: action.message };
+      // Preserve preview data so user can retry without re-selecting file
+      return { step: "import-error", result: action.result, geoNames: action.geoNames };
     case "RETRY":
+      // If we had preview data, go back to preview; otherwise go to file picker
+      if (state.step === "import-error") {
+        return { step: "preview", result: state.result, geoNames: state.geoNames };
+      }
       return { step: "idle" };
   }
 }
@@ -85,7 +114,7 @@ async function geocodeStopovers(result: ProcessingResult): Promise<StopoverGeoIn
 }
 
 export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxImporterProps) {
-  const [state, dispatch] = useReducer(reducer, { step: "idle" });
+  const [state, dispatch] = useReducer(importReducer, { step: "idle" });
   const workerRef = useRef<Worker | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
@@ -117,7 +146,7 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
         case "error":
           dispatch({
             type: "PROCESSING_ERROR",
-            message: msg.error.message,
+            errorInfo: classifyProcessingError(msg.error.message),
           });
           break;
       }
@@ -126,7 +155,7 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
     workerRef.current.onerror = (event) => {
       dispatch({
         type: "PROCESSING_ERROR",
-        message: event.message || "Worker failed to load",
+        errorInfo: classifyProcessingError(event.message || "Worker failed to load"),
       });
     };
 
@@ -157,10 +186,10 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
         const xmlString = await file.text();
         const tracks = parseGpx(xmlString);
         workerRef.current?.postMessage({ type: "process", tracks });
-      } catch (error) {
+      } catch (err) {
         if (cancelled) return;
-        const message = error instanceof Error ? error.message : "Failed to load shared file";
-        dispatch({ type: "PROCESSING_ERROR", message });
+        const message = err instanceof Error ? err.message : "Failed to load shared file";
+        dispatch({ type: "PROCESSING_ERROR", errorInfo: classifyProcessingError(message) });
       }
     }
 
@@ -168,10 +197,26 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
     return () => { cancelled = true; };
   }, [autoImportFromShare]);
 
+  const MAX_FILE_SIZE_MB = 400;
+  const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
   const handleFileSelect = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (!file || !workerRef.current) return;
+
+      // Guard: file size limit
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        const sizeMb = Math.round(file.size / (1024 * 1024));
+        dispatch({
+          type: "PROCESSING_ERROR",
+          errorInfo: {
+            title: importMessages.error.tooLarge.title(sizeMb),
+            description: importMessages.error.tooLarge.description,
+          },
+        });
+        return;
+      }
 
       dispatch({ type: "FILE_SELECTED" });
 
@@ -182,10 +227,10 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
 
         // Send parsed tracks to worker for heavy computation
         workerRef.current.postMessage({ type: "process", tracks });
-      } catch (error) {
+      } catch (err) {
         const message =
-          error instanceof Error ? error.message : "Failed to parse GPX file";
-        dispatch({ type: "PROCESSING_ERROR", message });
+          err instanceof Error ? err.message : "Failed to parse GPX file";
+        dispatch({ type: "PROCESSING_ERROR", errorInfo: classifyProcessingError(message) });
       }
     },
     [],
@@ -201,7 +246,7 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
 
   const handleConfirm = useCallback(
     async (selectedIndices: number[], merge: boolean) => {
-      if (state.step !== "preview") return;
+      if (state.step !== "preview" && state.step !== "import-error") return;
 
       dispatch({ type: "IMPORT_START", result: state.result, geoNames: state.geoNames });
 
@@ -258,8 +303,23 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
       });
 
       if (error) {
-        dispatch({ type: "IMPORT_ERROR", message: error.message });
-        toast.error("Import failed \u2014 please try again");
+        dispatch({
+          type: "IMPORT_ERROR",
+          result: state.result,
+          geoNames: state.geoNames,
+        });
+        const isNetwork = error.code === "EXTERNAL_SERVICE_ERROR";
+        showActionError(error, {
+          message: isNetwork
+            ? importMessages.error.networkError.title
+            : importMessages.error.importFailed,
+          description: isNetwork
+            ? importMessages.error.networkError.description
+            : undefined,
+          onRetry: isNetwork
+            ? () => handleConfirm(selectedIndices, merge)
+            : undefined,
+        });
         return;
       }
 
@@ -334,22 +394,22 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
     );
   }
 
-  // Error state
-  if (state.step === "error") {
+  // Processing error state — file-level failure, must re-select
+  if (state.step === "processing-error") {
     return (
       <ImportProgress
         currentStep="parsing"
-        error={state.message}
+        error={state.errorInfo}
         onRetry={handleRetry}
       />
     );
   }
 
-  // Preview or importing state
-  if (state.step === "preview" || state.step === "importing") {
+  // Preview, importing, or import-error state — preserve track preview
+  if (state.step === "preview" || state.step === "importing" || state.step === "import-error") {
     return (
       <TrackPreview
-        result={state.step === "preview" ? state.result : state.result}
+        result={state.result}
         onConfirm={handleConfirm}
         importing={state.step === "importing"}
       />

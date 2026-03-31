@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Profile } from "@/lib/data/profiles";
 import { validateImageFile, compressImage } from "@/lib/utils/image";
+import { showActionError } from "@/lib/toast-helpers";
 import { checkUsername, saveProfile, uploadPhoto } from "./actions";
 import { messages } from "./messages";
 import {
@@ -137,7 +138,12 @@ export function ProfileForm({ profile, isEdit }: ProfileFormProps) {
 
     const validation = validateImageFile(file);
     if (!validation.valid) {
-      toast.error(validation.error);
+      toast.error(
+        validation.error.includes("type")
+          ? messages.validation.imageInvalidType
+          : messages.validation.imageTooLarge,
+        { duration: Infinity },
+      );
       return;
     }
 
@@ -152,14 +158,14 @@ export function ProfileForm({ profile, isEdit }: ProfileFormProps) {
       const result = await uploadPhoto(formData);
 
       if (result.error) {
-        toast.error(messages.toast.photoError);
+        showActionError(result.error, { message: messages.toast.photoError });
         return;
       }
 
       setUrl(result.data.url);
       toast.success(messages.toast.photoUploaded);
     } catch {
-      toast.error(messages.toast.photoError);
+      toast.error(messages.toast.photoError, { duration: Infinity });
     } finally {
       setUploading(false);
     }
@@ -178,7 +184,7 @@ export function ProfileForm({ profile, isEdit }: ProfileFormProps) {
       setUsernameStatus("invalid");
       setUsernameError(usernameValidationError);
       setFieldErrors({ username: usernameValidationError });
-      toast.error(messages.toast.error);
+      toast.error(messages.toast.error, { duration: Infinity });
       setSubmitting(false);
       return;
     }
@@ -193,7 +199,7 @@ export function ProfileForm({ profile, isEdit }: ProfileFormProps) {
         setUsernameError(result.error.message);
         setFieldErrors({ username: result.error.message });
       }
-      toast.error(messages.toast.error);
+      showActionError(result.error, { message: messages.toast.error });
       setSubmitting(false);
       return;
     }

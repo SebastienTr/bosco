@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { formatDistanceNm, formatDuration } from "@/lib/utils/format";
 import type { Leg } from "@/lib/data/legs";
+import { showActionError } from "@/lib/toast-helpers";
 import { messages } from "@/app/voyage/[id]/messages";
 import type { ActionResponse } from "@/types";
 
@@ -48,12 +49,12 @@ export function LegList({
     try {
       const result = await onDelete(legId);
       if (result.error) {
-        toast.error(result.error.message || messages.legs.deleteErrorToast);
+        showActionError(result.error, { message: messages.legs.deleteErrorToast });
         return;
       }
       toast.success(messages.legs.deletedToast);
     } catch {
-      toast.error(messages.legs.deleteErrorToast);
+      toast.error(messages.legs.deleteErrorToast, { duration: Infinity });
     } finally {
       setIsDeleting(false);
     }

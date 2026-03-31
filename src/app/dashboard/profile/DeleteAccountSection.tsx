@@ -15,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { showActionError } from "@/lib/toast-helpers";
 import { deleteAccount } from "./actions";
 import { messages } from "./messages";
 
@@ -33,7 +34,7 @@ export function DeleteAccountSection() {
 
     if (result.error) {
       setIsDeleting(false);
-      toast.error(result.error.message || messages.toast.accountDeletedError);
+      showActionError(result.error, { message: messages.toast.accountDeletedError });
       return;
     }
 

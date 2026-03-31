@@ -121,7 +121,12 @@ describe("LogEntryForm", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Remove photo" }));
 
-    await waitFor(() => expect(mockToastError).toHaveBeenCalledWith("Delete failed"));
+    await waitFor(() =>
+      expect(mockToastError).toHaveBeenCalledWith(
+        "Failed to remove photo",
+        expect.objectContaining({ duration: Infinity }),
+      ),
+    );
     expect(container.querySelector(`img[src="${photoUrl}"]`)).toBeTruthy();
   });
 });

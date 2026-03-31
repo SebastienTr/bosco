@@ -111,7 +111,8 @@ describe("DeleteAccountSection", () => {
 
     await waitFor(() => {
       expect(mockToastError).toHaveBeenCalledWith(
-        "Storage cleanup failed",
+        messages.toast.accountDeletedError,
+        expect.objectContaining({ duration: Infinity }),
       );
     });
     expect(mockReplace).not.toHaveBeenCalled();

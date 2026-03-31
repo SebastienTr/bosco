@@ -22,6 +22,7 @@ import {
 import type { Voyage } from "@/lib/data/voyages";
 import { generateSlug } from "@/lib/utils/slug";
 import { validateImageFile, compressImage } from "@/lib/utils/image";
+import { showActionError } from "@/lib/toast-helpers";
 import {
   updateVoyage,
   deleteVoyage,
@@ -68,7 +69,7 @@ export function VoyageSettingsForm({ voyage, username }: VoyageSettingsFormProps
       if (result.error.message.includes("slug")) {
         setSlugError(result.error.message);
       } else {
-        toast.error(result.error.message);
+        showActionError(result.error);
       }
       return;
     }
@@ -90,7 +91,7 @@ export function VoyageSettingsForm({ voyage, username }: VoyageSettingsFormProps
 
     if (result.error) {
       setIsPublic(!checked);
-      toast.error(result.error.message);
+      showActionError(result.error);
       return;
     }
 
@@ -104,7 +105,12 @@ export function VoyageSettingsForm({ voyage, username }: VoyageSettingsFormProps
   async function handleCoverUpload(file: File) {
     const validation = validateImageFile(file);
     if (!validation.valid) {
-      toast.error(validation.error);
+      toast.error(
+        validation.error.includes("type")
+          ? messages.cover.invalidTypeError
+          : messages.cover.tooLargeError,
+        { duration: Infinity },
+      );
       return;
     }
 
@@ -119,14 +125,14 @@ export function VoyageSettingsForm({ voyage, username }: VoyageSettingsFormProps
       const result = await uploadCoverImage(formData);
 
       if (result.error) {
-        toast.error(messages.cover.errorToast);
+        showActionError(result.error, { message: messages.cover.errorToast });
         return;
       }
 
       setCoverUrl(result.data.url);
       toast.success(messages.cover.uploadedToast);
     } catch {
-      toast.error(messages.cover.errorToast);
+      toast.error(messages.cover.errorToast, { duration: Infinity });
     } finally {
       setUploadingCover(false);
     }
@@ -139,7 +145,7 @@ export function VoyageSettingsForm({ voyage, username }: VoyageSettingsFormProps
 
     if (result.error) {
       setIsDeleting(false);
-      toast.error(messages.danger.deleteErrorToast);
+      showActionError(result.error, { message: messages.danger.deleteErrorToast });
       return;
     }
 

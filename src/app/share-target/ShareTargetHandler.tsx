@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { showActionError } from "@/lib/toast-helpers";
 import { createVoyage } from "@/app/dashboard/actions";
 import { messages } from "./messages";
 
@@ -94,8 +94,8 @@ export function ShareTargetHandler({
     setIsSubmitting(false);
 
     if (result.error) {
-      setError(result.error.message);
-      toast.error(messages.error.createFailed);
+      setError(messages.error.createFailed);
+      showActionError(result.error, { message: messages.error.createFailed });
       return;
     }
 

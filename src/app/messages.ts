@@ -56,6 +56,7 @@ export const messages = {
     title: "Something went wrong",
     description: "An unexpected error occurred. Please try again.",
     retry: "Try Again",
+    backToDashboard: "Back to Dashboard",
   },
   loading: {
     label: "Loading Bosco...",

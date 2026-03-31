@@ -17,6 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { generateSlug } from "@/lib/utils/slug";
+import { showActionError } from "@/lib/toast-helpers";
 import { createVoyage } from "./actions";
 import { messages } from "./messages";
 
@@ -72,7 +73,7 @@ export function CreateVoyageDialog({ trigger }: CreateVoyageDialogProps) {
       if (result.error.message.includes("slug")) {
         setError(result.error.message);
       } else {
-        toast.error(result.error.message);
+        showActionError(result.error);
       }
       return;
     }

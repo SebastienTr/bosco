@@ -25,7 +25,26 @@ export const messages = {
   success: (count: number, voyageName: string) =>
     `${count} track(s) added to ${voyageName}`,
   error: {
-    importFailed: "Import failed \u2014 please try again",
+    importFailed: "Import failed — please try again",
     voyageNotFound: "Voyage not found",
+    notGpx: {
+      title: "This file isn't GPX format",
+      description:
+        "Bosco works with GPX files exported from navigation apps like Navionics.",
+      helpLink: "Need help exporting from Navionics?",
+      helpHref: "/help/navionics-export",
+    },
+    tooLarge: {
+      title: (sizeMb: number) => `This file is too large (${sizeMb} MB)`,
+      description: "Maximum file size is 400 MB. Try exporting fewer tracks.",
+    },
+    networkError: {
+      title: "Upload interrupted — no connection",
+      description: "Check your internet connection and try again.",
+    },
+    processingFailed: {
+      title: "Something went wrong processing this file",
+      description: "Please try again or use a different file.",
+    },
   },
 };

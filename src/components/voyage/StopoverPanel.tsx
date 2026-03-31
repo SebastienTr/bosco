@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import type { Stopover } from "@/lib/data/stopovers";
 import { regeocodeUnnamed } from "@/app/voyage/[id]/stopover/actions";
+import { showActionError } from "@/lib/toast-helpers";
 import { StopoverList } from "./StopoverList";
 import { messages } from "@/app/voyage/[id]/messages";
 
@@ -42,14 +43,14 @@ export function StopoverPanel({
     try {
       const result = await regeocodeUnnamed({ voyageId });
       if (result.error) {
-        toast.error(messages.stopovers.regeocodeError);
+        showActionError(result.error, { message: messages.stopovers.regeocodeError });
       } else {
         toast.success(messages.stopovers.regeocodeSuccess);
         // Reload page to show updated names
         window.location.reload();
       }
     } catch {
-      toast.error(messages.stopovers.regeocodeError);
+      toast.error(messages.stopovers.regeocodeError, { duration: Infinity });
     } finally {
       setIsRegeocoding(false);
     }

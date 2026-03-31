@@ -9,6 +9,7 @@ import type { Stopover } from "@/lib/data/stopovers";
 import { LogEntryCard } from "./LogEntryCard";
 import { LogEntryForm } from "./LogEntryForm";
 import { deleteLogEntry } from "@/app/voyage/[id]/log/actions";
+import { showActionError } from "@/lib/toast-helpers";
 import { messages } from "@/app/voyage/[id]/log/messages";
 
 interface JournalSectionProps {
@@ -64,7 +65,7 @@ export function JournalSection({
   async function handleDelete(entry: LogEntry) {
     const result = await deleteLogEntry({ id: entry.id, voyageId });
     if (result.error) {
-      toast.error(messages.toast.deleteError);
+      showActionError(result.error, { message: messages.toast.deleteError });
       return;
     }
     toast.success(messages.toast.deleted);

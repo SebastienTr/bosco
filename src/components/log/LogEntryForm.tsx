@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { validateImageFile, compressImage } from "@/lib/utils/image";
+import { showActionError } from "@/lib/toast-helpers";
 import type { LogEntry } from "@/lib/data/log-entries";
 import {
   createLogEntry,
@@ -89,7 +90,12 @@ export function LogEntryForm({
     for (const file of Array.from(files)) {
       const validation = validateImageFile(file);
       if (!validation.valid) {
-        toast.error(validation.error);
+        toast.error(
+          validation.error.includes("type")
+            ? messages.validation.invalidFileType
+            : messages.validation.fileTooLarge,
+          { duration: Infinity },
+        );
         continue;
       }
 
@@ -102,14 +108,14 @@ export function LogEntryForm({
         const result = await uploadLogPhoto(formData);
 
         if (result.error) {
-          toast.error(messages.toast.photoError);
+          showActionError(result.error, { message: messages.toast.photoError });
           continue;
         }
 
         setPhotoUrls((prev) => [...prev, result.data.url]);
         toast.success(messages.toast.photoUploaded);
       } catch {
-        toast.error(messages.toast.photoError);
+        toast.error(messages.toast.photoError, { duration: Infinity });
       }
     }
 
@@ -128,7 +134,7 @@ export function LogEntryForm({
     setRemovingPhotoUrl(null);
 
     if (result.error) {
-      toast.error(result.error.message || messages.toast.photoDeleteError);
+      showActionError(result.error, { message: messages.toast.photoDeleteError });
       return;
     }
 
@@ -160,7 +166,7 @@ export function LogEntryForm({
       setIsSubmitting(false);
 
       if (result.error) {
-        toast.error(messages.toast.updateError);
+        showActionError(result.error, { message: messages.toast.updateError });
         return;
       }
 
@@ -170,7 +176,7 @@ export function LogEntryForm({
       setIsSubmitting(false);
 
       if (result.error) {
-        toast.error(messages.toast.createError);
+        showActionError(result.error, { message: messages.toast.createError });
         return;
       }
 

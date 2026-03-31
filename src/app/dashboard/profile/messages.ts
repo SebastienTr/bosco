@@ -94,5 +94,6 @@ export const messages = {
     noFileProvided: "No file provided",
     invalidPhotoField: "Invalid photo field",
     imageTooLarge: "Image must be under 18 MB",
+    imageInvalidType: "Only JPEG, PNG, and WebP images are accepted",
   },
 };

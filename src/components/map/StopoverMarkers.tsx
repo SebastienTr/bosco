@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useMap } from "react-leaflet";
-import { toast } from "sonner";
 import { StopoverMarker } from "./StopoverMarker";
 import {
   renameStopover,
   removeStopover,
   repositionStopover,
 } from "@/app/voyage/[id]/stopover/actions";
+import { stopoverMessages } from "@/app/voyage/[id]/stopover/messages";
+import { showActionError } from "@/lib/toast-helpers";
 import type { Stopover } from "@/lib/data/stopovers";
 
 interface StopoverMarkersProps {
@@ -35,7 +36,7 @@ export function StopoverMarkers({
   const handleRename = useCallback(async (id: string, name: string) => {
     const { data, error } = await renameStopover({ id, name });
     if (error) {
-      toast.error("Failed to rename stopover");
+      showActionError(error, { message: stopoverMessages.actions.renameFailed });
       return;
     }
     setStopovers((prev) =>
@@ -46,7 +47,7 @@ export function StopoverMarkers({
   const handleDelete = useCallback(async (id: string) => {
     const { error } = await removeStopover({ id });
     if (error) {
-      toast.error("Failed to delete stopover");
+      showActionError(error, { message: stopoverMessages.actions.deleteFailed });
       return;
     }
     setStopovers((prev) => prev.filter((s) => s.id !== id));
@@ -60,7 +61,7 @@ export function StopoverMarkers({
         longitude: lon,
       });
       if (error) {
-        toast.error("Failed to reposition stopover");
+        showActionError(error, { message: stopoverMessages.actions.repositionFailed });
         return;
       }
       setStopovers((prev) =>

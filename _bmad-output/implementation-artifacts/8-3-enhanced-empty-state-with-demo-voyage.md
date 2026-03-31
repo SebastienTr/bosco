@@ -1,6 +1,6 @@
 # Story 8.3: Enhanced Empty State with Demo Voyage
 
-Status: review
+Status: done
 
 ## Story
 
