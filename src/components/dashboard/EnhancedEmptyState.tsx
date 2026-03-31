@@ -32,7 +32,7 @@ export function EnhancedEmptyState({
   return (
     <div className="flex flex-col items-center text-center">
       {/* Animated mini-map */}
-      <div className="w-full max-w-sm overflow-hidden rounded-[var(--radius-card)] shadow-card">
+      <div className="relative z-0 w-full max-w-sm overflow-hidden rounded-[var(--radius-card)] shadow-card">
         <DemoMapAnimation />
       </div>
 
