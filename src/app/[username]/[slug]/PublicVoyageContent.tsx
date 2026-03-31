@@ -22,7 +22,6 @@ import {
   toVoyageRouteTracks,
 } from "@/lib/voyage-route";
 import { parseMapHash } from "@/lib/utils/map-view-hash";
-import { siteUrl } from "@/lib/utils/site-url";
 import { messages } from "./messages";
 
 const RouteAnimation = dynamic(
@@ -98,7 +97,7 @@ interface PublicVoyageContentProps {
   countriesCount: number;
   boatName: string | null;
   username: string;
-  slug: string;
+  publicUrl: string;
   logEntries: LogEntry[];
 }
 
@@ -112,7 +111,7 @@ export default function PublicVoyageContent({
   countriesCount,
   boatName,
   username,
-  slug,
+  publicUrl,
   logEntries,
 }: PublicVoyageContentProps) {
   const initialMapView = useMemo(() => {
@@ -272,7 +271,7 @@ export default function PublicVoyageContent({
             </p>
           </Link>
           <ShareButton
-            url={`${siteUrl}/${username}/${slug}`}
+            url={publicUrl}
             title={voyageName}
             text={messages.share.text(voyageName, username)}
             messages={messages.share}

@@ -69,13 +69,14 @@ export default async function PublicVoyagePage({ params }: Props) {
   const description = voyage.description
     ? `${voyage.description} · ${formatDistanceNm(totalDistanceNm)}`
     : messages.meta.descriptionFallback(username, totalDistanceNm);
+  const publicUrl = `${siteUrl}/${username}/${slug}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SportsEvent",
     name: voyage.name,
     description,
-    url: `${siteUrl}/${username}/${slug}`,
+    url: publicUrl,
     organizer: {
       "@type": "Person",
       name: profile.username ?? username,
@@ -117,7 +118,7 @@ export default async function PublicVoyagePage({ params }: Props) {
         countriesCount={countriesCount}
         boatName={profile.boat_name}
         username={profile.username ?? username}
-        slug={slug}
+        publicUrl={publicUrl}
         logEntries={logEntries ?? []}
       />
     </>

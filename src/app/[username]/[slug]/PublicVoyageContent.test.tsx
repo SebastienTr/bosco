@@ -82,7 +82,7 @@ describe("PublicVoyageContent", () => {
     countriesCount: 0,
     boatName: "Selkie",
     username: "seb",
-    slug: "atlantic-loop",
+    publicUrl: "https://sailbosco.com/seb/atlantic-loop",
     logEntries: [
       {
         id: "entry-1",

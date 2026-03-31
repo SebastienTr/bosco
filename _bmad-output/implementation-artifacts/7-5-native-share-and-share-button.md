@@ -236,7 +236,7 @@ Claude Opus 4.6 (1M context)
 
 ### Debug Log References
 
-- All 377 tests pass (7 new + 370 existing), zero regressions
+- All 378 tests pass (7 new + 371 existing), zero regressions
 - TypeScript strict mode passes cleanly
 - No new lint issues introduced
 
@@ -266,3 +266,4 @@ Claude Opus 4.6 (1M context)
 ### Change Log
 
 - 2026-03-31: Story 7.5 implemented — Native Share & Share Button with Web Share API and clipboard fallback
+- 2026-03-31: Fix — pass only string props to ShareButton in server component (voyage page.tsx). Functions in messages.share.text cannot cross server→client serialization boundary.

@@ -22,12 +22,45 @@ const defaultProps = {
   messages: mockMessages,
 };
 
+function setUserAgent(userAgent: string) {
+  Object.defineProperty(navigator, "userAgent", {
+    value: userAgent,
+    configurable: true,
+  });
+}
+
+function setUserAgentData(mobile?: boolean) {
+  Object.defineProperty(navigator, "userAgentData", {
+    value:
+      typeof mobile === "boolean"
+        ? {
+            mobile,
+          }
+        : undefined,
+    configurable: true,
+  });
+}
+
 describe("ShareButton", () => {
   beforeEach(async () => {
     vi.restoreAllMocks();
     const { toast } = await import("sonner");
     vi.mocked(toast.success).mockClear();
     vi.mocked(toast.error).mockClear();
+    setUserAgent(
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+    );
+    setUserAgentData(undefined);
+    Object.defineProperty(navigator, "share", {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: vi.fn().mockResolvedValue(undefined) },
+      writable: true,
+      configurable: true,
+    });
   });
 
   it("renders with correct aria-label", () => {
@@ -45,8 +78,11 @@ describe("ShareButton", () => {
     expect(button.className).toContain("min-w-[44px]");
   });
 
-  it("calls navigator.share when available with correct params", async () => {
+  it("calls navigator.share on mobile with correct params", async () => {
     const shareMock = vi.fn().mockResolvedValue(undefined);
+    setUserAgent(
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+    );
     Object.defineProperty(navigator, "share", {
       value: shareMock,
       writable: true,
@@ -64,24 +100,41 @@ describe("ShareButton", () => {
       });
     });
 
-    // Cleanup
+  });
+
+  it("falls back to clipboard + toast on desktop even when navigator.share exists", async () => {
+    const { toast } = await import("sonner");
+    const shareMock = vi.fn().mockResolvedValue(undefined);
+    const writeTextMock = vi.fn().mockResolvedValue(undefined);
+    setUserAgent(
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+    );
     Object.defineProperty(navigator, "share", {
-      value: undefined,
+      value: shareMock,
       writable: true,
       configurable: true,
     });
+    Object.defineProperty(navigator, "clipboard", {
+      value: { writeText: writeTextMock },
+      writable: true,
+      configurable: true,
+    });
+
+    render(<ShareButton {...defaultProps} />);
+    fireEvent.click(screen.getByRole("button", { name: mockMessages.label }));
+
+    await waitFor(() => {
+      expect(writeTextMock).toHaveBeenCalledWith(defaultProps.url);
+      expect(toast.success).toHaveBeenCalledWith(mockMessages.copied);
+    });
+
+    expect(shareMock).not.toHaveBeenCalled();
   });
 
   it("falls back to clipboard + toast when navigator.share is undefined", async () => {
     const { toast } = await import("sonner");
-
-    Object.defineProperty(navigator, "share", {
-      value: undefined,
-      writable: true,
-      configurable: true,
-    });
-
     const writeTextMock = vi.fn().mockResolvedValue(undefined);
+
     Object.defineProperty(navigator, "clipboard", {
       value: { writeText: writeTextMock },
       writable: true,
@@ -102,6 +155,9 @@ describe("ShareButton", () => {
 
     const abortError = new DOMException("Share cancelled", "AbortError");
     const shareMock = vi.fn().mockRejectedValue(abortError);
+    setUserAgent(
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+    );
     Object.defineProperty(navigator, "share", {
       value: shareMock,
       writable: true,
@@ -117,13 +173,6 @@ describe("ShareButton", () => {
 
     expect(toast.error).not.toHaveBeenCalled();
     expect(toast.success).not.toHaveBeenCalled();
-
-    // Cleanup
-    Object.defineProperty(navigator, "share", {
-      value: undefined,
-      writable: true,
-      configurable: true,
-    });
   });
 
   it("handles clipboard failure with error toast", async () => {
@@ -158,6 +207,9 @@ describe("ShareButton", () => {
     const shareMock = vi
       .fn()
       .mockRejectedValue(new Error("NotAllowedError"));
+    setUserAgent(
+      "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1",
+    );
     Object.defineProperty(navigator, "share", {
       value: shareMock,
       writable: true,
@@ -177,13 +229,6 @@ describe("ShareButton", () => {
     await waitFor(() => {
       expect(writeTextMock).toHaveBeenCalledWith(defaultProps.url);
       expect(toast.success).toHaveBeenCalledWith(mockMessages.copied);
-    });
-
-    // Cleanup
-    Object.defineProperty(navigator, "share", {
-      value: undefined,
-      writable: true,
-      configurable: true,
     });
   });
 });

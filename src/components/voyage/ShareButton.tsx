@@ -17,6 +17,34 @@ interface ShareButtonProps {
   className?: string;
 }
 
+type NavigatorWithUserAgentData = Navigator & {
+  userAgentData?: {
+    mobile?: boolean;
+  };
+};
+
+function isLikelyMobileDevice() {
+  if (typeof navigator === "undefined") {
+    return false;
+  }
+
+  const nav = navigator as NavigatorWithUserAgentData;
+  if (typeof nav.userAgentData?.mobile === "boolean") {
+    return nav.userAgentData.mobile;
+  }
+
+  const userAgent = nav.userAgent;
+  if (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(
+      userAgent,
+    )
+  ) {
+    return true;
+  }
+
+  return userAgent.includes("Macintosh") && nav.maxTouchPoints > 1;
+}
+
 export function ShareButton({
   url,
   title,
@@ -34,9 +62,17 @@ export function ShareButton({
   }, [url, messages.copied, messages.copyFailed]);
 
   const handleShare = useCallback(async () => {
-    if (typeof navigator !== "undefined" && navigator.share) {
+    const shareData = { title, text, url };
+    const canUseNativeShare =
+      typeof navigator !== "undefined" &&
+      typeof navigator.share === "function" &&
+      isLikelyMobileDevice() &&
+      (typeof navigator.canShare !== "function" ||
+        navigator.canShare(shareData));
+
+    if (canUseNativeShare) {
       try {
-        await navigator.share({ title, text, url });
+        await navigator.share(shareData);
       } catch (err: unknown) {
         // User cancelled the share sheet — not an error
         const isAbort =

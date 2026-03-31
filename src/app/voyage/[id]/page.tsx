@@ -89,7 +89,11 @@ export default async function VoyagePage({
               url={`${siteUrl}/${username}/${voyage.slug}`}
               title={voyage.name}
               text={messages.share.text(voyage.name, username)}
-              messages={messages.share}
+              messages={{
+                label: messages.share.label,
+                copied: messages.share.copied,
+                copyFailed: messages.share.copyFailed,
+              }}
               className="bg-ocean/10 text-ocean backdrop-blur-none hover:bg-ocean/20"
             />
           )}
