@@ -1,6 +1,6 @@
 # Story 8.4: Actionable Error Messages & Recovery UX
 
-Status: review
+Status: done
 
 ## Story
 

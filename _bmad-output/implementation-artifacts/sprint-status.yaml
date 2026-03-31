@@ -106,7 +106,7 @@ development_status:
   8-1-landing-page-redesign: done
   # 8-2 moved to Epic 6B (requires native app)
   8-3-enhanced-empty-state-with-demo-voyage: done
-  8-4-actionable-error-messages-and-recovery-ux: review
+  8-4-actionable-error-messages-and-recovery-ux: done
   8-5-navionics-gpx-export-guide: backlog
   epic-8-retrospective: optional
 
