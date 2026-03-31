@@ -75,6 +75,40 @@ describe("EnhancedEmptyState", () => {
     expect(link.getAttribute("href")).toBe("/Seb/goteborg-to-nice");
   });
 
+  it("renders helpLink when provided", () => {
+    render(
+      <EnhancedEmptyState
+        messages={defaultMessages}
+        createVoyageTrigger={<button>Create</button>}
+        showcaseUrl="/Seb/goteborg-to-nice"
+        helpLink={{
+          label: "How to export from Navionics?",
+          href: "/help/navionics-export",
+        }}
+      />,
+    );
+
+    const link = screen.getByRole("link", {
+      name: "How to export from Navionics?",
+    });
+    expect(link).toBeTruthy();
+    expect(link.getAttribute("href")).toBe("/help/navionics-export");
+  });
+
+  it("does not render helpLink when not provided", () => {
+    render(
+      <EnhancedEmptyState
+        messages={defaultMessages}
+        createVoyageTrigger={<button>Create</button>}
+        showcaseUrl="/Seb/goteborg-to-nice"
+      />,
+    );
+
+    expect(
+      screen.queryByRole("link", { name: /How to export/ }),
+    ).toBeNull();
+  });
+
   it("renders map demo placeholder (mocked dynamic import)", () => {
     render(
       <EnhancedEmptyState

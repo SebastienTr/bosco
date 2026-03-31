@@ -126,6 +126,14 @@ export default function Home() {
                   {step.title}
                 </h3>
                 <p className="mt-2 text-body text-slate">{step.description}</p>
+                {i === 0 && (
+                  <Link
+                    href="/help/navionics-export"
+                    className="mt-1 text-small text-ocean hover:underline"
+                  >
+                    {t.howItWorks.steps.export.learnHow}
+                  </Link>
+                )}
               </div>
             );
           })}

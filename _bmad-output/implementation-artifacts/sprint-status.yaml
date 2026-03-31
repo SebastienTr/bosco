@@ -1,5 +1,5 @@
 # generated: 2026-03-15
-# last_updated: 2026-03-31T22:45:00+0200
+# last_updated: 2026-03-31T23:59:00+0200
 # project: bosco
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-15
-last_updated: 2026-03-31T22:45:00+0200
+last_updated: 2026-03-31T23:59:00+0200
 project: bosco
 project_key: NOKEY
 tracking_system: file-system
@@ -107,7 +107,7 @@ development_status:
   # 8-2 moved to Epic 6B (requires native app)
   8-3-enhanced-empty-state-with-demo-voyage: done
   8-4-actionable-error-messages-and-recovery-ux: done
-  8-5-navionics-gpx-export-guide: backlog
+  8-5-navionics-gpx-export-guide: review
   epic-8-retrospective: optional
 
   # Epic 6A: Android App & Native Import

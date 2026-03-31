@@ -93,6 +93,10 @@ export default async function DashboardPage() {
               />
             }
             showcaseUrl="/Seb/goteborg-to-nice"
+            helpLink={{
+              label: messages.emptyState.navionicsGuide,
+              href: "/help/navionics-export",
+            }}
           />
         </div>
       )}

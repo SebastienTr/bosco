@@ -70,6 +70,13 @@ describe("Home", () => {
     ).toBeTruthy();
   });
 
+  it("renders 'Learn how' link under Export step pointing to /help/navionics-export", () => {
+    render(<Home />);
+
+    const learnHowLink = screen.getByRole("link", { name: "Learn how" });
+    expect(learnHowLink.getAttribute("href")).toBe("/help/navionics-export");
+  });
+
   it("renders feature cards", () => {
     render(<Home />);
 

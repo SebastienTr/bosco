@@ -41,7 +41,7 @@ interface LandingMessagesBase {
   howItWorks: {
     title: string;
     steps: {
-      export: { title: string; description: string };
+      export: { title: string; description: string; learnHow: string };
       import: { title: string; description: string };
       share: { title: string; description: string };
     };
@@ -76,6 +76,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Export",
           description:
             "Export your GPS track from Navionics or any navigation app.",
+          learnHow: "Learn how",
         },
         import: {
           title: "Import",
@@ -139,6 +140,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Exporter",
           description:
             "Exportez votre trace GPS depuis Navionics ou toute application de navigation.",
+          learnHow: "Comment faire",
         },
         import: {
           title: "Importer",
@@ -202,6 +204,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Exportar",
           description:
             "Exporta tu traza GPS desde Navionics o cualquier app de navegación.",
+          learnHow: "Cómo hacerlo",
         },
         import: {
           title: "Importar",
@@ -265,6 +268,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Exportar",
           description:
             "Exporte o seu trajeto GPS do Navionics ou de qualquer aplicação de navegação.",
+          learnHow: "Saiba como",
         },
         import: {
           title: "Importar",
@@ -328,6 +332,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Esporta",
           description:
             "Esporta la tua traccia GPS da Navionics o qualsiasi app di navigazione.",
+          learnHow: "Scopri come",
         },
         import: {
           title: "Importa",
@@ -391,6 +396,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Exportieren",
           description:
             "Exportiere deinen GPS-Track aus Navionics oder einer anderen Navigations-App.",
+          learnHow: "So geht's",
         },
         import: {
           title: "Importieren",
@@ -454,6 +460,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Exporteer",
           description:
             "Exporteer je GPS-track vanuit Navionics of een andere navigatie-app.",
+          learnHow: "Zo werkt het",
         },
         import: {
           title: "Importeer",
@@ -517,6 +524,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Eksportér",
           description:
             "Eksportér dit GPS-spor fra Navionics eller en anden navigationsapp.",
+          learnHow: "Se hvordan",
         },
         import: {
           title: "Importér",
@@ -580,6 +588,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Exportera",
           description:
             "Exportera ditt GPS-spår från Navionics eller valfri navigationsapp.",
+          learnHow: "Se hur",
         },
         import: {
           title: "Importera",
@@ -643,6 +652,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Eksportér",
           description:
             "Eksportér GPS-sporet ditt fra Navionics eller en annen navigasjonsapp.",
+          learnHow: "Se hvordan",
         },
         import: {
           title: "Importér",
@@ -706,6 +716,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Экспорт",
           description:
             "Экспортируйте GPS-трек из Navionics или любого навигационного приложения.",
+          learnHow: "Узнать как",
         },
         import: {
           title: "Импорт",
@@ -769,6 +780,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Εξαγωγή",
           description:
             "Εξάγετε το GPS ίχνος σας από το Navionics ή οποιαδήποτε εφαρμογή πλοήγησης.",
+          learnHow: "Μάθετε πώς",
         },
         import: {
           title: "Εισαγωγή",
@@ -832,6 +844,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "エクスポート",
           description:
             "Navionicsまたは任意のナビゲーションアプリからGPSトラックをエクスポートします。",
+          learnHow: "方法を見る",
         },
         import: {
           title: "インポート",
@@ -895,6 +908,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Easpórtáil",
           description:
             "Easpórtáil do rian GPS ó Navionics nó aon aip loingseoireachta.",
+          learnHow: "Foghlaim conas",
         },
         import: {
           title: "Iompórtáil",
@@ -958,6 +972,7 @@ const landingMessagesBase: Record<Lang, LandingMessagesBase> = {
           title: "Ezporzhiañ",
           description:
             "Ezporzhiit ho roudenn GPS diwar Navionics pe ne vern pe arload merdeiñ.",
+          learnHow: "Deskiñ penaos",
         },
         import: {
           title: "Enporzhiañ",

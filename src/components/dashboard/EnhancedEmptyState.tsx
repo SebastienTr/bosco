@@ -22,12 +22,14 @@ interface EnhancedEmptyStateProps {
   };
   createVoyageTrigger: ReactNode;
   showcaseUrl: string;
+  helpLink?: { label: string; href: string };
 }
 
 export function EnhancedEmptyState({
   messages,
   createVoyageTrigger,
   showcaseUrl,
+  helpLink,
 }: EnhancedEmptyStateProps) {
   return (
     <div className="flex flex-col items-center text-center">
@@ -47,6 +49,15 @@ export function EnhancedEmptyState({
         <li>2. {messages.step2}</li>
         <li>3. {messages.step3}</li>
       </ol>
+
+      {helpLink && (
+        <Link
+          href={helpLink.href}
+          className="mt-3 text-body text-ocean hover:underline"
+        >
+          {helpLink.label}
+        </Link>
+      )}
 
       {/* Primary CTA */}
       <div className="mt-6">{createVoyageTrigger}</div>

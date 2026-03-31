@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 640" fill="none">
+  <!-- Phone outline -->
+  <rect x="40" y="20" width="280" height="600" rx="24" stroke="#1B2D4F" stroke-width="3" fill="#F1F5F9"/>
+  <!-- Screen -->
+  <rect x="52" y="60" width="256" height="520" rx="8" fill="white"/>
+  <!-- Top bar -->
+  <rect x="52" y="60" width="256" height="48" rx="8" fill="#2563EB"/>
+  <text x="180" y="90" text-anchor="middle" fill="white" font-size="16" font-weight="bold" font-family="system-ui">My Data</text>
+  <!-- Menu item: Tracks -->
+  <rect x="68" y="124" width="224" height="56" rx="8" fill="#F1F5F9" stroke="#2563EB" stroke-width="2"/>
+  <text x="180" y="158" text-anchor="middle" fill="#1B2D4F" font-size="16" font-weight="600" font-family="system-ui">Tracks</text>
+  <!-- Track items -->
+  <rect x="68" y="196" width="224" height="44" rx="6" fill="white" stroke="#94A3B8" stroke-width="1"/>
+  <text x="84" y="224" fill="#334155" font-size="13" font-family="system-ui">Summer cruise 2025</text>
+  <rect x="68" y="252" width="224" height="44" rx="6" fill="white" stroke="#94A3B8" stroke-width="1"/>
+  <text x="84" y="280" fill="#334155" font-size="13" font-family="system-ui">Weekend sail Sept</text>
+  <!-- Arrow pointing to Tracks -->
+  <circle cx="310" cy="152" r="16" fill="#E8614D"/>
+  <text x="310" y="158" text-anchor="middle" fill="white" font-size="18" font-weight="bold" font-family="system-ui">1</text>
+</svg>

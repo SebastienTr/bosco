@@ -28,6 +28,7 @@ export const messages = {
     step2: "Share the GPX file to Bosco",
     step3: "Your voyage appears on the map",
     seeExample: "See an example",
+    navionicsGuide: "How to export from Navionics?",
   },
   createDialog: {
     title: "New Voyage",
