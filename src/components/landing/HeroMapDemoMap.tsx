@@ -7,40 +7,62 @@ import { MapContainer, TileLayer, Polyline, useMap } from "react-leaflet";
 import type { LatLngExpression, LatLngBoundsExpression } from "leaflet";
 
 /**
- * A short Mediterranean sailing route (Marseille → Cassis → Porquerolles area).
- * Coordinates are [lat, lng] for Leaflet consumption.
- * Designed to look like a real sailing track with tacking angles.
+ * Demo sailing track: Cassis → Porquerolles, beating upwind.
+ * Coordinates are [lat, lng] for Leaflet.
+ * The zigzag pattern shows close-hauled tacking — Bosco's core value prop.
  */
 const DEMO_ROUTE: LatLngExpression[] = [
-  [43.295, 5.37],   // Marseille — Vieux Port
-  [43.27, 5.39],    // Heading south
-  [43.24, 5.42],    // Tack east
-  [43.215, 5.39],   // Tack back
-  [43.19, 5.44],    // Past Calanques
-  [43.17, 5.48],    // Cassis approach
-  [43.16, 5.53],    // Past Cassis
-  [43.14, 5.58],    // Open water
-  [43.12, 5.64],    // Heading to La Ciotat
-  [43.11, 5.71],    // Past La Ciotat
-  [43.1, 5.78],     // Continuing east
-  [43.085, 5.85],   // Les Lecques area
-  [43.07, 5.91],    // Bandol approach
-  [43.06, 5.98],    // Past Bandol
-  [43.05, 6.05],    // Sanary
-  [43.04, 6.12],    // Toulon bay entrance
-  [43.02, 6.19],    // Into the bay
-  [43.0, 6.26],     // Past Toulon
-  [42.98, 6.34],    // Heading to Hyeres
-  [42.96, 6.42],    // Approaching Porquerolles
-  [42.98, 6.5],     // Tack north a bit
-  [42.99, 6.58],    // Porquerolles area
-  [43.01, 6.64],    // Past the islands
-  [43.0, 6.72],     // Final stretch
+  // Depart Cassis heading SE
+  [43.214, 5.537],
+  [43.195, 5.56],
+  // Tack 1 — heading SSW
+  [43.17, 5.54],
+  [43.15, 5.52],
+  // Tack 2 — heading SSE
+  [43.13, 5.56],
+  [43.115, 5.60],
+  // Tack 3 — heading SSW
+  [43.095, 5.57],
+  [43.08, 5.54],
+  // Tack 4 — heading SE toward La Ciotat
+  [43.065, 5.59],
+  [43.055, 5.64],
+  // Rounding La Ciotat, easing off
+  [43.05, 5.69],
+  [43.045, 5.74],
+  // Tack 5 — short tack south
+  [43.025, 5.72],
+  [43.01, 5.70],
+  // Tack 6 — back toward coast
+  [43.0, 5.75],
+  [42.995, 5.81],
+  // Reaching past Bandol
+  [42.99, 5.87],
+  [42.985, 5.93],
+  [42.98, 5.99],
+  // Approaching Toulon — slight tack
+  [42.965, 5.97],
+  [42.95, 5.95],
+  // Tack back east
+  [42.94, 6.01],
+  [42.935, 6.07],
+  // Open water — freer wind
+  [42.93, 6.14],
+  [42.935, 6.21],
+  // Tack toward Hyères
+  [42.95, 6.19],
+  [42.965, 6.22],
+  // Final approach to Porquerolles
+  [42.975, 6.20],
+  [42.99, 6.22],
+  [43.0, 6.19],
+  // Anchoring at Porquerolles
+  [42.995, 6.215],
 ];
 
 const BOUNDS: LatLngBoundsExpression = [
-  [42.93, 5.32],  // Southwest corner
-  [43.32, 6.78],  // Northeast corner
+  [42.91, 5.49],
+  [43.24, 6.27],
 ];
 
 const OSM_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
