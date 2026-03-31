@@ -4,6 +4,7 @@ import { Polyline, useMap } from "react-leaflet";
 import type { LatLngExpression } from "leaflet";
 import L from "leaflet";
 import { useEffect, useMemo } from "react";
+import { ROUTE_PANE } from "./MapCanvas";
 
 interface RouteLayerProps {
   tracks: GeoJSON.LineString[];
@@ -59,6 +60,7 @@ export function RouteLayer({
               ? { ...TRACK_STYLE, color: trackColors[index] }
               : TRACK_STYLE
           }
+          pane={ROUTE_PANE}
         />
       ))}
     </>

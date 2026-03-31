@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
 import { toLatLngs } from "./RouteLayer";
+import { ROUTE_PANE } from "./MapCanvas";
 import { messages } from "@/app/[username]/[slug]/messages";
 
 type AnimationState = "idle" | "playing" | "paused" | "complete";
@@ -77,6 +78,7 @@ export function RouteAnimation({
         color: TRACK_COLOR,
         opacity: TRACK_OPACITY,
         weight: ANIMATION_WEIGHT,
+        pane: ROUTE_PANE,
       }).addTo(map),
     );
     polylinesRef.current = polylines;

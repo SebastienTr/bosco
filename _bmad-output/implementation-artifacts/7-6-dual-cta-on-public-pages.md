@@ -1,6 +1,6 @@
 # Story 7.6: Dual CTA on Public Pages
 
-Status: review
+Status: done
 
 ## Story
 

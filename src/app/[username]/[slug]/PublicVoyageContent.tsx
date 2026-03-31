@@ -9,7 +9,6 @@ import { StopoverSheet } from "@/components/voyage/StopoverSheet";
 import { PortsPanel } from "@/components/voyage/PortsPanel";
 import { ActionFAB } from "@/components/voyage/ActionFAB";
 import { ShareButton } from "@/components/voyage/ShareButton";
-import { DualCTA } from "@/components/voyage/DualCTA";
 import { JournalTimeline } from "@/components/log/JournalTimeline";
 import { PhotoLightbox } from "@/components/log/PhotoLightbox";
 import type { LogEntry } from "@/lib/data/log-entries";
@@ -443,10 +442,6 @@ export default function PublicVoyageContent({
             initialIndex={lightboxIndex}
             onClose={handleCloseLightbox}
           />
-        )}
-
-        {!isOwner && (
-          <DualCTA messages={messages.dualCTA} />
         )}
       </div>
     </div>

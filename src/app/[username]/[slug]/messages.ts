@@ -63,10 +63,4 @@ export const messages = {
     text: (voyageName: string, username: string) =>
       `Check out this sailing voyage: ${voyageName} by @${username}`,
   },
-  dualCTA: {
-    headline: "Sail too? Create your own voyage",
-    createLabel: "Get started",
-    dismissLabel: "Dismiss",
-    ariaLabel: "Create your own voyage on Bosco",
-  },
 };
