@@ -32,4 +32,11 @@ export const messages = {
     deletedToast: "Leg deleted",
     deleteErrorToast: "Failed to delete leg",
   },
+  share: {
+    label: "Share this voyage",
+    copied: "Link copied!",
+    copyFailed: "Could not copy link",
+    text: (voyageName: string, username: string) =>
+      `Check out this sailing voyage: ${voyageName} by @${username}`,
+  },
 };

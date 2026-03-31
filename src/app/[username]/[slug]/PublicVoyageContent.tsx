@@ -8,6 +8,7 @@ import { StatsBar } from "@/components/voyage/StatsBar";
 import { StopoverSheet } from "@/components/voyage/StopoverSheet";
 import { PortsPanel } from "@/components/voyage/PortsPanel";
 import { ActionFAB } from "@/components/voyage/ActionFAB";
+import { ShareButton } from "@/components/voyage/ShareButton";
 import { JournalTimeline } from "@/components/log/JournalTimeline";
 import { PhotoLightbox } from "@/components/log/PhotoLightbox";
 import type { LogEntry } from "@/lib/data/log-entries";
@@ -21,6 +22,7 @@ import {
   toVoyageRouteTracks,
 } from "@/lib/voyage-route";
 import { parseMapHash } from "@/lib/utils/map-view-hash";
+import { siteUrl } from "@/lib/utils/site-url";
 import { messages } from "./messages";
 
 const RouteAnimation = dynamic(
@@ -96,6 +98,7 @@ interface PublicVoyageContentProps {
   countriesCount: number;
   boatName: string | null;
   username: string;
+  slug: string;
   logEntries: LogEntry[];
 }
 
@@ -109,6 +112,7 @@ export default function PublicVoyageContent({
   countriesCount,
   boatName,
   username,
+  slug,
   logEntries,
 }: PublicVoyageContentProps) {
   const initialMapView = useMemo(() => {
@@ -255,7 +259,7 @@ export default function PublicVoyageContent({
 
       {/* Map fills remaining space */}
       <div className="relative flex-1">
-        <header className="absolute inset-x-0 top-4 z-[350] flex justify-center px-4">
+        <header className="absolute inset-x-0 top-4 z-[350] flex items-start justify-center px-4">
           <Link
             href={`/${username}`}
             className="max-w-[min(28rem,calc(100vw-8rem))] rounded-2xl bg-navy/75 px-4 py-3 text-center text-white shadow-overlay backdrop-blur-[12px] transition-colors hover:bg-navy/85"
@@ -267,6 +271,13 @@ export default function PublicVoyageContent({
               {boatName ?? voyageName} · @{username}
             </p>
           </Link>
+          <ShareButton
+            url={`${siteUrl}/${username}/${slug}`}
+            title={voyageName}
+            text={messages.share.text(voyageName, username)}
+            messages={messages.share}
+            className="ml-2 shrink-0"
+          />
         </header>
 
         <MapLoader

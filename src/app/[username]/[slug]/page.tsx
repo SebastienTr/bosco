@@ -117,6 +117,7 @@ export default async function PublicVoyagePage({ params }: Props) {
         countriesCount={countriesCount}
         boatName={profile.boat_name}
         username={profile.username ?? username}
+        slug={slug}
         logEntries={logEntries ?? []}
       />
     </>

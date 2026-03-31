@@ -3,10 +3,13 @@ import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { getUser } from "@/lib/auth";
 import { getVoyageById } from "@/lib/data/voyages";
+import { getProfileByUserId } from "@/lib/data/profiles";
 import { getLegsByVoyageId } from "@/lib/data/legs";
 import { getStopoversByVoyageId } from "@/lib/data/stopovers";
 import { getLogEntriesByVoyageId } from "@/lib/data/log-entries";
 import { VoyageContent } from "@/components/voyage/VoyageContent";
+import { ShareButton } from "@/components/voyage/ShareButton";
+import { siteUrl } from "@/lib/utils/site-url";
 import { messages } from "./messages";
 
 export const metadata: Metadata = {
@@ -50,6 +53,8 @@ export default async function VoyagePage({
   }
 
   const { data: logEntries } = await getLogEntriesByVoyageId(id);
+  const { data: profile } = await getProfileByUserId(user.id);
+  const username = profile?.username ?? null;
 
   return (
     <div className="flex h-dvh flex-col">
@@ -79,6 +84,15 @@ export default async function VoyagePage({
           {voyage.name}
         </h1>
         <div className="flex items-center gap-2">
+          {voyage.is_public && username && voyage.slug && (
+            <ShareButton
+              url={`${siteUrl}/${username}/${voyage.slug}`}
+              title={voyage.name}
+              text={messages.share.text(voyage.name, username)}
+              messages={messages.share}
+              className="bg-ocean/10 text-ocean backdrop-blur-none hover:bg-ocean/20"
+            />
+          )}
           {(legs ?? []).length > 0 && (
             <Link
               href={`/voyage/${id}/import`}

@@ -56,4 +56,11 @@ export const messages = {
     closeLabel: "Close journal",
     toggle: (count: number) => (count === 1 ? "1 entry" : `${count} entries`),
   },
+  share: {
+    label: "Share this voyage",
+    copied: "Link copied!",
+    copyFailed: "Could not copy link",
+    text: (voyageName: string, username: string) =>
+      `Check out this sailing voyage: ${voyageName} by @${username}`,
+  },
 };

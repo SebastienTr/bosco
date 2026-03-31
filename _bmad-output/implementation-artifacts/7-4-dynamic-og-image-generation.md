@@ -1,6 +1,6 @@
 # Story 7.4: Dynamic OG Image Generation
 
-Status: review
+Status: done
 
 ## Story
 

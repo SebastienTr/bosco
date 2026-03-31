@@ -5,6 +5,10 @@ import type { Json } from "@/types/supabase";
 import PublicVoyageContent from "./PublicVoyageContent";
 import { messages } from "./messages";
 
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
+}));
+
 vi.mock("next/image", () => ({
   default: ({
     src,
@@ -78,6 +82,7 @@ describe("PublicVoyageContent", () => {
     countriesCount: 0,
     boatName: "Selkie",
     username: "seb",
+    slug: "atlantic-loop",
     logEntries: [
       {
         id: "entry-1",
