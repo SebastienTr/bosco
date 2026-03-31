@@ -4,8 +4,8 @@ import { getUser } from "@/lib/auth";
 import { getProfileByUserId } from "@/lib/data/profiles";
 import { getVoyagesWithStats } from "@/lib/data/voyages";
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/shared/EmptyState";
 import { VoyageCard } from "@/components/voyage/VoyageCard";
+import { EnhancedEmptyState } from "@/components/dashboard/EnhancedEmptyState";
 import { CreateVoyageDialog } from "./CreateVoyageDialog";
 import { SharePendingRedirect } from "./SharePendingRedirect";
 import { messages } from "./messages";
@@ -81,26 +81,9 @@ export default async function DashboardPage() {
         </div>
       ) : (
         <div className="mt-8">
-          <EmptyState
-            icon={
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="64"
-                height="64"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-              </svg>
-            }
-            title={messages.emptyState.title}
-            description={messages.emptyState.description}
-            action={
+          <EnhancedEmptyState
+            messages={messages.emptyState}
+            createVoyageTrigger={
               <CreateVoyageDialog
                 trigger={
                   <Button className="min-h-[44px] bg-coral px-8 text-white hover:bg-coral/90">
@@ -109,6 +92,7 @@ export default async function DashboardPage() {
                 }
               />
             }
+            showcaseUrl="/Seb/goteborg-to-nice"
           />
         </div>
       )}

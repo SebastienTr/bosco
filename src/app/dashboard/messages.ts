@@ -22,7 +22,12 @@ export const messages = {
     title: "Create your first voyage",
     description:
       "Start documenting your sailing journey. Create a voyage, import your GPS tracks, and share your adventure.",
-    cta: "Create a voyage",
+    cta: "Create your first voyage",
+    headline: "Your first voyage awaits",
+    step1: "Export your track from Navionics",
+    step2: "Share the GPX file to Bosco",
+    step3: "Your voyage appears on the map",
+    seeExample: "See an example",
   },
   createDialog: {
     title: "New Voyage",

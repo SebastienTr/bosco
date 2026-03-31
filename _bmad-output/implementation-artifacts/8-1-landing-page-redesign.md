@@ -1,6 +1,6 @@
 # Story 8.1: Landing Page Redesign
 
-Status: review
+Status: done
 
 ## Story
 

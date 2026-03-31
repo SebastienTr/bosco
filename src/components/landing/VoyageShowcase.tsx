@@ -84,15 +84,10 @@ export function VoyageShowcase({ messages }: VoyageShowcaseProps) {
             voyageTitle={SHOWCASE_VOYAGE.title}
           />
         ) : (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/showcase-voyage.png"
-              alt={showcaseMediaLabel}
-              className="w-full"
-              loading="lazy"
-            />
-          </>
+          <div
+            aria-hidden="true"
+            className="aspect-[16/10] w-full animate-pulse bg-navy/10"
+          />
         )}
       </div>
 
