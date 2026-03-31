@@ -59,7 +59,8 @@ export default async function VoyagePage({
   return (
     <div className="flex h-dvh flex-col">
       {/* Header bar */}
-      <header className="flex items-center gap-4 bg-white px-4 py-3 shadow-card">
+      <header className="bg-white px-4 py-3 shadow-card">
+        <div className="flex items-center gap-4">
         <Link
           href="/dashboard"
           className="inline-flex min-h-[44px] items-center rounded-[var(--radius-button)] px-3 py-2 text-body font-semibold text-mist transition-colors hover:text-navy"
@@ -80,7 +81,7 @@ export default async function VoyagePage({
           </svg>
           {messages.backToDashboard}
         </Link>
-        <h1 className="flex-1 truncate font-heading text-h1 text-navy">
+        <h1 className="hidden flex-1 truncate font-heading text-h1 text-navy sm:block">
           {voyage.name}
         </h1>
         <div className="flex items-center gap-2">
@@ -94,6 +95,7 @@ export default async function VoyagePage({
                 copied: messages.share.copied,
                 copyFailed: messages.share.copyFailed,
               }}
+              ogImageUrl={`${siteUrl}/${username}/${voyage.slug}/opengraph-image`}
               className="bg-ocean/10 text-ocean backdrop-blur-none hover:bg-ocean/20"
             />
           )}
@@ -126,6 +128,10 @@ export default async function VoyagePage({
             </svg>
           </Link>
         </div>
+        </div>
+        <h1 className="truncate px-3 pt-1 font-heading text-h2 text-navy sm:hidden">
+          {voyage.name}
+        </h1>
       </header>
 
       {/* Map area — fills remaining viewport */}

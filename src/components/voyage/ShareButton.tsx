@@ -14,7 +14,21 @@ interface ShareButtonProps {
   title: string;
   text: string;
   messages: ShareButtonMessages;
+  ogImageUrl?: string;
   className?: string;
+}
+
+async function fetchOgImageAsFile(
+  ogImageUrl: string,
+): Promise<File | null> {
+  try {
+    const response = await fetch(ogImageUrl);
+    if (!response.ok) return null;
+    const blob = await response.blob();
+    return new File([blob], "voyage.png", { type: blob.type || "image/png" });
+  } catch {
+    return null;
+  }
 }
 
 type NavigatorWithUserAgentData = Navigator & {
@@ -50,6 +64,7 @@ export function ShareButton({
   title,
   text,
   messages,
+  ogImageUrl,
   className = "",
 }: ShareButtonProps) {
   const copyToClipboard = useCallback(async () => {
@@ -62,29 +77,51 @@ export function ShareButton({
   }, [url, messages.copied, messages.copyFailed]);
 
   const handleShare = useCallback(async () => {
-    const shareData = { title, text, url };
-    const canUseNativeShare =
+    const isMobile = isLikelyMobileDevice();
+    const hasNativeShare =
       typeof navigator !== "undefined" &&
       typeof navigator.share === "function" &&
-      isLikelyMobileDevice() &&
-      (typeof navigator.canShare !== "function" ||
-        navigator.canShare(shareData));
+      isMobile;
 
-    if (canUseNativeShare) {
-      try {
-        await navigator.share(shareData);
-      } catch (err: unknown) {
-        // User cancelled the share sheet — not an error
-        const isAbort =
-          err instanceof DOMException && err.name === "AbortError";
-        if (!isAbort) {
-          await copyToClipboard();
+    if (!hasNativeShare) {
+      await copyToClipboard();
+      return;
+    }
+
+    // Try sharing with OG image first (enables Instagram Stories, etc.)
+    if (ogImageUrl) {
+      const file = await fetchOgImageAsFile(ogImageUrl);
+      if (file) {
+        const fileShareData = { files: [file], title, url };
+        if (
+          typeof navigator.canShare === "function" &&
+          navigator.canShare(fileShareData)
+        ) {
+          try {
+            await navigator.share(fileShareData);
+            return;
+          } catch (err: unknown) {
+            const isAbort =
+              err instanceof DOMException && err.name === "AbortError";
+            if (isAbort) return;
+            // Fall through to text-only share
+          }
         }
       }
-    } else {
-      await copyToClipboard();
     }
-  }, [title, text, url, copyToClipboard]);
+
+    // Fallback: text-only share
+    const textShareData = { title, text, url };
+    try {
+      await navigator.share(textShareData);
+    } catch (err: unknown) {
+      const isAbort =
+        err instanceof DOMException && err.name === "AbortError";
+      if (!isAbort) {
+        await copyToClipboard();
+      }
+    }
+  }, [title, text, url, ogImageUrl, copyToClipboard]);
 
   return (
     <button

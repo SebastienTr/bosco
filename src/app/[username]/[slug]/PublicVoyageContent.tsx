@@ -275,6 +275,7 @@ export default function PublicVoyageContent({
             title={voyageName}
             text={messages.share.text(voyageName, username)}
             messages={messages.share}
+            ogImageUrl={`${publicUrl}/opengraph-image`}
             className="ml-2 shrink-0"
           />
         </header>
