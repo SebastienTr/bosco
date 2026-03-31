@@ -110,8 +110,9 @@ function createLongitudeNormalizer(allCoords: [number, number][][]) {
 function mercatorProject(lng: number, lat: number): { x: number; y: number } {
   const latClamped = Math.max(-MAX_MERCATOR_LAT, Math.min(MAX_MERCATOR_LAT, lat));
   const latRad = (latClamped * Math.PI) / 180;
+  const lngRad = (lng * Math.PI) / 180;
   return {
-    x: lng,
+    x: lngRad,
     y: Math.log(Math.tan(Math.PI / 4 + latRad / 2)),
   };
 }
