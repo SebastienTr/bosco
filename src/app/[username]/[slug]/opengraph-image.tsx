@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getPublicVoyageBySlug } from "@/lib/data/voyages";
+import { geojsonToSvgPaths } from "@/lib/geo/geojson-to-svg";
 import { formatDistanceNm } from "@/lib/utils/format";
 import { fetchImageDataUrl } from "@/lib/utils/image-data-url";
 import { getVoyageMetrics } from "@/lib/utils/voyage-metrics";
@@ -40,14 +41,23 @@ export default async function Image({
     );
   }
 
+  const legs = voyage.legs ?? [];
   const { totalDistanceNm, days, portsCount, countriesCount } = getVoyageMetrics(
-    voyage.legs ?? [],
+    legs,
     voyage.stopovers ?? [],
   );
   const profile = voyage.profiles;
   const coverImageSrc = voyage.cover_image_url
     ? await fetchImageDataUrl(voyage.cover_image_url)
     : null;
+
+  // Generate SVG route paths from leg track data
+  const routeSvg = geojsonToSvgPaths(
+    legs.filter((l) => l.track_geojson),
+    size.width,
+    size.height,
+    40,
+  );
 
   return new ImageResponse(
     (
@@ -83,6 +93,26 @@ export default async function Image({
               : "linear-gradient(135deg, #1B2D4F 0%, #0f1a2e 100%)",
           }}
         />
+        {routeSvg.paths.length > 0 && (
+          <svg
+            width={routeSvg.width}
+            height={routeSvg.height}
+            viewBox={routeSvg.viewBox}
+            style={{ position: "absolute", inset: 0 }}
+          >
+            {routeSvg.paths.map((d, i) => (
+              <path
+                key={i}
+                d={d}
+                fill="none"
+                stroke="rgba(255,255,255,0.25)"
+                strokeWidth={3}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            ))}
+          </svg>
+        )}
         <div
           style={{
             position: "relative",
@@ -221,7 +251,9 @@ export default async function Image({
                 color: "rgba(255,255,255,0.78)",
               }}
             >
-              <span style={{ fontSize: 18 }}>Shared from Bosco</span>
+              {profile.boat_name ? (
+                <span style={{ fontSize: 20 }}>{profile.boat_name}</span>
+              ) : null}
               <span style={{ fontSize: 22 }}>by @{profile.username ?? username}</span>
             </div>
             <div
@@ -230,7 +262,7 @@ export default async function Image({
                 color: "rgba(255,255,255,0.58)",
               }}
             >
-              {coverImageSrc ? "Cover photo included" : "Bosco voyage preview"}
+              sailbosco.com
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 # Story 7.3: Photo Lightbox Viewer
 
-Status: review
+Status: done
 
 ## Story
 
