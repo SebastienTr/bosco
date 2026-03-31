@@ -91,9 +91,9 @@ export function LogEntryForm({
       const validation = validateImageFile(file);
       if (!validation.valid) {
         toast.error(
-          validation.error.includes("type")
-            ? messages.validation.invalidFileType
-            : messages.validation.fileTooLarge,
+          validation.error.includes("18 MB")
+            ? messages.validation.fileTooLarge
+            : messages.validation.invalidFileType,
           { duration: Infinity },
         );
         continue;

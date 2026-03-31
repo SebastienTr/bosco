@@ -23,6 +23,22 @@ describe("classifyProcessingError", () => {
     expect(result.helpLink?.href).toBe(messages.error.notGpx.helpHref);
   });
 
+  it("classifies 'Invalid GPX format: XML parsing failed' as GPX format error", () => {
+    const result = classifyProcessingError("Invalid GPX format: XML parsing failed");
+    expect(result.title).toBe(messages.error.notGpx.title);
+    expect(result.helpLink).toBeDefined();
+  });
+
+  it("classifies 'Invalid GPX format: no tracks found' as GPX format error", () => {
+    const result = classifyProcessingError("Invalid GPX format: no tracks found");
+    expect(result.title).toBe(messages.error.notGpx.title);
+  });
+
+  it("classifies 'Invalid GPX format: no valid track points found' as GPX format error", () => {
+    const result = classifyProcessingError("Invalid GPX format: no valid track points found");
+    expect(result.title).toBe(messages.error.notGpx.title);
+  });
+
   it("classifies 'no <trk>' as GPX format error", () => {
     const result = classifyProcessingError("No <trk> elements found");
     expect(result.title).toBe(messages.error.notGpx.title);

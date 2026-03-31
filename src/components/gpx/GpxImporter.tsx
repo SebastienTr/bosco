@@ -47,7 +47,7 @@ type ImportAction =
 /** @internal Exported for testing only */
 export function classifyProcessingError(message: string): ImportErrorInfo {
   const lower = message.toLowerCase();
-  if (lower.includes("not a valid gpx") || lower.includes("no <trk>") || lower.includes("invalid xml") || lower.includes("no tracks")) {
+  if (lower.includes("not a valid gpx") || lower.includes("invalid gpx format") || lower.includes("no <trk>") || lower.includes("invalid xml") || lower.includes("no tracks") || lower.includes("no valid track")) {
     return {
       title: importMessages.error.notGpx.title,
       description: importMessages.error.notGpx.description,

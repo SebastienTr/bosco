@@ -139,9 +139,9 @@ export function ProfileForm({ profile, isEdit }: ProfileFormProps) {
     const validation = validateImageFile(file);
     if (!validation.valid) {
       toast.error(
-        validation.error.includes("type")
-          ? messages.validation.imageInvalidType
-          : messages.validation.imageTooLarge,
+        validation.error.includes("18 MB")
+          ? messages.validation.imageTooLarge
+          : messages.validation.imageInvalidType,
         { duration: Infinity },
       );
       return;

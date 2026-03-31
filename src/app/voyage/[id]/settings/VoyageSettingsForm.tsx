@@ -106,9 +106,9 @@ export function VoyageSettingsForm({ voyage, username }: VoyageSettingsFormProps
     const validation = validateImageFile(file);
     if (!validation.valid) {
       toast.error(
-        validation.error.includes("type")
-          ? messages.cover.invalidTypeError
-          : messages.cover.tooLargeError,
+        validation.error.includes("18 MB")
+          ? messages.cover.tooLargeError
+          : messages.cover.invalidTypeError,
         { duration: Infinity },
       );
       return;
