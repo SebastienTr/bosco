@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 };
 
 const stepImages = [
-  "/images/help/navionics-step-1.svg",
-  "/images/help/navionics-step-2.svg",
-  "/images/help/navionics-step-3.svg",
-  "/images/help/navionics-step-4.svg",
+  "/images/help/navionics-step-1.webp",
+  "/images/help/navionics-step-2.webp",
+  "/images/help/navionics-step-3.webp",
+  "/images/help/navionics-step-4.webp",
 ];
 
 export default function NavionicsExportGuidePage() {
@@ -48,13 +48,13 @@ export default function NavionicsExportGuidePage() {
               className="flex flex-col gap-6 rounded-[var(--radius-card)] bg-foam p-6 shadow-card md:flex-row md:items-start"
             >
               {/* Image */}
-              <div className="relative aspect-[9/16] w-full shrink-0 overflow-hidden rounded-[var(--radius-card)] bg-white md:max-w-[200px]">
+              <div className="relative mx-auto aspect-[9/16] w-full max-w-[180px] shrink-0 overflow-hidden rounded-[var(--radius-card)] bg-navy md:mx-0 md:max-w-[200px]">
                 <Image
                   src={stepImages[i]}
                   alt={step.alt}
                   fill
-                  className="object-contain p-4"
-                  sizes="(max-width: 768px) 100vw, 200px"
+                  className="object-cover"
+                  sizes="(max-width: 768px) 180px, 200px"
                 />
               </div>
 

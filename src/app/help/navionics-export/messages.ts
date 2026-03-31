@@ -11,26 +11,26 @@ export const messages = {
     {
       title: "Open your tracks",
       description:
-        "In the Navionics Boating app, tap the menu and go to \"My Data\" > \"Tracks\". Find the track you want to export.",
-      alt: "Navionics app showing the tracks list in My Data section",
+        "In the Navionics Boating app, open the menu and tap \"Tracks\". You'll see all your recorded tracks sorted by date.",
+      alt: "Navionics menu showing Tracks with 49 recorded tracks",
     },
     {
-      title: "Select the track",
+      title: "Select your tracks",
       description:
-        "Tap on the track to open its details. You'll see the route drawn on the map.",
-      alt: "Navionics app showing a selected track with the route on the map",
+        "Long-press a track to enter selection mode, then check the tracks you want to export. You can select one or several at once.",
+      alt: "Navionics tracks list with three tracks selected via checkboxes",
     },
     {
       title: "Export as GPX",
       description:
-        "Tap the share/export icon. In the format options, select \"GPX\". This is the standard format Bosco uses.",
-      alt: "Navionics export dialog with GPX format selected",
+        "Tap the share icon at the bottom, then choose \"Export GPX File\" under Other Options. This is the standard format Bosco uses.",
+      alt: "Navionics sharing options with Export GPX File highlighted",
     },
     {
       title: "Send to Bosco",
       description:
-        "Choose \"Save to Files\" or share directly. Then import the .gpx file in Bosco.",
-      alt: "Share sheet showing options to save or send the GPX file",
+        "The share sheet opens with your .gpx file ready. Choose Bosco to import directly, or save the file and import it later.",
+      alt: "Phone share sheet showing Bosco app among sharing options for a GPX file",
     },
   ],
   cta: "Ready? Import your tracks",
