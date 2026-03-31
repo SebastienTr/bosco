@@ -52,7 +52,7 @@ export function DualCTA({ messages }: DualCTAProps) {
       role="complementary"
       aria-label={messages.ariaLabel}
       data-testid="dual-cta"
-      className={`fixed bottom-24 left-3 z-[420] max-w-[calc(100vw-5rem)] transition-all duration-500 ease-out lg:bottom-12 lg:left-auto lg:right-4 ${
+      className={`fixed bottom-40 left-3 z-[420] max-w-[calc(100vw-5rem)] transition-all duration-500 ease-out lg:bottom-20 lg:left-auto lg:right-4 ${
         visible
           ? "translate-y-0 opacity-100"
           : "translate-y-4 opacity-0 pointer-events-none"
@@ -64,7 +64,7 @@ export function DualCTA({ messages }: DualCTAProps) {
         </p>
 
         <Link
-          href="/auth/login"
+          href="/"
           data-testid="dual-cta-create"
           className="shrink-0 rounded-full bg-coral px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-coral/90 active:scale-95"
         >

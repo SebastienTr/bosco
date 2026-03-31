@@ -80,7 +80,7 @@ describe("DualCTA", () => {
     });
 
     const createLink = screen.getByTestId("dual-cta-create");
-    expect(createLink.getAttribute("href")).toBe("/auth/login");
+    expect(createLink.getAttribute("href")).toBe("/");
     expect(createLink.textContent).toBe("Get started");
   });
 
