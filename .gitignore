@@ -49,6 +49,7 @@ navionics_traces_goteborg_audierne
 navionics_traces_goteborg_audierne_light.gpx
 data/all-navionics-routes.json
 data/canal-des-deux-mers.json
+data/navionics_archive_export*
 
 # Claude context files (auto-generated, not project code)
 **/CLAUDE.md

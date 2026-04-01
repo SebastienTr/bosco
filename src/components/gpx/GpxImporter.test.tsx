@@ -98,6 +98,43 @@ describe("GpxImporter autoImportFromShare", () => {
     });
   });
 
+  it("rejects shared file exceeding 400 MB size limit", async () => {
+    // Create a mock blob that reports a size over 400 MB
+    const largeSize = 401 * 1024 * 1024;
+    const largeBlob = new Blob(["x"], { type: "application/gpx+xml" });
+    Object.defineProperty(largeBlob, "size", { value: largeSize });
+
+    const fakeResponse = {
+      blob: vi.fn().mockResolvedValue(largeBlob),
+    };
+    const mockCache = {
+      match: vi.fn().mockResolvedValue(fakeResponse),
+      delete: vi.fn(),
+    };
+    Object.defineProperty(window, "caches", {
+      value: { open: vi.fn().mockResolvedValue(mockCache) },
+      writable: true,
+      configurable: true,
+    });
+
+    const { container } = render(
+      <GpxImporter
+        voyageId="test-voyage"
+        voyageName="Test"
+        autoImportFromShare={true}
+      />,
+    );
+
+    // Should show error state instead of processing
+    await vi.waitFor(() => {
+      const errorText = container.textContent;
+      expect(errorText).toContain("too large");
+    });
+
+    // Worker should NOT have received a message
+    expect(mockPostMessage).not.toHaveBeenCalled();
+  });
+
   it("falls back to file picker when autoImportFromShare is true but no file in cache", async () => {
     mockCaches(false);
 

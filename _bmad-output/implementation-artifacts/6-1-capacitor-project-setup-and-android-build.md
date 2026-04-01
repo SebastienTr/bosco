@@ -1,6 +1,6 @@
 # Story 6.1: Capacitor Project Setup & Android Build
 
-Status: review
+Status: done
 
 ## Story
 

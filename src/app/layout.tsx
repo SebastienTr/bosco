@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "@/components/ui/sonner";
 import { ServiceWorkerRegistrar } from "@/components/pwa/ServiceWorkerRegistrar";
+import NativeShareListener from "@/components/native/NativeShareListener";
 import "./globals.css";
 import { messages } from "./messages";
 
@@ -45,6 +46,7 @@ export default function RootLayout({
         {children}
         <Toaster richColors position="bottom-center" />
         <ServiceWorkerRegistrar />
+        <NativeShareListener />
         <Analytics />
         <SpeedInsights />
       </body>

@@ -179,6 +179,22 @@ export function GpxImporter({ voyageId, voyageName, autoImportFromShare }: GpxIm
         const response = await cache.match(SHARE_KEY);
         if (!response || cancelled) return;
         const blob = await response.blob();
+
+        // Apply same size limit as file picker (400 MB)
+        const maxBytes = 400 * 1024 * 1024;
+        if (blob.size > maxBytes) {
+          if (cancelled) return;
+          const sizeMb = Math.round(blob.size / (1024 * 1024));
+          dispatch({
+            type: "PROCESSING_ERROR",
+            errorInfo: {
+              title: importMessages.error.tooLarge.title(sizeMb),
+              description: importMessages.error.tooLarge.description,
+            },
+          });
+          return;
+        }
+
         const file = new File([blob], "shared.gpx", { type: "application/gpx+xml" });
 
         if (cancelled) return;
