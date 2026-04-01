@@ -1,6 +1,6 @@
 # Story 8.5: Navionics GPX Export Guide
 
-Status: review
+Status: done
 
 ## Story
 

@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-15
-last_updated: 2026-03-31T23:59:00+0200
+last_updated: 2026-04-01T09:00:00+0200
 project: bosco
 project_key: NOKEY
 tracking_system: file-system
@@ -107,16 +107,17 @@ development_status:
   # 8-2 moved to Epic 6B (requires native app)
   8-3-enhanced-empty-state-with-demo-voyage: done
   8-4-actionable-error-messages-and-recovery-ux: done
-  8-5-navionics-gpx-export-guide: review
+  8-5-navionics-gpx-export-guide: done
   epic-8-retrospective: optional
 
   # Epic 6A: Android App & Native Import
   # Split from Epic 6 — iOS deferred to Epic 6B (no iPhone for testing)
   # Moved after Epics 7-8 (web-first features have higher immediate value)
   # See sprint-change-proposal-2026-03-30.md
-  epic-6a: backlog
-  6-1-capacitor-project-setup-and-android-build: backlog
+  epic-6a: in-progress
+  6-1-capacitor-project-setup-and-android-build: review
   6-2-android-gpx-share-target-intent-filter: backlog
+  6-a3-play-store-submission-and-android-listing: backlog
   epic-6a-retrospective: optional
 
   # Epic 9: Offline & Internationalization — Polish & Reach

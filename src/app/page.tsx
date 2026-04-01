@@ -58,7 +58,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-4 sm:px-8">
+      <nav className="relative z-50 flex items-center justify-between px-6 py-4 sm:px-8">
         <span className="font-heading text-h1 text-navy">Bosco</span>
         <div className="flex items-center gap-4">
           <LanguageSelector value={lang} onChange={changeLang} />

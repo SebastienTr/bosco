@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Bosco</string>
+    <string name="title_activity_main">Bosco</string>
+    <string name="package_name">com.sailbosco.app</string>
+    <string name="custom_url_scheme">com.sailbosco.app</string>
+</resources>

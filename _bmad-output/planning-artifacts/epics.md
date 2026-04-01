@@ -242,10 +242,11 @@ This document provides the complete epic and story breakdown for Bosco v1.0, dec
 - FR-3: Epic 5 (Custom SMTP)
 - FR-66, FR-67: Epic 5 (Legal/RGPD)
 - FR-14 (Android): Epic 6A (Android share target intent filter)
+- FR-62: Epic 6A (Play Store distribution — extracted from 6B, see sprint-change-proposal-2026-04-01.md)
 - FR-4: Epic 6B (Cross-platform auth — requires iOS)
 - FR-14 (iOS), FR-15: Epic 6B (iOS share extension + file preservation)
 - FR-48: Epic 6B (Deep linking)
-- FR-61, FR-62, FR-63: Epic 6B (App store distribution + QA)
+- FR-61, FR-63: Epic 6B (App Store distribution + cross-platform QA)
 - FR-33, FR-34, FR-35: Epic 7 (Photo markers + lightbox)
 - FR-43, FR-44: Epic 7 (Dynamic OG + dual CTA)
 - FR-46, FR-47: Epic 7 (Native share + rich previews)
@@ -403,8 +404,11 @@ So that I can exercise my RGPD right to erasure.
 ## Epic 6A: Android App & Native Import
 
 > **Split from original Epic 6** — iOS stories deferred to Epic 6B (no iPhone for testing). See sprint-change-proposal-2026-03-30.md.
+> **Extended** — Play Store submission added (extracted from Story 6.7). See sprint-change-proposal-2026-04-01.md.
 
-Capacitor project setup with Android build and GPX share target via intent filter.
+Capacitor project setup with Android build, GPX share target via intent filter, and Play Store distribution.
+**FRs covered:** FR-14 (Android only), FR-62
+**ARs covered:** AR-2, AR-4, AR-6
 
 ### Story 6.1: Capacitor Project Setup & Android Build
 
@@ -437,6 +441,23 @@ So that I can import tracks without manual file picking.
 **And** the import preview screen shows with the received file pre-loaded
 **And** the import flow completes identically to the file picker flow
 **And** `application/gpx+xml` and `.gpx` file extensions are handled
+
+### Story 6.A3: Play Store Submission & Android Listing
+
+As a sailor on Android,
+I want to find and download Bosco on the Google Play Store,
+So that I can install it without technical knowledge.
+
+**Acceptance Criteria:**
+
+**Given** the Android app from Stories 6.1 and 6.2 is built and tested
+**When** submitted to Google Play
+**Then** a Google Play Developer account is created ($25 one-time fee)
+**And** a signed release AAB is generated with proper keystore
+**And** Bosco is listed on Google Play Store with screenshots, description, and data safety section
+**And** store listing is optimized for keywords: "sailing", "voyage tracker", "GPS track", "logbook", "Navionics"
+**And** age rating is set to Everyone
+**And** Internal Testing track is used for initial validation before production release
 
 ---
 
@@ -865,20 +886,22 @@ So that my voyages are accessible everywhere.
 **And** sessions persist across app relaunches until explicit logout
 **And** if a GPX file was shared before authentication, the file is preserved and the import flow resumes after sign-in (FR-15)
 
-### Story 6.7: App Store Submission & Listings
+### Story 6.7: App Store Submission & iOS Listing
 
-As a sailor,
-I want to find and download Bosco on the App Store and Play Store,
-So that I can install it on my device.
+> **Narrowed** — Play Store submission handled in Epic 6A (Story 6.A3). See sprint-change-proposal-2026-04-01.md.
+
+As a sailor on iOS,
+I want to find and download Bosco on the Apple App Store,
+So that I can install it on my iPhone.
 
 **Acceptance Criteria:**
 
-**Given** the iOS and Android apps are built and tested
-**When** submitted to the respective stores
+**Given** the iOS app is built and tested
+**When** submitted to the Apple App Store
 **Then** Bosco is listed on the Apple App Store with screenshots, description, and privacy labels
-**And** Bosco is listed on Google Play Store with screenshots, description, and data safety section
-**And** store listings are optimized for keywords: "sailing", "voyage tracker", "GPS track", "logbook", "Navionics"
-**And** age rating is set appropriately (4+ / Everyone)
+**And** store listing is optimized for keywords: "sailing", "voyage tracker", "GPS track", "logbook", "Navionics"
+**And** age rating is set to 4+
+**And** Play Store listing (already live from Story 6.A3) is verified for cross-platform consistency
 
 ### Story 6.8: Cross-Platform QA & Parity
 

@@ -54,6 +54,12 @@ data/canal-des-deux-mers.json
 **/CLAUDE.md
 !/CLAUDE.md
 
+# Capacitor Android build artifacts
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+
 # BMad
 .agents
 .claude
