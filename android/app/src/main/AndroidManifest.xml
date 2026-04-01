@@ -48,6 +48,14 @@
                 <data android:mimeType="application/gpx+xml" />
             </intent-filter>
 
+            <!-- App Links: Deep link sailbosco.com URLs into the app -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="www.sailbosco.com" />
+            </intent-filter>
+
         </activity>
 
         <provider

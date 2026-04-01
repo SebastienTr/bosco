@@ -406,8 +406,8 @@ So that I can exercise my RGPD right to erasure.
 > **Split from original Epic 6** — iOS stories deferred to Epic 6B (no iPhone for testing). See sprint-change-proposal-2026-03-30.md.
 > **Extended** — Play Store submission added (extracted from Story 6.7). See sprint-change-proposal-2026-04-01.md.
 
-Capacitor project setup with Android build, GPX share target via intent filter, and Play Store distribution.
-**FRs covered:** FR-14 (Android only), FR-62
+Capacitor project setup with Android build, GPX share target via intent filter, deep linking for auth, and Play Store distribution.
+**FRs covered:** FR-14 (Android only), FR-48 (Android only), FR-62
 **ARs covered:** AR-2, AR-4, AR-6
 
 ### Story 6.1: Capacitor Project Setup & Android Build
@@ -441,6 +441,21 @@ So that I can import tracks without manual file picking.
 **And** the import preview screen shows with the received file pre-loaded
 **And** the import flow completes identically to the file picker flow
 **And** `application/gpx+xml` and `.gpx` file extensions are handled
+
+### Story 6.A4: Android App Links (Deep Linking)
+
+As a sailor on Android,
+I want tapping a sailbosco.com link to open in the Bosco app,
+So that magic link authentication works in the native app.
+
+**Acceptance Criteria:**
+
+**Given** the Android app is installed
+**When** the user taps a `sailbosco.com/*` link (e.g., magic link from email)
+**Then** the link opens in the Bosco app instead of Chrome
+**And** `public/.well-known/assetlinks.json` is served correctly from sailbosco.com
+**And** if the app is NOT installed, the link opens in the web browser as before
+**And** magic link authentication completes successfully in the native app
 
 ### Story 6.A3: Play Store Submission & Android Listing
 
@@ -856,19 +871,20 @@ So that I can import tracks without manual file picking on iPhone.
 **And** the import preview screen shows with the received file pre-loaded
 **And** the flow works for single and multiple GPX files
 
-### Story 6.5: Deep Linking (Universal Links & App Links)
+### Story 6.5: iOS Universal Links
 
-As a user,
+> **Narrowed** — Android App Links handled in Epic 6A (Story 6.A4). See sprint-change-proposal-2026-04-01-deep-linking.md.
+
+As a user on iOS,
 I want tapping a sailbosco.com link to open in the native app when installed,
 So that I get the native experience for shared voyage links.
 
 **Acceptance Criteria:**
 
-**Given** the native app is installed on the user's device
+**Given** the iOS app is installed on the user's device
 **When** the user taps a `sailbosco.com/Seb/goteborg-to-nice` link
 **Then** the link opens in the Bosco app on the correct voyage page
 **And** `public/.well-known/apple-app-site-association` is served correctly
-**And** `public/.well-known/assetlinks.json` is served correctly
 **And** if the app is NOT installed, the link opens in the web browser
 
 ### Story 6.6: Cross-Platform Auth & File Preservation

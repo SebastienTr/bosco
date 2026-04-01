@@ -54,6 +54,12 @@ public class GpxReceivePlugin extends Plugin {
 
         if (uri == null) return;
 
+        // Skip URL intents (https/http) — handled by @capacitor/app for deep linking.
+        // Without this guard, readContentFromUri fails on https:// URIs and the
+        // setIntent() call at the end clears the intent before AppPlugin can read it.
+        String scheme = uri.getScheme();
+        if ("https".equals(scheme) || "http".equals(scheme)) return;
+
         lastProcessedIntent = intent;
 
         try {
@@ -127,6 +133,12 @@ public class GpxReceivePlugin extends Plugin {
             uri = intent.getData();
         }
         if (uri == null) {
+            call.resolve();
+            return;
+        }
+        // Skip URL intents — handled by @capacitor/app for deep linking
+        String scheme = uri.getScheme();
+        if ("https".equals(scheme) || "http".equals(scheme)) {
             call.resolve();
             return;
         }
