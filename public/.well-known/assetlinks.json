@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "com.sailbosco.app",
       "sha256_cert_fingerprints": [
-        "94:42:E7:39:E6:78:9A:67:B1:9E:23:E8:DB:10:DD:04:64:8D:8F:CC:6E:E6:8D:02:DB:87:D5:BE:E3:F2:C4:43"
+        "94:42:E7:39:E6:78:9A:67:B1:9E:23:E8:DB:10:DD:04:64:8D:8F:CC:6E:E6:8D:02:DB:87:D5:BE:E3:F2:C4:43",
+        "C2:BC:A8:DB:17:A2:6F:F5:FD:7A:55:9F:3A:05:28:4B:75:45:3F:CF:6B:BF:8F:11:5A:BC:17:57:95:1A:90:59"
       ]
     }
   }

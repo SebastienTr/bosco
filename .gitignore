@@ -60,6 +60,8 @@ android/app/build/
 android/.gradle/
 android/build/
 android/local.properties
+android/keystore.properties
+*.keystore
 
 # BMad
 .agents

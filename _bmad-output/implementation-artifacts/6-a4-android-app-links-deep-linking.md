@@ -1,6 +1,6 @@
 # Story 6.A4: Android App Links (Deep Linking)
 
-Status: review
+Status: done
 
 ## Story
 
