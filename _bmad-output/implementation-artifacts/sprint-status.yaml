@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-15
-last_updated: 2026-04-01T16:20:00+0200
+last_updated: 2026-04-22T16:30:00+0200
 project: bosco
 project_key: NOKEY
 tracking_system: file-system
@@ -92,7 +92,7 @@ development_status:
   epic-5-retrospective: done
 
   # Epic 7: Visual Storytelling — Photos, OG & Sharing
-  epic-7: in-progress
+  epic-7: done
   7-1-photo-markers-on-map: done
   7-2-photo-marker-clustering: done
   7-3-photo-lightbox-viewer: done
@@ -102,7 +102,7 @@ development_status:
   epic-7-retrospective: optional
 
   # Epic 8: Landing Page & Onboarding
-  epic-8: in-progress
+  epic-8: done
   8-1-landing-page-redesign: done
   # 8-2 moved to Epic 6B (requires native app)
   8-3-enhanced-empty-state-with-demo-voyage: done
@@ -114,12 +114,69 @@ development_status:
   # Split from Epic 6 — iOS deferred to Epic 6B (no iPhone for testing)
   # Moved after Epics 7-8 (web-first features have higher immediate value)
   # See sprint-change-proposal-2026-03-30.md
-  epic-6a: in-progress
+  epic-6a: done
   6-1-capacitor-project-setup-and-android-build: done
   6-2-android-gpx-share-target-intent-filter: done
   6-a4-android-app-links-deep-linking: done
-  6-a3-play-store-submission-and-android-listing: in-progress
+  6-a3-play-store-submission-and-android-listing: done
   epic-6a-retrospective: optional
+
+  # ============================================
+  # v2.0 EPICS (11-15) — EXPERIENCE DEEPENING
+  # ============================================
+  # Source: brainstorming-session-2026-04-19-1156.md
+  # Trajectory: 11 → 12 → 13 → 14 → 15 (then 9, 10, 6B)
+
+  # Epic 11: Voyage Configuration & Map Interactivity
+  epic-11: in-progress
+  11-1-enriched-voyage-card-boat-and-crew-details: ready-for-dev
+  11-2-multi-crew-names: backlog
+  11-3-clickable-legs-with-info-panel: backlog
+  11-4-configurable-stats-display: backlog
+  11-5-section-visibility-toggles: backlog
+  11-6-og-image-cache-busting-fix: backlog
+  epic-11-retrospective: optional
+
+  # Epic 12: Map Themes & Visual Identity
+  # Depends on: Epic 11 (data model)
+  epic-12: backlog
+  12-1-map-theme-selection-and-engine: backlog
+  12-2-customizable-boat-icon: backlog
+  12-3-theme-adapted-stopover-markers: backlog
+  12-4-theme-adapted-trace-style-and-wake-effect: backlog
+  12-5-system-dark-light-mode-support: backlog
+  epic-12-retrospective: optional
+
+  # Epic 13: Cinematic Animation
+  # Depends on: Epic 12 (theme engine)
+  epic-13: backlog
+  13-1-enriched-route-animation: backlog
+  13-2-import-visual-feedback-animation: backlog
+  13-3-timeline-slider: backlog
+  epic-13-retrospective: optional
+
+  # Epic 14: Living Map — Photos on Trace & Planned Route
+  # Depends on: Epic 12 (theme markers), Epic 11 (leg info panel)
+  epic-14: backlog
+  14-1-photos-positioned-on-the-trace: backlog
+  14-2-planned-route-import: backlog
+  14-3-progressive-planned-route-hiding: backlog
+  14-4-voyage-status-lifecycle: backlog
+  14-5-stopover-quick-preview-long-press: backlog
+  epic-14-retrospective: optional
+
+  # Epic 15: Content Distribution — Widget, Video & Sharing
+  # Depends on: Epic 13 (animation), Epic 12 (themes)
+  epic-15: backlog
+  15-1-embeddable-voyage-widget: backlog
+  15-2-video-export-mp4: backlog
+  15-3-postcard-image-download: backlog
+  15-4-voyage-qr-code: backlog
+  epic-15-retrospective: optional
+
+  # ============================================
+  # POLISH EPICS (9-10) — AFTER v2.0
+  # ============================================
 
   # Epic 9: Offline & Internationalization — Polish & Reach
   epic-9: backlog

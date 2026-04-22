@@ -115,6 +115,18 @@ date: '2026-03-29'
 
 The v1.0 is a success if: **100 sailors other than Seb** use Bosco within 3 months, **30% share** their voyage publicly, and the critical flow from download to share operates with **zero errors**. The product runs on production infrastructure at **≤$50/month** and is available on **both app stores**.
 
+### v2.0 Success Criteria
+
+| # | Criterion | Metric | Target | Measurement |
+|---|-----------|--------|--------|-------------|
+| SC-V2-1 | Theme adoption | Percentage of voyages using a non-default theme | 30% of voyages within 3 months of Epic 12 release | Database query on `voyages.theme` |
+| SC-V2-2 | Animation engagement | Visitors who watch the cinematic animation to completion | 50% of first-time visitors on public pages | Analytics event on animation complete |
+| SC-V2-3 | Widget adoption | Number of active embedded widgets on external sites | 10 active widgets within 6 months | API endpoint hit tracking |
+| SC-V2-4 | Content exports | Total video + postcard + QR exports per month | 50 exports/month within 3 months of Epic 15 release | Database query on `voyage_exports` |
+| SC-V2-5 | Configuration depth | Percentage of voyages with boat details or crew configured | 40% of voyages with at least one field set | Database query on boat/crew columns |
+
+**v2.0 Measurable Outcome:** v2.0 is a success if Bosco voyages become **visually distinctive** (30% non-default themes), visitors are **captivated** (50% watch full animation), and sailors **share beyond links** (50 exports/month). The product evolves from a functional logbook to an **experience platform**.
+
 ## Product Scope & Phased Development
 
 ### MVP Strategy
@@ -156,32 +168,32 @@ The v1.0 is a success if: **100 sailors other than Seb** use Bosco within 3 mont
 - Social features (follow, discover)
 - Trophy ordering pipeline
 - Weather overlay
-- Multi-crew collaboration
-- Generated share card images (Story format)
 
 **Timeline:** 4 weeks target, but not at the expense of the iOS Share Extension. If it overflows, that's OK — better to launch with the critical feature than fast without it.
 
-### Phase 2 — v1.1 (1-2 months after launch)
+### Phase 2 — v2.0 Experience Deepening (6-9 months after v1.0)
 
-- Social foundations (follow sailors, discover voyages)
-- Video support in journal entries
-- Stats & achievements (total NM, countries, badges)
-- Share card image generation (Instagram Story format)
-- Trophy "Coming Soon" with preview
-- Embeddable voyage widget (for blogs/websites)
+Epics 11-15 focus on making Bosco indispensable for active sailors through deeper experience and visual polish. Source: brainstorming-session-2026-04-19-1156.md.
 
-### Phase 3 — v2.0 (6+ months)
+- Enriched voyage card: boat details, crew names, configurable stats display (Epic 11)
+- Map theme system: 5 visual themes, boat icons, themed markers and trace styles (Epic 12)
+- Cinematic animation: enriched route animation with labels/photos/stats, timeline slider (Epic 13)
+- Living map: photos positioned on the trace (not just stopovers), planned route overlay (Epic 14)
+- Content distribution: embeddable blog widget, video export, postcard images, QR codes (Epic 15)
+
+### Phase 3 — v3.0 (12+ months)
 
 - Full social network for sailors (groups, chat, tips, anchorage reviews)
 - Trophy ordering pipeline (3D preview, payment, fulfillment)
 - Historical weather overlay on routes
-- Multi-crew collaboration
 - Import from PolarSteps and other sources
-- Full offline mode with sync
-- Multi-language (German, Italian, Spanish)
+- Multi-language beyond French (German, Italian, Spanish)
 - Partnership program (charter companies, sailing associations)
 - Real-time voyage tracking (live position sharing)
 - AI-generated voyage summaries
+- World map with all voyages on profile (brainstorming #20)
+- Aggregated sailor stats on profile (brainstorming #28)
+- Scrollable story mode as alternative to map view (brainstorming #12)
 
 ### Risk Mitigation
 
@@ -278,7 +290,7 @@ The v1.0 is a success if: **100 sailors other than Seb** use Bosco within 3 mont
 
 **Requirements revealed:** Native share sheet (Capacitor `@capacitor/share`), dynamic OG image generation (`opengraph-image.tsx`), link-based sharing flow, optimized OG dimensions for social platforms.
 
-**v1.1 future:** Generated share card images in Story format (9:16), direct Instagram Story sharing with image.
+**v2.0 planned:** Postcard image download in Story format (9:16) and video export for social sharing — see Epic 15.
 
 ### UJ-5: Admin Monitoring — Seb (Admin)
 
@@ -349,13 +361,98 @@ The v1.0 is a success if: **100 sailors other than Seb** use Bosco within 3 mont
 | UJ-6 Error Recovery | Clear error messages, contextual help, graceful degradation |
 | UJ-7 Returning Sailor | Persistent session, last voyage quick access, progressive building, retention UX |
 
-**Coverage:**
+**Coverage (v1.0):**
 - Primary user — success path (UJ-1, UJ-2, UJ-7)
 - Viral/growth path (UJ-3, UJ-4)
 - Admin/operations (UJ-5)
 - Error recovery (UJ-6)
 - Retention loop (UJ-7)
 - 5 distinct personas across 7 journeys
+
+### UJ-8: The Visual Storyteller — Line (v2.0)
+
+**Persona:** Line (35), manages @sv_freya Instagram (2.4K followers). She and Mads have been using Bosco for 3 months. Their voyage "Copenhagen → World" has 25 legs and beautiful photos. Line wants to elevate the visual storytelling.
+
+**Opening Scene:** Line opens Bosco on her phone at a café in Lisbon. She's been posting links on Instagram but wants something more visually striking for their anniversary — 6 months at sea.
+
+**Rising Action:**
+1. Opens voyage settings → discovers the Theme selector → previews "Night at Sea" — the trace glows on a dark map, markers become luminous dots. She selects it.
+2. Changes the boat icon from generic sailboat to catamaran — "That's more like Freya"
+3. Fills in boat details: "Hallberg-Rassy 40", 12m, Danish flag, home port Copenhagen
+4. Adds crew names: Mads, Line, and their cat "Skipper"
+5. Opens the public page → watches the cinematic animation: the trace draws with a luminous wake effect, stopover names fade in ("Copenhagen", "Kiel", "Brest"...), photo vignettes flash near each port, leg stats slide in between
+6. Taps "Export as video" → selects 9:16 for Instagram Reels → a 20-second clip renders showing the cinematic animation with "Night at Sea" theme
+7. Downloads the video and posts it as an Instagram Reel with the caption "6 months, 12 countries, one boat"
+
+**Climax:** The Reel gets 4,200 views — 3x their usual engagement. 15 DMs asking "What app is this?" The video IS the marketing. No link needed — the visuals speak.
+
+**Resolution:** Line also grabs the embed widget code and adds it to their sailing blog. Now every blog post about their journey includes a live, interactive map that updates automatically when Mads imports the next leg. Their followers can explore the route without leaving the blog.
+
+**Requirements revealed:** Theme selection per voyage, boat icon customization, boat details, crew names, cinematic animation with wake/labels/photos/stats, video export for social media, embeddable blog widget.
+
+### UJ-9: The Blogger Sailor — Captain Haddock (v2.0)
+
+**Persona:** Captain Haddock (62), retired, sailing solo around the Mediterranean. Writes a weekly WordPress blog about his adventures. Has 800 email subscribers. Not very technical but determined.
+
+**Opening Scene:** Haddock reads Line's blog and sees the embedded Bosco map. He thinks: "I need this on my blog."
+
+**Rising Action:**
+1. Downloads Bosco → creates account → imports his 40 GPX files from last season
+2. Opens voyage settings → selects "Logbook" theme — the map takes on a warm, vintage watercolor feel. Markers become classic anchors. He loves it.
+3. Configures stats: shows distance and ports, hides speed (he's not racing)
+4. Hides the journal section on public page (he writes on his blog, not in Bosco)
+5. Clicks "Embed widget" → copies the HTML snippet → pastes it into his WordPress post
+6. The widget appears: a mini interactive map with his complete Mediterranean trace in Logbook theme, showing 2,847 NM and 34 ports
+
+**Climax:** His subscribers click the widget, zoom into ports they know, and email him: "I can see the night you anchored in that tiny cove!" The map tells stories his blog posts couldn't.
+
+**Resolution:** Haddock generates a QR code for his voyage and prints it on a small card. He leaves them on marina bulletin boards. Other sailors scan the code and discover his entire voyage.
+
+**Requirements revealed:** Embeddable widget, theme selection (Logbook), configurable stats display, section visibility toggles, QR code generation, non-technical embed workflow.
+
+### UJ-10: The Captivated Visitor — Pierre (v2.0)
+
+**Persona:** Pierre (45), Line and Mads' friend in Paris. Non-sailor. Received the Instagram Reel and tapped the Bosco link in Line's bio.
+
+**Opening Scene:** Pierre opens the Bosco public page on his phone at 10pm. His phone is in dark mode.
+
+**Rising Action:**
+1. The page loads in dark mode — the "Night at Sea" theme adapts to his system preference. The map is dark, the trace glows.
+2. The cinematic animation starts: the route draws itself from Copenhagen southward, the luminous wake trailing behind a small sailboat icon. Port names fade in. A photo of the Kiel canal locks flashes briefly.
+3. Pierre is mesmerized. He watches the entire 45-second animation. At the end, stats appear: "8,200 NM · 12 countries · 6 months"
+4. He grabs the timeline slider and scrubs back to Portugal — the trace rewinds. He zooms into Lisbon and sees 3 photos clustered at the marina. Taps one — a lightbox shows a sunset over the Tagus river.
+5. He clicks on the leg between Lisbon and Gibraltar — a panel shows: "June 14-15, 2026 · 280 NM · 32h · Crew: Mads, Line, Skipper"
+6. Pierre long-presses on the Gibraltar stopover — a quick preview pops up with a photo, the dates, and "4 nights"
+
+**Climax:** Pierre texts the link to 3 friends with "You HAVE to see this." One of them, a weekend sailor, watches the animation and thinks: "I could do this for my Brittany trip." He downloads Bosco.
+
+**Resolution:** The visual richness (theme, animation, dark mode, interactive legs, timeline) transformed a simple shared link into a 5-minute exploration experience. Pierre has never sailed but he felt like he was there.
+
+**Requirements revealed:** System dark/light mode, cinematic animation with wake effect, timeline slider, clickable legs with info panel, photo markers on trace, long-press preview, visual storytelling driving viral sharing.
+
+### Journey Requirements Summary (Updated)
+
+| Journey | Key Capabilities Revealed |
+|---------|--------------------------|
+| UJ-1 App Store Discovery | Store listing, native onboarding, engaging empty state, full import-to-share flow, dynamic OG images |
+| UJ-2 Photo Storytelling | Photo markers on map, geo-tagged media, lightbox viewer |
+| UJ-3 Visitor → Amplifier | Dual CTA (create + re-share), OG optimization, viral loop |
+| UJ-4 Social Sharing | Native share sheet (Capacitor), dynamic OG image, link-based sharing |
+| UJ-5 Admin Monitoring | `is_admin` on profiles, admin dashboard, user management, metrics |
+| UJ-6 Error Recovery | Clear error messages, contextual help, graceful degradation |
+| UJ-7 Returning Sailor | Persistent session, last voyage quick access, progressive building, retention UX |
+| **UJ-8 Visual Storyteller** | **Themes, boat icon, crew, cinematic animation, video export, blog widget** |
+| **UJ-9 Blogger Sailor** | **Embeddable widget, theme (Logbook), stats config, section toggles, QR code** |
+| **UJ-10 Captivated Visitor** | **Dark mode, cinematic animation, timeline slider, clickable legs, long-press preview** |
+
+**Coverage:**
+- Primary user — success path (UJ-1, UJ-2, UJ-7)
+- Viral/growth path (UJ-3, UJ-4)
+- Admin/operations (UJ-5)
+- Error recovery (UJ-6)
+- Retention loop (UJ-7)
+- **v2.0 experience deepening (UJ-8, UJ-9, UJ-10)**
+- 8 distinct personas across 10 journeys
 
 ## Domain-Specific Requirements
 
@@ -628,6 +725,45 @@ Performance targets, SEO strategy, and accessibility level are defined in the No
 ### Trophy (Preview)
 
 - **FR-68:** Visitors can see a "Coming Soon" section for the Bosco Trophy physical product on public voyage pages
+
+### Voyage Configuration (v2.0)
+
+- **FR-69:** Users can configure voyage details: boat name, boat type (sailboat/catamaran/motorboat), boat length, flag, and home port
+- **FR-70:** Users can add crew member names to a voyage, optionally per leg
+- **FR-71:** Users and visitors can click on a leg to view an info panel with departure/arrival date-time, average speed, and nautical miles
+- **FR-72:** Users can select which stats are displayed on their public voyage page from a predefined list
+- **FR-73:** Users can toggle visibility of individual sections (journal, photos, stats, stopovers) on their public page
+- **FR-74:** Users who share a voyage link after importing new legs see the updated route preview on social networks within one page refresh
+
+### Map Themes & Visual Identity (v2.0)
+
+- **FR-75:** Users can select a visual theme for each voyage from a collection of presets (e.g., Logbook, Night at Sea, Ocean, Satellite, Minimalist)
+- **FR-76:** Users can choose a boat icon from a selection (sailboat, catamaran, motorboat) that appears on the animation and current position
+- **FR-77:** Stopover markers adapt their visual style to the selected voyage theme
+- **FR-78:** The trace line style (stroke, effect) adapts to the selected voyage theme
+- **FR-79:** The route trace displays an animated wake/trail effect behind the leading point during animation
+- **FR-80:** Public voyage pages respect the visitor's system dark/light mode preference
+
+### Cinematic Animation (v2.0)
+
+- **FR-81:** The route animation displays stopover name labels, journal photo vignettes, and leg stats as the trace draws progressively
+- **FR-82:** After importing a GPX leg, the map animates the new trace drawing within 5 seconds of import confirmation
+- **FR-83:** Visitors can scrub through the voyage timeline with a slider control that shows/hides the trace, stopovers, and photos progressively
+
+### Enhanced Map (v2.0)
+
+- **FR-84:** Users can position photos anywhere on the voyage trace (not just at stopovers), with marker clustering when more than 15 photo markers are visible at the current zoom level
+- **FR-85:** Users can import a second GPX file as a "planned route" displayed as a translucent dotted line alongside the sailed trace
+- **FR-86:** The planned route progressively hides completed portions as real legs are imported, showing only the remaining planned route
+- **FR-87:** Voyages have a status (planning, active, completed) that adapts the display accordingly
+- **FR-88:** Visitors can long-press a stopover marker to see a quick floating preview with photo, name, and dates
+
+### Content Distribution (v2.0)
+
+- **FR-89:** Users can embed a live voyage widget on external websites showing mini-map, trace, stats, and last stopover, auto-updating on each leg import
+- **FR-90:** Users can export the voyage animation as a short video clip (MP4, 15-30s) optimized for social media sharing
+- **FR-91:** Users can download a static "postcard" image of their voyage in social media formats (1:1, 9:16)
+- **FR-92:** Users can generate a QR code for their voyage that links to the public page
 
 ## Non-Functional Requirements
 

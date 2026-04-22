@@ -17,9 +17,9 @@ inputDocuments:
 
 ## Overview
 
-This document provides the complete epic and story breakdown for Bosco v1.0, decomposing the requirements from the PRD (68 FRs, 35 NFRs), Architecture (with v1.0 addendum), and UX Design Specification (with v1.0 addendum) into implementable stories.
+This document provides the complete epic and story breakdown for Bosco v1.0 and v2.0, decomposing the requirements from the PRD (92 FRs, 35 NFRs), Architecture, and UX Design Specification into implementable stories.
 
-**Context:** MVP (4 epics) is deployed and live at sailbosco.com. v1.0 extends the product to app stores, adds storytelling features, and hardens for production.
+**Context:** MVP (4 epics) is deployed and live at sailbosco.com. v1.0 extends to app stores, storytelling, and production hardening. v2.0 deepens the experience with map themes, cinematic animation, enhanced interactivity, and content distribution.
 
 ## Requirements Inventory
 
@@ -128,6 +128,40 @@ This document provides the complete epic and story breakdown for Bosco v1.0, dec
 
 **Trophy Preview (FR-68)**
 - FR-68: Visitors can see a "Coming Soon" section for the Bosco Trophy physical product on public voyage pages
+
+**Voyage Configuration (FR-69 to FR-74) — v2.0**
+- FR-69: Users can configure voyage details: boat name, boat type (sailboat/catamaran/motorboat), boat length, flag, and home port
+- FR-70: Users can add crew member names to a voyage, optionally per leg
+- FR-71: Users and visitors can click on a leg to view an info panel with departure/arrival date-time, average speed, and nautical miles
+- FR-72: Users can select which stats are displayed on their public voyage page from a predefined list
+- FR-73: Users can toggle visibility of individual sections (journal, photos, stats, stopovers) on their public page
+- FR-74: Users who share a voyage link after importing new legs see the updated route preview on social networks within one page refresh
+
+**Map Themes & Visual Identity (FR-75 to FR-80) — v2.0**
+- FR-75: Users can select a visual theme for each voyage from a collection of presets (e.g., Logbook, Night at Sea, Ocean, Satellite, Minimalist)
+- FR-76: Users can choose a boat icon from a selection (sailboat, catamaran, motorboat) that appears on the animation and current position
+- FR-77: Stopover markers adapt their visual style to the selected voyage theme
+- FR-78: The trace line style (stroke, effect) adapts to the selected voyage theme
+- FR-79: The route trace displays an animated wake/trail effect behind the leading point during animation
+- FR-80: Public voyage pages respect the visitor's system dark/light mode preference
+
+**Cinematic Animation (FR-81 to FR-83) — v2.0**
+- FR-81: The route animation displays stopover name labels, journal photo vignettes, and leg stats as the trace draws progressively
+- FR-82: After importing a GPX leg, the map animates the new trace drawing within 5 seconds of import confirmation
+- FR-83: Visitors can scrub through the voyage timeline with a slider control that shows/hides the trace, stopovers, and photos progressively
+
+**Enhanced Map (FR-84 to FR-88) — v2.0**
+- FR-84: Users can position photos anywhere on the voyage trace (not just at stopovers), with marker clustering when more than 15 photo markers are visible at the current zoom level
+- FR-85: Users can import a second GPX file as a "planned route" displayed as a translucent dotted line alongside the sailed trace
+- FR-86: The planned route progressively hides completed portions as real legs are imported, showing only the remaining planned route
+- FR-87: Voyages have a status (planning, active, completed) that adapts the display accordingly
+- FR-88: Visitors can long-press a stopover marker to see a quick floating preview with photo, name, and dates
+
+**Content Distribution (FR-89 to FR-92) — v2.0**
+- FR-89: Users can embed a live voyage widget on external websites showing mini-map, trace, stats, and last stopover, auto-updating on each leg import
+- FR-90: Users can export the voyage animation as a short video clip (MP4, 15-30s) optimized for social media sharing
+- FR-91: Users can download a static "postcard" image of their voyage in social media formats (1:1, 9:16)
+- FR-92: Users can generate a QR code for their voyage that links to the public page
 
 ### Non-Functional Requirements
 
@@ -260,7 +294,14 @@ This document provides the complete epic and story breakdown for Bosco v1.0, dec
 - FR-57, FR-58, FR-59, FR-60: Epic 10 (Admin zone)
 - FR-68: Epic 10 (Trophy preview)
 
-**Coverage: 68/68 FRs mapped (34 MVP + 34 v1.0)**
+**v2.0 (Epics 11-15) — Experience Deepening:**
+- FR-69, FR-70, FR-71, FR-72, FR-73, FR-74: Epic 11 (Voyage configuration + interactivity)
+- FR-75, FR-76, FR-77, FR-78, FR-79, FR-80: Epic 12 (Map themes + visual identity)
+- FR-81, FR-82, FR-83: Epic 13 (Cinematic animation)
+- FR-84, FR-85, FR-86, FR-87, FR-88: Epic 14 (Enhanced map)
+- FR-89, FR-90, FR-91, FR-92: Epic 15 (Content distribution)
+
+**Coverage: 92/92 FRs mapped (34 MVP + 34 v1.0 + 24 v2.0)**
 
 ## Epic List
 
@@ -315,6 +356,40 @@ Seb can monitor Bosco's health (users, voyages, errors, storage), manage users, 
 **ARs covered:** AR-14
 **UX-DRs covered:** UX-DR4→6, UX-DR15, UX-DR16
 **Priority:** Should-Have / Could-Have
+
+### Epic 11: Voyage Configuration & Map Interactivity
+The voyage becomes a richer object with boat details and crew names. The trace becomes interactive with clickable legs. Sailors control what's displayed. OG images stay fresh.
+**FRs covered:** FR-69, FR-70, FR-71, FR-72, FR-73, FR-74
+**Stories:** 11.1, 11.2, 11.3, 11.4, 11.5, 11.6
+**Priority:** Must-Have (v2.0)
+
+### Epic 12: Map Themes & Visual Identity
+Each voyage gets its own visual identity through a theme system. Themes drive trace style, marker style, boat icon, and color palette. Dark/light mode follows system preference.
+**FRs covered:** FR-75, FR-76, FR-77, FR-78, FR-79, FR-80
+**Stories:** 12.1, 12.2, 12.3, 12.4, 12.5
+**Depends on:** Epic 11 (data model enrichments)
+**Priority:** Must-Have (v2.0)
+
+### Epic 13: Cinematic Animation
+The route animation becomes a mini-film with contextual labels, photos, and stats. Import provides visual feedback. A timeline slider gives visitors control.
+**FRs covered:** FR-81, FR-82, FR-83
+**Stories:** 13.1, 13.2, 13.3
+**Depends on:** Epic 12 (theme engine for visual rendering)
+**Priority:** Must-Have (v2.0)
+
+### Epic 14: Living Map — Photos on Trace & Planned Route
+Photos exist anywhere on the trace (not just stopovers). Planned routes show plan vs reality. Voyages have a lifecycle status.
+**FRs covered:** FR-84, FR-85, FR-86, FR-87, FR-88
+**Stories:** 14.1, 14.2, 14.3, 14.4, 14.5
+**Depends on:** Epic 12 (theme-aware markers), Epic 11 (leg info panel)
+**Priority:** Should-Have (v2.0)
+
+### Epic 15: Content Distribution — Widget, Video & Sharing
+Bosco content goes beyond sailbosco.com through embeddable widgets, video export, downloadable images, and QR codes.
+**FRs covered:** FR-89, FR-90, FR-91, FR-92
+**Stories:** 15.1, 15.2, 15.3, 15.4
+**Depends on:** Epic 13 (animation engine for video), Epic 12 (themes for visuals)
+**Priority:** Should-Have (v2.0)
 
 ---
 
@@ -830,6 +905,430 @@ So that I can see more information at a glance.
 **And** cards show last import date: "Last track: 3 days ago"
 **And** cards show journal count and country flags
 **And** quick actions are available on hover/long-press: "View", "Import track", "Settings"
+
+---
+
+## Epic 11: Voyage Configuration & Map Interactivity
+
+> **v2.0 Wave 1** — Enriches the data model and makes the trace interactive. Foundation for all subsequent v2.0 epics.
+> Source: brainstorming-session-2026-04-19-1156.md
+
+The voyage becomes a richer object (boat details, crew, configurable display) and the trace becomes interactive (clickable legs with info). OG image cache fix resolves an existing pain point.
+**FRs covered:** FR-69, FR-70, FR-71, FR-72, FR-73, FR-74
+**Priority:** Must-Have (v2.0)
+
+### Story 11.1: Enriched Voyage Card — Boat & Crew Details
+
+As a sailor,
+I want to add my boat details and crew to my voyage,
+So that visitors understand the context of my journey.
+
+**Acceptance Criteria:**
+
+**Given** an authenticated user on the voyage settings page
+**When** the user edits voyage details
+**Then** fields are available for: boat name, boat type (sailboat/catamaran/motorboat), boat length (feet or meters), flag (country), and home port
+**And** all fields are optional — the voyage works without them
+**And** boat details display elegantly on the public voyage page header (like a logbook entry)
+**And** boat type selection uses a simple dropdown with icons
+**And** the database schema includes new columns on the voyages table
+
+### Story 11.2: Multi-Crew Names
+
+As a sailor,
+I want to list my crew members on the voyage,
+So that the people who shared the journey are part of the story.
+
+**Acceptance Criteria:**
+
+**Given** an authenticated user on the voyage settings page
+**When** the user manages crew members
+**Then** the user can add crew member names (first name, optional last name)
+**And** crew members can optionally be associated with specific legs ("This leg: Seb + Marie")
+**And** crew names display on the public voyage page in the voyage header
+**And** per-leg crew displays in the leg info panel (Story 11.3)
+**And** crew is stored as a JSON array on the voyages table (not separate user accounts)
+
+### Story 11.3: Clickable Legs with Info Panel
+
+As a visitor,
+I want to click on a leg to see its details,
+So that I can understand each segment of the journey.
+
+**Acceptance Criteria:**
+
+**Given** a voyage map with visible legs (trace segments between stopovers)
+**When** the user clicks/taps on a leg
+**Then** an info panel opens showing: departure date-time, arrival date-time, average speed (kts), total nautical miles, duration, and crew (if set)
+**And** the selected leg is visually highlighted on the map
+**And** associated journal entries are listed in the panel
+**And** the panel is dismissible by tapping elsewhere or pressing Escape
+**And** on mobile, the panel appears as a bottom sheet; on desktop as a side panel
+
+### Story 11.4: Configurable Stats Display
+
+As a sailor,
+I want to choose which stats appear on my public voyage page,
+So that I highlight what matters most for my journey.
+
+**Acceptance Criteria:**
+
+**Given** an authenticated user on the voyage settings page
+**When** the user configures stats display
+**Then** toggles are available for: nautical miles, total duration, days at sea, number of ports, number of countries, average speed, longest leg, start/end dates
+**And** all toggles default to ON
+**And** the public page stats bar reflects the selected stats immediately
+**And** at least one stat must remain visible (validation prevents disabling all)
+
+### Story 11.5: Section Visibility Toggles
+
+As a sailor,
+I want to show or hide sections on my public page,
+So that I control what visitors see.
+
+**Acceptance Criteria:**
+
+**Given** an authenticated user on the voyage settings page
+**When** the user toggles section visibility
+**Then** sections can be individually shown/hidden: journal, photos, stats bar, stopovers/ports panel
+**And** the map and trace are always visible (cannot be hidden)
+**And** changes are reflected immediately on the public page
+**And** toggle states are persisted per voyage
+
+### Story 11.6: OG Image Cache-Busting Fix
+
+As a sailor sharing my updated voyage,
+I want social networks to show the current preview image,
+So that my friends see the latest route when I share.
+
+**Acceptance Criteria:**
+
+**Given** a public voyage with a previously shared OG image
+**When** a new leg is imported
+**Then** the OG image is regenerated with the updated trace
+**And** the OG image URL includes a version parameter (e.g., `?v={timestamp}`) to invalidate social network caches
+**And** the meta tags reference the versioned URL
+**And** sharing the same voyage link after import shows the updated preview on WhatsApp, Facebook, and other platforms
+
+---
+
+## Epic 12: Map Themes & Visual Identity
+
+> **v2.0 Wave 2** — Bosco becomes the first beautiful navigation app. Each voyage gets its own visual identity through themes.
+> Source: brainstorming-session-2026-04-19-1156.md
+
+A coherent design system for the map: theme selection drives trace style, marker style, boat icon, and color palette. Dark/light mode follows system preference.
+**FRs covered:** FR-75, FR-76, FR-77, FR-78, FR-79, FR-80
+**Priority:** Must-Have (v2.0)
+
+### Story 12.1: Map Theme Selection & Engine
+
+As a sailor,
+I want to choose a visual theme for my voyage,
+So that the map reflects the mood of my journey.
+
+**Acceptance Criteria:**
+
+**Given** an authenticated user on the voyage settings page
+**When** the user selects a theme
+**Then** themes are available: "Ocean" (default — current style enriched), "Logbook" (watercolor/vintage feel), "Night at Sea" (dark, luminous trace), "Satellite" (aerial imagery), "Minimalist" (clean, thin lines)
+**And** the theme is applied immediately to the voyage map (both creator and public views)
+**And** a theme engine in `src/lib/map/themes.ts` defines per-theme configuration: tile layer URL, trace color/style, marker style, font accent
+**And** the selected theme is stored per voyage in the database
+**And** a preview is shown in the theme selector before applying
+
+### Story 12.2: Customizable Boat Icon
+
+As a sailor,
+I want to choose the boat icon that represents me on the map,
+So that visitors see my type of vessel.
+
+**Acceptance Criteria:**
+
+**Given** an authenticated user on the voyage settings page
+**When** the user selects a boat icon
+**Then** options include: sailboat, catamaran, motorboat (minimum 3 icons)
+**And** the selected icon appears at the head of the route animation
+**And** the icon appears at the current position (last imported point) on the static map
+**And** the icon adapts its color to the selected theme
+**And** the selection is stored per voyage
+
+### Story 12.3: Theme-Adapted Stopover Markers
+
+As a visitor,
+I want stopover markers that match the voyage's visual theme,
+So that the map feels cohesive and polished.
+
+**Acceptance Criteria:**
+
+**Given** a voyage with a selected theme
+**When** the map renders stopovers
+**Then** marker style adapts to the theme: classic anchor (Ocean), vintage pin (Logbook), glowing dot (Night at Sea), subtle circle (Satellite), minimal dot (Minimalist)
+**And** markers maintain 44px minimum touch target regardless of style
+**And** selected/active state is visually distinct across all themes
+**And** theme marker definitions are part of the theme engine configuration
+
+### Story 12.4: Theme-Adapted Trace Style & Wake Effect
+
+As a visitor,
+I want the route trace to have a style that matches the theme and an animated wake,
+So that the voyage feels alive and visually distinctive.
+
+**Acceptance Criteria:**
+
+**Given** a voyage with a selected theme
+**When** the map renders the trace
+**Then** the trace style adapts: solid with glow (Ocean), ink/hand-drawn effect (Logbook), neon glow (Night at Sea), clean solid (Satellite), thin precise line (Minimalist)
+**And** during animation, a semi-transparent wake/trail effect follows behind the leading point
+**And** the wake fades gradually over a few seconds
+**And** trace style parameters (color, width, opacity, dash pattern) are part of the theme engine
+
+### Story 12.5: System Dark/Light Mode Support
+
+As a visitor,
+I want the voyage page to respect my device's dark/light mode preference,
+So that the experience is comfortable at any time of day.
+
+**Acceptance Criteria:**
+
+**Given** a visitor viewing a public voyage page
+**When** their device is set to dark mode
+**Then** the page chrome (stats bar, panels, overlays) adapts to dark mode
+**And** if the voyage theme is "Ocean" or "Minimalist", the map tiles switch to a dark variant
+**And** themes that are inherently dark ("Night at Sea") or inherently light ("Logbook") override system preference for the map layer
+**And** the implementation uses `prefers-color-scheme` media query
+**And** transitions between modes are smooth (no flash)
+
+---
+
+## Epic 13: Cinematic Animation
+
+> **v2.0 Wave 3** — The route animation becomes a mini-film. This is the #1 emotional hook — what visitors remember and talk about.
+> Source: brainstorming-session-2026-04-19-1156.md
+
+The existing animation is enriched with contextual information (labels, photos, stats). Import gets visual feedback. A timeline slider gives visitors control.
+**FRs covered:** FR-81, FR-82, FR-83
+**Depends on:** Epic 12 (benefits from themes)
+**Priority:** Must-Have (v2.0)
+
+### Story 13.1: Enriched Route Animation
+
+As a visitor,
+I want the route animation to tell the story as it draws,
+So that I experience the journey without clicking anything.
+
+**Acceptance Criteria:**
+
+**Given** a public voyage page with route animation enabled
+**When** the animation plays on initial page load
+**Then** as the trace reaches each stopover, the port name fades in as a label near the marker
+**And** if journal photos exist at a stopover, a small vignette briefly flashes (2-3 seconds) near the label
+**And** between stopovers, leg stats (distance in NM, duration) slide in discreetly
+**And** the camera auto-zooms to follow the drawing trace with smooth panning
+**And** the animation respects `prefers-reduced-motion` (shows final state immediately)
+**And** the enriched elements are configurable in the theme engine (font, timing, opacity)
+
+### Story 13.2: Import Visual Feedback Animation
+
+As a sailor,
+I want to see my new track appear on the map when I import it,
+So that the import feels satisfying and immediate.
+
+**Acceptance Criteria:**
+
+**Given** an authenticated user importing a GPX leg
+**When** processing completes and the leg is confirmed
+**Then** the map zooms to the new leg's bounding box
+**And** the new trace draws itself with the animation effect (matching the voyage theme)
+**And** new stopovers appear with a subtle pop-in animation
+**And** a brief stats summary appears ("42 NM, 8h 30m")
+**And** the animation completes in 3-5 seconds (not the full voyage replay length)
+
+### Story 13.3: Timeline Slider
+
+As a visitor,
+I want to scrub through the voyage timeline,
+So that I can explore the journey at my own pace.
+
+**Acceptance Criteria:**
+
+**Given** a voyage page with the animation completed (or skipped)
+**When** the visitor interacts with the timeline slider
+**Then** a horizontal slider appears at the bottom of the map
+**And** dragging the slider forward/backward progressively shows/hides the trace, stopovers, and photo markers
+**And** the slider shows date markers at key positions (start, stopovers, end)
+**And** the current date/position is displayed as the slider moves
+**And** the slider is touch-friendly on mobile (44px height minimum)
+**And** the slider can trigger a replay of the animation from any point
+
+---
+
+## Epic 14: Living Map — Photos on Trace & Planned Route
+
+> **v2.0 Wave 4** — The map becomes a living canvas. Photos exist in open sea, planned routes show the plan vs reality.
+> Source: brainstorming-session-2026-04-19-1156.md
+
+Photos can be placed anywhere on the trace (not just stopovers). A second GPX can be imported as a planned route. Voyages have a lifecycle status.
+**FRs covered:** FR-84, FR-85, FR-86, FR-87, FR-88
+**Depends on:** Epic 12 (theme-aware markers), Epic 11 (leg info panel)
+**Priority:** Should-Have (v2.0)
+
+### Story 14.1: Photos Positioned on the Trace
+
+As a sailor,
+I want to place photos anywhere on my route,
+So that moments in open sea appear where they happened.
+
+**Acceptance Criteria:**
+
+**Given** a voyage with a journal entry containing photos
+**When** the user creates or edits a journal entry
+**Then** photos with EXIF GPS metadata are auto-positioned at their GPS coordinates on the trace
+**And** photos without EXIF GPS can be manually positioned by tapping a location on the trace
+**And** photos can still be associated with a stopover (existing behavior preserved)
+**And** photo markers on the trace use the same clustering logic as stopover photos (cluster when >15 visible)
+**And** the trace-positioned photo marker style is consistent with the voyage theme
+**And** a toggle allows the sailor to show/hide trace photos to keep the map clean
+
+### Story 14.2: Planned Route Import
+
+As a sailor,
+I want to import my planned route alongside my sailed trace,
+So that visitors see where I intended to go.
+
+**Acceptance Criteria:**
+
+**Given** an authenticated user on the voyage view
+**When** the user imports a GPX file as a "planned route" (distinct from regular leg import)
+**Then** the planned route displays as a translucent dotted line on the map
+**And** the planned route uses a muted version of the theme's trace color
+**And** only one planned route can exist per voyage (importing a new one replaces the previous)
+**And** the planned route is stored separately from legs in the database
+**And** the import flow clearly distinguishes "Import sailed track" from "Import planned route"
+
+### Story 14.3: Progressive Planned Route Hiding
+
+As a sailor,
+I want the planned route to update as I sail,
+So that only the remaining planned portion is visible.
+
+**Acceptance Criteria:**
+
+**Given** a voyage with both a planned route and imported legs
+**When** a new leg is imported that overlaps with the planned route
+**Then** the completed portion of the planned route is automatically hidden
+**And** the matching is based on proximity (planned route points within a configurable radius of the actual trace are considered "completed")
+**And** the remaining planned route stays visible in dotted style
+**And** the transition point between sailed and planned is visually clear
+
+### Story 14.4: Voyage Status Lifecycle
+
+As a sailor,
+I want my voyage to show its current status,
+So that visitors know if it's planned, active, or completed.
+
+**Acceptance Criteria:**
+
+**Given** a voyage
+**When** the status is set
+**Then** three statuses are available: "Planning" (only planned route, no legs), "Active" (at least one leg imported), "Completed" (manually set by sailor)
+**And** status transitions: Planning → Active (automatic on first leg import), Active → Completed (manual)
+**And** the public page adapts: Planning shows only dotted planned route, Active shows both, Completed shows final trace with summary
+**And** a small status badge is visible on the voyage card and public page
+
+### Story 14.5: Stopover Quick Preview (Long Press)
+
+As a visitor,
+I want to quickly peek at a stopover without opening the full panel,
+So that I can explore faster.
+
+**Acceptance Criteria:**
+
+**Given** a voyage map with stopover markers
+**When** the visitor long-presses (mobile) or hovers (desktop) on a stopover marker
+**Then** a floating tooltip appears with: main photo thumbnail (if available), stopover name, arrival/departure dates
+**And** the tooltip disappears on release/mouse-out
+**And** tapping/clicking still opens the full stopover panel (existing behavior)
+**And** the tooltip style matches the voyage theme
+
+---
+
+## Epic 15: Content Distribution — Widget, Video & Sharing
+
+> **v2.0 Wave 5** — Bosco content goes beyond sailbosco.com. Sailors share on blogs, social media, and in physical spaces.
+> Source: brainstorming-session-2026-04-19-1156.md
+
+Embeddable widget for blogs, video export of the animation, downloadable postcard images, and QR codes.
+**FRs covered:** FR-89, FR-90, FR-91, FR-92
+**Depends on:** Epic 13 (animation engine for video export), Epic 12 (themes for visual output)
+**Priority:** Should-Have (v2.0)
+
+### Story 15.1: Embeddable Voyage Widget
+
+As a sailor with a blog,
+I want to embed a live voyage widget on my website,
+So that my readers can follow my journey without leaving my blog.
+
+**Acceptance Criteria:**
+
+**Given** a public voyage
+**When** the sailor accesses the widget embed option in voyage settings
+**Then** an embed code is provided (HTML snippet with iframe or script tag)
+**And** the widget displays: mini interactive map with trace, key stats (NM, ports, countries), last stopover name and date
+**And** the widget auto-updates when new legs are imported (no code change needed)
+**And** the widget is responsive (adapts to container width, minimum 300px)
+**And** the widget links to the full voyage page on sailbosco.com
+**And** the widget respects the voyage's selected theme
+**And** a public API endpoint serves the widget data (`/api/widget/[username]/[slug]`)
+
+### Story 15.2: Video Export (MP4)
+
+As a sailor,
+I want to export my voyage animation as a video,
+So that I can share it on Instagram, TikTok, or WhatsApp.
+
+**Acceptance Criteria:**
+
+**Given** a public voyage with the route animation
+**When** the sailor taps "Export as video"
+**Then** a video is generated showing the cinematic route animation (from Epic 13)
+**And** the video is 15-30 seconds long, optimized for social media
+**And** format options: square (1:1 for Instagram feed), vertical (9:16 for Reels/TikTok), horizontal (16:9 for YouTube/desktop)
+**And** the video includes: voyage name, animated trace with theme, stats at the end
+**And** the video is rendered client-side (Canvas/WebGL recording) or server-side (headless browser)
+**And** a download button provides the MP4 file
+
+### Story 15.3: Postcard Image Download
+
+As a sailor,
+I want to download a beautiful image of my voyage,
+So that I can share it on any platform.
+
+**Acceptance Criteria:**
+
+**Given** a public voyage
+**When** the sailor taps "Download postcard"
+**Then** a static image is generated showing: the map with full trace, voyage name, key stats, theme styling
+**And** format options: square (1:1), vertical (9:16 for Stories), horizontal (16:9)
+**And** the image is high-resolution (minimum 1080px on shortest side)
+**And** the image is generated via `@vercel/og` or similar server-side renderer
+**And** the download is immediate (generated on-demand, cached for performance)
+
+### Story 15.4: Voyage QR Code
+
+As a sailor,
+I want a QR code for my voyage,
+So that other sailors at the marina can scan it and see my route.
+
+**Acceptance Criteria:**
+
+**Given** a public voyage
+**When** the sailor accesses the QR code option
+**Then** a QR code is generated linking to the public voyage URL
+**And** the QR code is styled to match the voyage theme (colored, not just black/white)
+**And** the QR code can be downloaded as a PNG image
+**And** the QR code includes the Bosco logo or boat icon in the center
+**And** the QR code is scannable by standard phone cameras
 
 ---
 

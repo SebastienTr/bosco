@@ -4,6 +4,7 @@ lastStep: 8
 status: 'complete'
 completedAt: '2026-03-15'
 v1Addendum: '2026-03-29'
+v2Addendum: '2026-04-22'
 inputDocuments:
   - '_bmad-output/planning-artifacts/prd.md'
   - '_bmad-output/planning-artifacts/prd-validation-report.md'
@@ -1363,3 +1364,399 @@ tests/e2e/
 - PWA: finalize Serwist vs custom service worker during implementation
 - Caching: introduce TanStack Query if client-side refetch patterns become complex
 - Global state: add Zustand if shared state need emerges
+
+---
+
+## v2.0 Architecture Addendum
+
+**Date:** 2026-04-22
+**Context:** The PRD has been extended for v2.0 scope (92 FRs — up from 68). v1.0 is nearly complete (Epics 1-8 done, Epic 6A done). This addendum extends the architecture for v2.0 experience deepening: voyage configuration, map themes, cinematic animation, enhanced map, and content distribution. Source: brainstorming-session-2026-04-19-1156.md.
+
+**Principle:** All existing architectural decisions, patterns, and containment rules remain in effect. This addendum adds new capabilities that follow the same patterns.
+
+### Database Schema v2.0 (Epics 11-15)
+
+**Migrations — Voyage Configuration (Epic 11):**
+```sql
+-- Boat details on voyages (not profiles — different boats per voyage)
+ALTER TABLE voyages ADD COLUMN boat_name VARCHAR(100);
+ALTER TABLE voyages ADD COLUMN boat_type VARCHAR(20); -- 'sailboat' | 'catamaran' | 'motorboat'
+ALTER TABLE voyages ADD COLUMN boat_length_m NUMERIC(5,2);
+ALTER TABLE voyages ADD COLUMN boat_flag VARCHAR(2); -- ISO country code
+ALTER TABLE voyages ADD COLUMN home_port VARCHAR(100);
+ALTER TABLE voyages ADD COLUMN visible_stats JSONB DEFAULT '{"distance":true,"duration":true,"days_at_sea":true,"ports":true,"countries":true,"avg_speed":true,"longest_leg":true,"dates":true}';
+ALTER TABLE voyages ADD COLUMN visible_sections JSONB DEFAULT '{"journal":true,"photos":true,"stats":true,"stopovers":true}';
+ALTER TABLE voyages ADD COLUMN og_version INTEGER DEFAULT 0; -- cache-bust counter
+
+-- Crew members (simple, no user accounts)
+CREATE TABLE crew_members (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  voyage_id UUID NOT NULL REFERENCES voyages(id) ON DELETE CASCADE,
+  name VARCHAR(100) NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Crew per leg (optional association)
+CREATE TABLE leg_crew (
+  leg_id UUID NOT NULL REFERENCES legs(id) ON DELETE CASCADE,
+  crew_member_id UUID NOT NULL REFERENCES crew_members(id) ON DELETE CASCADE,
+  PRIMARY KEY (leg_id, crew_member_id)
+);
+
+-- RLS: crew visibility inherits voyage visibility
+ALTER TABLE crew_members ENABLE ROW LEVEL SECURITY;
+CREATE POLICY crew_select ON crew_members FOR SELECT
+  USING (voyage_id IN (SELECT id FROM voyages WHERE user_id = auth.uid() OR is_public = true));
+CREATE POLICY crew_manage ON crew_members FOR ALL
+  USING (voyage_id IN (SELECT id FROM voyages WHERE user_id = auth.uid()));
+```
+
+**Migrations — Map Themes (Epic 12):**
+```sql
+ALTER TABLE voyages ADD COLUMN theme VARCHAR(20) DEFAULT 'ocean';
+  -- 'ocean' | 'logbook' | 'night' | 'satellite' | 'minimalist'
+ALTER TABLE voyages ADD COLUMN boat_icon VARCHAR(20) DEFAULT 'sailboat';
+  -- 'sailboat' | 'catamaran' | 'motorboat'
+```
+
+**Migrations — Living Map (Epic 14):**
+```sql
+-- Photo position on trace
+ALTER TABLE log_entries ADD COLUMN trace_position JSONB;
+  -- { "leg_id": "uuid", "ratio": 0.45 } — position as 0-1 ratio along the leg
+
+-- Planned route
+CREATE TABLE planned_routes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  voyage_id UUID NOT NULL REFERENCES voyages(id) ON DELETE CASCADE,
+  geojson JSONB NOT NULL,
+  distance_nm NUMERIC(10,2),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(voyage_id) -- one planned route per voyage
+);
+
+ALTER TABLE planned_routes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY planned_route_select ON planned_routes FOR SELECT
+  USING (voyage_id IN (SELECT id FROM voyages WHERE user_id = auth.uid() OR is_public = true));
+CREATE POLICY planned_route_manage ON planned_routes FOR ALL
+  USING (voyage_id IN (SELECT id FROM voyages WHERE user_id = auth.uid()));
+
+-- Voyage lifecycle
+ALTER TABLE voyages ADD COLUMN status VARCHAR(20) DEFAULT 'active';
+  -- 'planning' | 'active' | 'completed'
+```
+
+**Migrations — Content Distribution (Epic 15):**
+```sql
+CREATE TABLE voyage_exports (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  voyage_id UUID NOT NULL REFERENCES voyages(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  export_type VARCHAR(20) NOT NULL, -- 'video' | 'postcard' | 'qr'
+  status VARCHAR(20) DEFAULT 'pending', -- 'pending' | 'processing' | 'complete' | 'failed'
+  file_url TEXT, -- signed URL after completion
+  format VARCHAR(10), -- '1:1' | '9:16' | '16:9'
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  completed_at TIMESTAMPTZ
+);
+
+ALTER TABLE voyage_exports ENABLE ROW LEVEL SECURITY;
+CREATE POLICY export_manage ON voyage_exports FOR ALL
+  USING (user_id = auth.uid());
+```
+
+### Theme Engine Architecture (Epic 12 — FR-75 to FR-80)
+
+**Decision: Static theme configs in code, not database**
+
+Themes are defined as TypeScript objects in `src/lib/map/themes.ts`. No database storage for theme definitions — only the theme _selection_ is persisted per voyage.
+
+**Theme Config Type:**
+```typescript
+// src/lib/map/themes.ts
+interface ThemeConfig {
+  id: ThemeId
+  name: string
+  tileUrl: string              // map tile layer URL
+  tileAttribution: string
+  darkVariantTileUrl?: string  // for system dark mode
+  trace: {
+    color: string
+    weight: number
+    opacity: number
+    dashArray?: string         // dotted for planned routes
+  }
+  wake: {
+    color: string
+    fadeMs: number             // wake trail fade duration
+    width: number
+  }
+  marker: {
+    icon: 'anchor' | 'pin' | 'dot' | 'circle' | 'flag'
+    fill: string
+    stroke: string
+    activeScale: number
+  }
+  ui: {
+    panelBg: string            // overlay panel background
+    textColor: string
+    accentColor: string
+  }
+}
+
+type ThemeId = 'ocean' | 'logbook' | 'night' | 'satellite' | 'minimalist'
+
+export const themes: Record<ThemeId, ThemeConfig> = { ... }
+```
+
+**Dark/Light Mode:** Uses `prefers-color-scheme` media query. Themes that are inherently dark ("night") or light ("logbook") override system preference for the map layer. UI chrome always follows system.
+
+**Files:**
+```
+src/lib/map/
+├── themes.ts               # Theme definitions (static)
+├── theme-utils.ts           # getTheme(), getTraceStyle(), getMarkerIcon()
+└── use-theme.ts             # useVoyageTheme() hook
+src/components/map/
+├── WakeEffect.tsx           # NEW: animated wake trail
+├── BoatIcon.tsx             # NEW: themed boat marker
+└── ThemedMarker.tsx         # NEW: theme-aware stopover marker
+public/icons/boats/
+├── sailboat.svg
+├── catamaran.svg
+└── motorboat.svg
+```
+
+### Animation & Timeline Architecture (Epic 13 — FR-81 to FR-83)
+
+**Decision: Client-side animation engine with indexed sampling**
+
+Animation is purely client-side. No server rendering. The animation engine computes keyframes from leg geometry and timestamps, then plays them back using `requestAnimationFrame`.
+
+**Key Design Constraint:** Tracks can have 1M+ points. The animation must NOT process every point. Instead, sample points at fixed time intervals (e.g., every 5 seconds of animation = N points, regardless of track density).
+
+**Animation Pipeline:**
+```
+Leg GeoJSON + timestamps
+    ↓
+Timeline Indexer (compute keyframes from geometry)
+    ↓
+Playback Engine (requestAnimationFrame loop)
+    ↓
+Map Renderer (update Leaflet layers per frame)
+    ↓
+Overlay Renderer (labels, photos, stats per frame)
+```
+
+**Timeline Types:**
+```typescript
+// src/types/animation.ts
+interface AnimationKeyframe {
+  progress: number          // 0-1 overall
+  position: [number, number] // [lng, lat]
+  timestamp: string         // ISO 8601 from GPX
+  legIndex: number
+  stopoverReached?: string  // stopover ID if arrived
+  stats: {
+    distanceSoFar: number   // nm
+    elapsedTime: number     // ms
+    currentSpeed: number    // kts
+  }
+}
+
+interface PlaybackState {
+  status: 'idle' | 'playing' | 'paused' | 'complete'
+  currentFrame: number
+  speed: number             // 0.5 | 1 | 2 | 4
+  totalFrames: number
+}
+```
+
+**Files:**
+```
+src/lib/animation/
+├── timeline.ts             # Compute keyframes from legs (indexed sampling)
+├── playback.ts             # requestAnimationFrame engine
+└── interpolate.ts          # Point interpolation along polyline
+src/components/map/
+├── AnimationOverlay.tsx     # Labels, photos, stats during playback
+├── TimelineSlider.tsx       # Scrub control
+└── RouteAnimation.tsx       # UPDATE: integrate playback engine
+```
+
+**prefers-reduced-motion:** If set, skip animation entirely and show the final state immediately.
+
+### Photo Positioning Architecture (Epic 14 — FR-84)
+
+**Decision: Position stored as leg reference + ratio, resolved client-side**
+
+Photos are positioned on the trace via a `trace_position` JSONB column on `log_entries`:
+```json
+{ "leg_id": "uuid", "ratio": 0.45 }
+```
+
+The `ratio` (0-1) represents the position along the leg's polyline. Client-side, the position is resolved by interpolating along the leg's GeoJSON coordinates.
+
+**Auto-positioning from EXIF GPS:**
+- When a photo has EXIF GPS metadata, the system finds the nearest point on any leg
+- Computes the leg ID and ratio automatically
+- Uses a simple nearest-point-on-polyline algorithm
+- Library: no external dependency — custom implementation with turf-like logic in `src/lib/geo/snap-to-trace.ts`
+
+**Manual positioning:**
+- User taps a point on the trace → client computes leg ID + ratio from click position
+- Saved via Server Action `updateLogEntryPosition(entryId, tracePosition)`
+
+### Planned Route Architecture (Epic 14 — FR-85, FR-86)
+
+**Decision: Separate table, same GeoJSON format, client-side overlap detection**
+
+Planned routes are stored in a dedicated `planned_routes` table (one per voyage). The GeoJSON format is identical to legs, enabling the same rendering pipeline.
+
+**Progressive hiding:** When a new leg is imported, the client compares the leg's geometry with the planned route. Points on the planned route within a configurable radius (default: 2km) of the actual trace are marked as "completed." This is a client-side visual operation — the planned route data is not modified server-side.
+
+**Rendering:**
+- Planned route: translucent dotted line using theme's trace color at 40% opacity
+- Actual trace: solid line at full opacity (existing)
+- Transition point: subtle gradient where planned meets actual
+
+### Content Distribution Architecture (Epic 15 — FR-89 to FR-92)
+
+**Embeddable Widget (FR-89):**
+
+Decision: iframe-based embed with public API endpoint.
+
+```
+src/app/embed/[username]/[slug]/
+├── page.tsx                # Minimal page: Leaflet map + stats
+├── layout.tsx              # Stripped layout (no nav, no footer)
+└── opengraph-image.tsx     # OG for the embed URL itself
+src/app/api/widget/[username]/[slug]/
+└── route.ts                # JSON API: voyage data for widget
+```
+
+Embed code provided to users:
+```html
+<iframe src="https://sailbosco.com/embed/Seb/goteborg-to-nice?theme=ocean&height=400"
+  width="100%" height="400" frameborder="0"></iframe>
+```
+
+**Video Export (FR-90):**
+
+Decision: **Defer server-side rendering. Start with client-side Canvas recording.**
+
+Phase 1 (v2.0): Use `MediaRecorder` API + Canvas to record the animation playing in the browser. The user triggers "Export video", the animation plays in a hidden Canvas, and the browser records it to WebM/MP4. No server dependency.
+
+Phase 2 (future): If quality or format requirements exceed browser capabilities, introduce server-side rendering via external service (Mux, Cloudinary) or headless browser.
+
+**Rationale:** FFmpeg on Vercel serverless is impractical (cold start, memory limits, binary dependency). Client-side recording avoids all infrastructure complexity and ships faster.
+
+**Postcard Image (FR-91):**
+
+Uses `@vercel/og` (already in use for OG images). New endpoint generates higher-resolution images with format options.
+
+```
+src/app/api/export/[username]/[slug]/postcard/
+└── route.ts                # Edge Function: generate PNG via @vercel/og
+```
+
+**QR Code (FR-92):**
+
+Library: `qrcode` (lightweight, no React dependency needed for server-side generation).
+
+```
+src/app/api/qr/[username]/[slug]/
+└── route.ts                # Generate styled QR code PNG
+```
+
+### v2.0 Data Layer Extensions
+
+Following the existing 3-tier containment rule:
+
+```
+src/lib/data/
+├── crew.ts                 # NEW: CRUD crew members, leg-crew associations
+├── planned-routes.ts       # NEW: CRUD planned routes
+├── exports.ts              # NEW: CRUD export jobs
+├── voyages.ts              # UPDATE: theme, status, boat details, visible_stats
+└── log-entries.ts          # UPDATE: trace_position for photo positioning
+```
+
+All new Server Actions follow the existing `{ data, error }` return pattern with Zod validation.
+
+### v2.0 Component Organization
+
+```
+src/components/
+├── map/
+│   ├── WakeEffect.tsx          # NEW (Epic 12)
+│   ├── BoatIcon.tsx            # NEW (Epic 12)
+│   ├── ThemedMarker.tsx        # NEW (Epic 12)
+│   ├── AnimationOverlay.tsx    # NEW (Epic 13)
+│   ├── TimelineSlider.tsx      # NEW (Epic 13)
+│   ├── PlannedRouteLayer.tsx   # NEW (Epic 14)
+│   ├── RouteLayer.tsx          # UPDATE: theme-aware, playback-aware
+│   ├── RouteAnimation.tsx      # UPDATE: cinematic mode
+│   ├── PhotoMarker.tsx         # UPDATE: trace positioning
+│   └── MapCanvas.tsx           # UPDATE: theme prop
+├── voyage/
+│   ├── CrewManager.tsx         # NEW (Epic 11)
+│   ├── StatsConfig.tsx         # NEW (Epic 11)
+│   ├── SectionToggles.tsx      # NEW (Epic 11)
+│   ├── ThemeSelector.tsx       # NEW (Epic 12)
+│   ├── StatusBadge.tsx         # NEW (Epic 14)
+│   ├── ExportMenu.tsx          # NEW (Epic 15)
+│   └── VoyageCard.tsx          # UPDATE: status badge, theme
+└── shared/
+    └── BoatIconPicker.tsx      # NEW (Epic 12)
+```
+
+### v2.0 FR → Structure Mapping
+
+| Domain | FRs | Primary Location | Notes |
+|--------|-----|-----------------|-------|
+| Voyage Config | FR-69→73 | `src/app/voyage/[id]/settings/` | Extends existing settings page |
+| OG Cache-bust | FR-74 | `src/app/[username]/[slug]/opengraph-image.tsx` | Add `?v=` param |
+| Themes | FR-75→80 | `src/lib/map/themes.ts` + map components | New theme engine |
+| Animation | FR-81→83 | `src/lib/animation/` + map components | New animation pipeline |
+| Photos on Trace | FR-84 | `src/lib/geo/snap-to-trace.ts` | EXIF + manual positioning |
+| Planned Route | FR-85→87 | `src/lib/data/planned-routes.ts` | New data model |
+| Quick Preview | FR-88 | `src/components/map/StopoverMarker.tsx` | Tooltip on hover/long-press |
+| Widget | FR-89 | `src/app/embed/` | New route + API |
+| Video Export | FR-90 | Client-side Canvas recording | No server dependency |
+| Postcard | FR-91 | `src/app/api/export/` | @vercel/og |
+| QR Code | FR-92 | `src/app/api/qr/` | qrcode library |
+
+### v2.0 Architecture Readiness Assessment
+
+**Overall Status:** READY FOR IMPLEMENTATION (v2.0 scope)
+
+**Key Risks:**
+- Cinematic animation performance with 1M+ point tracks — requires indexed sampling, not brute-force rendering
+- Client-side video recording (MediaRecorder API) may have browser compatibility or quality limitations — fallback to server-side documented
+- Theme system affects many map components — requires careful visual QA across all 5 themes
+
+**Implementation Sequence (v2.0):**
+1. Database migrations (all epics — single migration batch)
+2. Voyage configuration: boat details, crew, stats/section toggles (Epic 11)
+3. Leg info panel + OG cache-busting (Epic 11)
+4. Theme engine + theme selector (Epic 12)
+5. Themed markers, trace styles, boat icons (Epic 12)
+6. Wake effect + dark/light mode (Epic 12)
+7. Enriched animation + import feedback (Epic 13)
+8. Timeline slider (Epic 13)
+9. Photos on trace + snap-to-trace (Epic 14)
+10. Planned route import + progressive hiding (Epic 14)
+11. Voyage status lifecycle (Epic 14)
+12. Embeddable widget (Epic 15)
+13. Postcard + QR code (Epic 15)
+14. Video export (Epic 15)
+
+**Confidence Level:** High for Epics 11-14, Medium for Epic 15 (video export)
+
+**New Libraries:**
+| Library | Purpose | Epic |
+|---------|---------|------|
+| `qrcode` | QR code generation | 15 |
+
+No other new external dependencies. Theme engine, animation pipeline, snap-to-trace, and Canvas recording are all custom implementations using existing Web APIs.
