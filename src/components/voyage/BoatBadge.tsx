@@ -9,6 +9,11 @@ interface BoatBadgeProps {
   boatType: string | null;
   username: string;
   voyageName: string;
+  voyageBoatName?: string | null;
+  voyageBoatType?: string | null;
+  voyageBoatLengthM?: number | null;
+  voyageBoatFlag?: string | null;
+  voyageHomePort?: string | null;
 }
 
 export function BoatBadge({
@@ -16,9 +21,35 @@ export function BoatBadge({
   boatType,
   username,
   voyageName,
+  voyageBoatName,
+  voyageBoatType,
+  voyageBoatLengthM,
+  voyageBoatFlag,
+  voyageHomePort,
 }: BoatBadgeProps) {
   const [expanded, setExpanded] = useState(false);
-  const displayName = boatName ?? voyageName;
+  const displayName = voyageBoatName ?? boatName ?? voyageName;
+  const displayType = voyageBoatType ?? boatType;
+
+  const boatDetailsSegments: string[] = [];
+  if (displayType) {
+    boatDetailsSegments.push(
+      displayType.charAt(0).toUpperCase() + displayType.slice(1),
+    );
+  }
+  if (voyageBoatLengthM != null) {
+    boatDetailsSegments.push(
+      `${voyageBoatLengthM}${messages.boatBadge.lengthUnit}`,
+    );
+  }
+  if (voyageBoatFlag) {
+    boatDetailsSegments.push(voyageBoatFlag);
+  }
+  if (voyageHomePort) {
+    boatDetailsSegments.push(
+      `${messages.boatBadge.homePortPrefix}${voyageHomePort}`,
+    );
+  }
 
   return (
     <div className="absolute left-14 top-4 z-[400]">
@@ -40,8 +71,10 @@ export function BoatBadge({
 
       {expanded && (
         <div className="mt-2 rounded-2xl bg-navy/75 px-4 py-3 shadow-overlay backdrop-blur-[12px] transition-all duration-200 ease-out">
-          {boatType && (
-            <p className="font-sans text-xs text-white/80">{boatType}</p>
+          {boatDetailsSegments.length > 0 && (
+            <p className="font-sans text-xs text-white/80">
+              {boatDetailsSegments.join(messages.boatBadge.separator)}
+            </p>
           )}
           <p className="mt-1 font-sans text-xs text-white/80">@{username}</p>
           <Link

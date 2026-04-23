@@ -81,6 +81,12 @@ describe("PublicVoyageContent", () => {
     portsCount: 0,
     countriesCount: 0,
     boatName: "Selkie",
+    boatType: "sailboat",
+    voyageBoatName: null,
+    voyageBoatType: null,
+    voyageBoatLengthM: null,
+    voyageBoatFlag: null,
+    voyageHomePort: null,
     username: "seb",
     publicUrl: "https://sailbosco.com/seb/atlantic-loop",
     logEntries: [

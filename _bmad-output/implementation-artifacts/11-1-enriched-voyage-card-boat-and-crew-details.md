@@ -1,6 +1,6 @@
 # Story 11.1: Enriched Voyage Card — Boat & Crew Details
 
-Status: ready-for-dev
+Status: review
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -21,30 +21,30 @@ so that visitors understand the context of my journey.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Database migration (AC: #6)
-  - [ ] 1.1 Create migration file adding 5 columns to `voyages` table
-  - [ ] 1.2 Run `supabase db reset` and `supabase gen types typescript` to update types
-- [ ] Task 2: Data layer update (AC: #1, #2)
-  - [ ] 2.1 Verify `updateVoyage` in `src/lib/data/voyages.ts` already accepts `TablesUpdate<"voyages">` (no change needed — it already passes any update fields through)
-- [ ] Task 3: Server Action for boat details (AC: #1, #2)
-  - [ ] 3.1 Add `updateBoatDetails` Server Action in `src/app/voyage/[id]/settings/actions.ts`
-  - [ ] 3.2 Add Zod schema `UpdateBoatDetailsSchema` with all 5 optional fields
-  - [ ] 3.3 Use existing `verifyOwnership` + `withLogging` patterns
-- [ ] Task 4: Voyage settings UI — Boat Details section (AC: #1, #2, #4)
-  - [ ] 4.1 Add "Boat Details" section to `VoyageSettingsForm.tsx` between "Cover Image" and "Danger Zone"
-  - [ ] 4.2 Add boat_name (text input), boat_type (select dropdown), boat_length_m (number input with unit label), boat_flag (text input for ISO country code), home_port (text input)
-  - [ ] 4.3 All fields pre-populated from existing voyage data, all optional
-  - [ ] 4.4 Add save button for the boat details section
-- [ ] Task 5: Messages externalization (AC: all)
-  - [ ] 5.1 Add boat details strings to `src/app/voyage/[id]/settings/messages.ts`
-  - [ ] 5.2 Add public page boat display strings to `src/app/[username]/[slug]/messages.ts`
-- [ ] Task 6: Public page boat display (AC: #3, #5)
-  - [ ] 6.1 Update BoatBadge to accept and prefer voyage-level boat data
-  - [ ] 6.2 Add a subtle boat details line in the public page header (boat type + length + flag + home port) when available
-  - [ ] 6.3 Update `PublicVoyageContent` to pass voyage-level boat data to BoatBadge
-- [ ] Task 7: Tests (AC: all)
-  - [ ] 7.1 Add Server Action tests for `updateBoatDetails` in `actions.test.ts`
-  - [ ] 7.2 Update `PublicVoyageContent.test.tsx` if needed for new props
+- [x] Task 1: Database migration (AC: #6)
+  - [x] 1.1 Create migration file adding 5 columns to `voyages` table
+  - [x] 1.2 Run `supabase db reset` and `supabase gen types typescript` to update types
+- [x] Task 2: Data layer update (AC: #1, #2)
+  - [x] 2.1 Verify `updateVoyage` in `src/lib/data/voyages.ts` already accepts `TablesUpdate<"voyages">` (no change needed — it already passes any update fields through)
+- [x] Task 3: Server Action for boat details (AC: #1, #2)
+  - [x] 3.1 Add `updateBoatDetails` Server Action in `src/app/voyage/[id]/settings/actions.ts`
+  - [x] 3.2 Add Zod schema `UpdateBoatDetailsSchema` with all 5 optional fields
+  - [x] 3.3 Use existing `verifyOwnership` + `withLogging` patterns
+- [x] Task 4: Voyage settings UI — Boat Details section (AC: #1, #2, #4)
+  - [x] 4.1 Add "Boat Details" section to `VoyageSettingsForm.tsx` between "Cover Image" and "Danger Zone"
+  - [x] 4.2 Add boat_name (text input), boat_type (select dropdown), boat_length_m (number input with unit label), boat_flag (text input for ISO country code), home_port (text input)
+  - [x] 4.3 All fields pre-populated from existing voyage data, all optional
+  - [x] 4.4 Add save button for the boat details section
+- [x] Task 5: Messages externalization (AC: all)
+  - [x] 5.1 Add boat details strings to `src/app/voyage/[id]/settings/messages.ts`
+  - [x] 5.2 Add public page boat display strings to `src/app/[username]/[slug]/messages.ts`
+- [x] Task 6: Public page boat display (AC: #3, #5)
+  - [x] 6.1 Update BoatBadge to accept and prefer voyage-level boat data
+  - [x] 6.2 Add a subtle boat details line in the public page header (boat type + length + flag + home port) when available
+  - [x] 6.3 Update `PublicVoyageContent` to pass voyage-level boat data to BoatBadge
+- [x] Task 7: Tests (AC: all)
+  - [x] 7.1 Add Server Action tests for `updateBoatDetails` in `actions.test.ts`
+  - [x] 7.2 Update `PublicVoyageContent.test.tsx` if needed for new props
 
 ## Dev Notes
 
@@ -230,10 +230,42 @@ Only add the 5 columns specified in the migration: `boat_name`, `boat_type`, `bo
 
 ### Agent Model Used
 
-
+Claude Opus 4.6 (1M context)
 
 ### Debug Log References
 
+None — clean implementation with no blockers.
+
 ### Completion Notes List
 
+- Task 1: Created migration `20260422161523_voyage_boat_details.sql` adding 5 columns (`boat_name`, `boat_type`, `boat_length_m`, `boat_flag`, `home_port`) to `voyages` table. Types regenerated successfully.
+- Task 2: Verified `updateVoyage` in `src/lib/data/voyages.ts` already accepts `TablesUpdate<"voyages">` — no changes needed.
+- Task 3: Added `updateBoatDetails` Server Action with `UpdateBoatDetailsSchema` Zod validation (all 5 fields optional, empty strings → null). Uses existing `verifyOwnership` + `withLogging` patterns.
+- Task 4: Added "Boat Details" section to `VoyageSettingsForm.tsx` between Cover Image and Danger Zone. Installed shadcn/ui `Select` component. All 5 fields with proper inputs, pre-populated, all optional. Fixed `onValueChange` type compatibility.
+- Task 5: Externalized all boat detail strings in `settings/messages.ts` and public page `messages.ts`.
+- Task 6: Updated `BoatBadge` to accept voyage-level boat data with fallback to profile-level. BoatBadge now renders in `PublicVoyageContent` with expanded details (type + length + flag + home port). Header shows `voyageBoatName ?? boatName ?? voyageName`.
+- Task 7: Added 6 tests for `updateBoatDetails` (happy path, nullification, validation, ownership, auth, partial fill). Updated `PublicVoyageContent.test.tsx` with new props. All 463 tests pass, 0 regressions.
+- Review fix 1: Added "None" option to boat_type Select to allow clearing the field back to empty (AC #2 compliance).
+- Review fix 2: Added visible boat details line in the public page header (type · length · flag · home port) — no longer requires BoatBadge interaction to see details.
+- Review fix 3: Added ISO alpha-2 regex validation on `boat_flag` server-side (`/^[A-Z]{2}$/`) with `.toUpperCase()` transform. Added 2 tests for invalid flag inputs. All 465 tests pass, 0 regressions.
+
 ### File List
+
+| File | Action |
+|------|--------|
+| `supabase/migrations/20260422161523_voyage_boat_details.sql` | CREATED |
+| `src/types/supabase.ts` | REGENERATED |
+| `src/app/voyage/[id]/settings/actions.ts` | MODIFIED |
+| `src/app/voyage/[id]/settings/actions.test.ts` | MODIFIED |
+| `src/app/voyage/[id]/settings/VoyageSettingsForm.tsx` | MODIFIED |
+| `src/app/voyage/[id]/settings/messages.ts` | MODIFIED |
+| `src/components/voyage/BoatBadge.tsx` | MODIFIED |
+| `src/components/ui/select.tsx` | CREATED (shadcn) |
+| `src/app/[username]/[slug]/page.tsx` | MODIFIED |
+| `src/app/[username]/[slug]/PublicVoyageContent.tsx` | MODIFIED |
+| `src/app/[username]/[slug]/PublicVoyageContent.test.tsx` | MODIFIED |
+| `src/app/[username]/[slug]/messages.ts` | MODIFIED |
+
+### Change Log
+
+- 2026-04-22: Implemented Story 11.1 — Enriched Voyage Card with Boat Details. Added 5 new columns to voyages table, Server Action, settings form section, and public page display with BoatBadge enhancement.

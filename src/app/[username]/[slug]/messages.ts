@@ -28,6 +28,9 @@ export const messages = {
     expandLabel: "Show boat details",
     collapseLabel: "Hide boat details",
     profileLink: "View profile",
+    separator: " · ",
+    lengthUnit: "m",
+    homePortPrefix: "Home port: ",
   },
   stopoverSheet: {
     arrivedLabel: "Arrived",

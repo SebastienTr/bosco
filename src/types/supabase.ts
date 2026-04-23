@@ -260,9 +260,14 @@ export type Database = {
       }
       voyages: {
         Row: {
+          boat_flag: string | null
+          boat_length_m: number | null
+          boat_name: string | null
+          boat_type: string | null
           cover_image_url: string | null
           created_at: string
           description: string | null
+          home_port: string | null
           id: string
           is_public: boolean
           name: string
@@ -271,9 +276,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          boat_flag?: string | null
+          boat_length_m?: number | null
+          boat_name?: string | null
+          boat_type?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          home_port?: string | null
           id?: string
           is_public?: boolean
           name: string
@@ -282,9 +292,14 @@ export type Database = {
           user_id: string
         }
         Update: {
+          boat_flag?: string | null
+          boat_length_m?: number | null
+          boat_name?: string | null
+          boat_type?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          home_port?: string | null
           id?: string
           is_public?: boolean
           name?: string
@@ -300,6 +315,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "voyages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -310,7 +332,7 @@ export type Database = {
           boat_name: string | null
           boat_photo_url: string | null
           boat_type: string | null
-          id: string
+          id: string | null
           profile_photo_url: string | null
           username: string | null
         }
@@ -457,3 +479,4 @@ export const Constants = {
     Enums: {},
   },
 } as const
+

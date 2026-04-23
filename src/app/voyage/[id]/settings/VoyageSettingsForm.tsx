@@ -24,10 +24,18 @@ import { generateSlug } from "@/lib/utils/slug";
 import { validateImageFile, compressImage } from "@/lib/utils/image";
 import { showActionError } from "@/lib/toast-helpers";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   updateVoyage,
   deleteVoyage,
   toggleVisibility,
   uploadCoverImage,
+  updateBoatDetails,
 } from "./actions";
 import { messages } from "./messages";
 
@@ -49,6 +57,14 @@ export function VoyageSettingsForm({ voyage, username }: VoyageSettingsFormProps
   const [uploadingCover, setUploadingCover] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [boatName, setBoatName] = useState(voyage.boat_name ?? "");
+  const [boatType, setBoatType] = useState(voyage.boat_type ?? "");
+  const [boatLengthM, setBoatLengthM] = useState(
+    voyage.boat_length_m != null ? String(voyage.boat_length_m) : "",
+  );
+  const [boatFlag, setBoatFlag] = useState(voyage.boat_flag ?? "");
+  const [homePort, setHomePort] = useState(voyage.home_port ?? "");
+  const [savingBoat, setSavingBoat] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -151,6 +167,31 @@ export function VoyageSettingsForm({ voyage, username }: VoyageSettingsFormProps
 
     toast.success(messages.danger.deletedToast);
     router.push("/dashboard");
+  }
+
+  async function handleSaveBoatDetails(e: React.FormEvent) {
+    e.preventDefault();
+    setSavingBoat(true);
+
+    const formData = new FormData();
+    formData.set("voyageId", voyage.id);
+    formData.set("boat_name", boatName);
+    formData.set("boat_type", boatType);
+    formData.set("boat_length_m", boatLengthM);
+    formData.set("boat_flag", boatFlag);
+    formData.set("home_port", homePort);
+
+    const result = await updateBoatDetails(formData);
+
+    setSavingBoat(false);
+
+    if (result.error) {
+      showActionError(result.error);
+      return;
+    }
+
+    toast.success(messages.boat.savedToast);
+    router.refresh();
   }
 
   function handleNameChange(value: string) {
@@ -338,7 +379,134 @@ export function VoyageSettingsForm({ voyage, username }: VoyageSettingsFormProps
         </div>
       </section>
 
-      {/* Section 4: Danger Zone */}
+      {/* Section 4: Boat Details */}
+      <section>
+        <h2 className="font-heading text-h2 text-navy">
+          {messages.boat.title}
+        </h2>
+        <p className="mt-1 text-small text-mist">
+          {messages.boat.description}
+        </p>
+        <form onSubmit={handleSaveBoatDetails} className="mt-4 space-y-4">
+          <div className="space-y-2">
+            <Label
+              htmlFor="settings-boat-name"
+              className="text-small font-semibold text-slate"
+            >
+              {messages.boat.nameLabel}
+            </Label>
+            <Input
+              id="settings-boat-name"
+              value={boatName}
+              onChange={(e) => setBoatName(e.target.value)}
+              placeholder={messages.boat.namePlaceholder}
+              maxLength={100}
+              className="min-h-[44px]"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label
+              htmlFor="settings-boat-type"
+              className="text-small font-semibold text-slate"
+            >
+              {messages.boat.typeLabel}
+            </Label>
+            <Select
+              value={boatType || "__none__"}
+              onValueChange={(v) => setBoatType(v === "__none__" ? "" : (v ?? ""))}
+            >
+              <SelectTrigger id="settings-boat-type" className="min-h-[44px]">
+                <SelectValue placeholder={messages.boat.typePlaceholder} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">
+                  {messages.boat.typeNone}
+                </SelectItem>
+                <SelectItem value="sailboat">
+                  {messages.boat.typeSailboat}
+                </SelectItem>
+                <SelectItem value="catamaran">
+                  {messages.boat.typeCatamaran}
+                </SelectItem>
+                <SelectItem value="motorboat">
+                  {messages.boat.typeMotorboat}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label
+              htmlFor="settings-boat-length"
+              className="text-small font-semibold text-slate"
+            >
+              {messages.boat.lengthLabel}
+            </Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="settings-boat-length"
+                type="number"
+                step="0.1"
+                min="1"
+                max="200"
+                value={boatLengthM}
+                onChange={(e) => setBoatLengthM(e.target.value)}
+                placeholder={messages.boat.lengthPlaceholder}
+                className="min-h-[44px]"
+              />
+              <span className="text-small text-mist">
+                {messages.boat.lengthUnit}
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label
+              htmlFor="settings-boat-flag"
+              className="text-small font-semibold text-slate"
+            >
+              {messages.boat.flagLabel}
+            </Label>
+            <Input
+              id="settings-boat-flag"
+              value={boatFlag}
+              onChange={(e) => setBoatFlag(e.target.value.toUpperCase())}
+              placeholder={messages.boat.flagPlaceholder}
+              maxLength={2}
+              className="min-h-[44px]"
+            />
+            <p className="text-tiny text-mist">{messages.boat.flagHint}</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label
+              htmlFor="settings-home-port"
+              className="text-small font-semibold text-slate"
+            >
+              {messages.boat.homePortLabel}
+            </Label>
+            <Input
+              id="settings-home-port"
+              value={homePort}
+              onChange={(e) => setHomePort(e.target.value)}
+              placeholder={messages.boat.homePortPlaceholder}
+              maxLength={100}
+              className="min-h-[44px]"
+            />
+          </div>
+
+          <Button
+            type="submit"
+            disabled={savingBoat}
+            className="min-h-[44px] bg-coral text-white hover:bg-coral/90"
+          >
+            {savingBoat ? messages.boat.saving : messages.boat.save}
+          </Button>
+        </form>
+      </section>
+
+      {/* Section 5: Danger Zone */}
       <section className="rounded-xl border border-error/30 p-6">
         <h2 className="font-heading text-h2 text-error">
           {messages.danger.title}

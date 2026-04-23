@@ -318,3 +318,87 @@ const _uploadCoverImage = async (
   return { data: { url: uploadResult.data.publicUrl }, error: null };
 };
 export const uploadCoverImage = withLogging("uploadCoverImage", _uploadCoverImage);
+
+const UpdateBoatDetailsSchema = z.object({
+  voyageId: z.string().regex(UUID_REGEX, "Invalid voyage ID"),
+  boat_name: z.string().trim().max(100).optional().or(z.literal("")),
+  boat_type: z
+    .enum(["sailboat", "catamaran", "motorboat"])
+    .optional()
+    .or(z.literal("")),
+  boat_length_m: z.coerce
+    .number()
+    .min(1)
+    .max(200)
+    .optional()
+    .or(z.literal("")),
+  boat_flag: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^[A-Z]{2}$/, "Flag must be a 2-letter country code (e.g. FR)")
+    .optional()
+    .or(z.literal("")),
+  home_port: z.string().trim().max(100).optional().or(z.literal("")),
+});
+
+const _updateBoatDetails = async (
+  formData: FormData,
+): Promise<ActionResponse<Voyage>> => {
+  const authResult = await requireAuth();
+  if (authResult.error) {
+    return { data: null, error: authResult.error };
+  }
+
+  const raw = {
+    voyageId: normalizeFormValue(formData.get("voyageId")),
+    boat_name: normalizeFormValue(formData.get("boat_name")),
+    boat_type: normalizeFormValue(formData.get("boat_type")),
+    boat_length_m: normalizeFormValue(formData.get("boat_length_m")),
+    boat_flag: normalizeFormValue(formData.get("boat_flag")),
+    home_port: normalizeFormValue(formData.get("home_port")),
+  };
+
+  const parsed = UpdateBoatDetailsSchema.safeParse(raw);
+  if (!parsed.success) {
+    return {
+      data: null,
+      error: {
+        code: "VALIDATION_ERROR",
+        message: parsed.error.issues[0].message,
+      },
+    };
+  }
+
+  const ownership = await verifyOwnership(
+    parsed.data.voyageId,
+    authResult.data.id,
+  );
+  if (ownership.error) {
+    return { data: null, error: ownership.error };
+  }
+
+  const { data, error } = await updateVoyageDb(parsed.data.voyageId, {
+    boat_name: parsed.data.boat_name || null,
+    boat_type: parsed.data.boat_type || null,
+    boat_length_m:
+      typeof parsed.data.boat_length_m === "number"
+        ? parsed.data.boat_length_m
+        : null,
+    boat_flag: parsed.data.boat_flag || null,
+    home_port: parsed.data.home_port || null,
+  });
+
+  if (error) {
+    return {
+      data: null,
+      error: { code: "EXTERNAL_SERVICE_ERROR", message: error.message },
+    };
+  }
+
+  return { data, error: null };
+};
+export const updateBoatDetails = withLogging(
+  "updateBoatDetails",
+  _updateBoatDetails,
+);

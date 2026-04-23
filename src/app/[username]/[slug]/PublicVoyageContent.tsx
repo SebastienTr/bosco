@@ -9,6 +9,7 @@ import { StopoverSheet } from "@/components/voyage/StopoverSheet";
 import { PortsPanel } from "@/components/voyage/PortsPanel";
 import { ActionFAB } from "@/components/voyage/ActionFAB";
 import { ShareButton } from "@/components/voyage/ShareButton";
+import { BoatBadge } from "@/components/voyage/BoatBadge";
 import { JournalTimeline } from "@/components/log/JournalTimeline";
 import { PhotoLightbox } from "@/components/log/PhotoLightbox";
 import type { LogEntry } from "@/lib/data/log-entries";
@@ -96,6 +97,12 @@ interface PublicVoyageContentProps {
   portsCount: number;
   countriesCount: number;
   boatName: string | null;
+  boatType: string | null;
+  voyageBoatName: string | null;
+  voyageBoatType: string | null;
+  voyageBoatLengthM: number | null;
+  voyageBoatFlag: string | null;
+  voyageHomePort: string | null;
   username: string;
   publicUrl: string;
   logEntries: LogEntry[];
@@ -111,6 +118,12 @@ export default function PublicVoyageContent({
   portsCount,
   countriesCount,
   boatName,
+  boatType,
+  voyageBoatName,
+  voyageBoatType,
+  voyageBoatLengthM,
+  voyageBoatFlag,
+  voyageHomePort,
   username,
   publicUrl,
   logEntries,
@@ -241,6 +254,27 @@ export default function PublicVoyageContent({
     [handleSelectStopover],
   );
 
+  const boatDetailsSegments: string[] = [];
+  const displayBoatType = voyageBoatType ?? boatType;
+  if (displayBoatType) {
+    boatDetailsSegments.push(
+      displayBoatType.charAt(0).toUpperCase() + displayBoatType.slice(1),
+    );
+  }
+  if (voyageBoatLengthM != null) {
+    boatDetailsSegments.push(`${voyageBoatLengthM} ${messages.boatBadge.lengthUnit}`);
+  }
+  if (voyageBoatFlag) {
+    boatDetailsSegments.push(voyageBoatFlag);
+  }
+  if (voyageHomePort) {
+    boatDetailsSegments.push(`${messages.boatBadge.homePortPrefix}${voyageHomePort}`);
+  }
+  const boatDetailsLine =
+    boatDetailsSegments.length > 0
+      ? boatDetailsSegments.join(messages.boatBadge.separator)
+      : null;
+
   const isPortsPanelOpen = activeOverlay === "panel";
   const isJournalOpen = activeOverlay === "journal";
   const hasLogEntries = logEntries.length > 0;
@@ -269,8 +303,13 @@ export default function PublicVoyageContent({
               {voyageName}
             </h1>
             <p className="mt-1 truncate font-sans text-xs uppercase tracking-[0.2em] text-white/80">
-              {boatName ?? voyageName} · @{username}
+              {voyageBoatName ?? boatName ?? voyageName} · @{username}
             </p>
+            {boatDetailsLine && (
+              <p className="mt-1 truncate font-sans text-xs text-white/70">
+                {boatDetailsLine}
+              </p>
+            )}
           </Link>
           <ShareButton
             url={publicUrl}
@@ -281,6 +320,18 @@ export default function PublicVoyageContent({
             className="ml-2 shrink-0"
           />
         </header>
+
+        <BoatBadge
+          boatName={boatName}
+          boatType={boatType}
+          username={username}
+          voyageName={voyageName}
+          voyageBoatName={voyageBoatName}
+          voyageBoatType={voyageBoatType}
+          voyageBoatLengthM={voyageBoatLengthM}
+          voyageBoatFlag={voyageBoatFlag}
+          voyageHomePort={voyageHomePort}
+        />
 
         <MapLoader
           tracks={animationComplete || !shouldAnimateRoute ? tracks : []}

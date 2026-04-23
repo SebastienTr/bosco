@@ -4,6 +4,7 @@ import {
   deleteVoyage,
   toggleVisibility,
   uploadCoverImage,
+  updateBoatDetails,
 } from "./actions";
 
 // Mock auth
@@ -50,6 +51,11 @@ const mockVoyage = {
   description: null,
   is_public: false,
   cover_image_url: null,
+  boat_name: null,
+  boat_type: null,
+  boat_length_m: null,
+  boat_flag: null,
+  home_port: null,
   created_at: "2026-03-15T00:00:00Z",
   updated_at: "2026-03-15T00:00:00Z",
 };
@@ -256,6 +262,180 @@ describe("uploadCoverImage", () => {
     expect(result.error).toEqual({
       code: "VALIDATION_ERROR",
       message: "Image must be under 18 MB",
+    });
+  });
+});
+
+describe("updateBoatDetails", () => {
+  it("should update boat details successfully", async () => {
+    const updated = {
+      ...mockVoyage,
+      boat_name: "Laurine",
+      boat_type: "sailboat",
+      boat_length_m: 8.5,
+      boat_flag: "FR",
+      home_port: "Göteborg",
+    };
+    mockUpdateVoyageDb.mockResolvedValue({ data: updated, error: null } as never);
+
+    const formData = new FormData();
+    formData.set("voyageId", mockVoyage.id);
+    formData.set("boat_name", "Laurine");
+    formData.set("boat_type", "sailboat");
+    formData.set("boat_length_m", "8.5");
+    formData.set("boat_flag", "FR");
+    formData.set("home_port", "Göteborg");
+
+    const result = await updateBoatDetails(formData);
+
+    expect(result.data).toEqual(updated);
+    expect(result.error).toBeNull();
+    expect(mockUpdateVoyageDb).toHaveBeenCalledWith(mockVoyage.id, {
+      boat_name: "Laurine",
+      boat_type: "sailboat",
+      boat_length_m: 8.5,
+      boat_flag: "FR",
+      home_port: "Göteborg",
+    });
+  });
+
+  it("should store empty strings as null", async () => {
+    const updated = { ...mockVoyage };
+    mockUpdateVoyageDb.mockResolvedValue({ data: updated, error: null } as never);
+
+    const formData = new FormData();
+    formData.set("voyageId", mockVoyage.id);
+    formData.set("boat_name", "");
+    formData.set("boat_type", "");
+    formData.set("boat_length_m", "");
+    formData.set("boat_flag", "");
+    formData.set("home_port", "");
+
+    const result = await updateBoatDetails(formData);
+
+    expect(result.error).toBeNull();
+    expect(mockUpdateVoyageDb).toHaveBeenCalledWith(mockVoyage.id, {
+      boat_name: null,
+      boat_type: null,
+      boat_length_m: null,
+      boat_flag: null,
+      home_port: null,
+    });
+  });
+
+  it("should return VALIDATION_ERROR for invalid boat_type", async () => {
+    const formData = new FormData();
+    formData.set("voyageId", mockVoyage.id);
+    formData.set("boat_name", "Laurine");
+    formData.set("boat_type", "submarine");
+    formData.set("boat_length_m", "");
+    formData.set("boat_flag", "");
+    formData.set("home_port", "");
+
+    const result = await updateBoatDetails(formData);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("should return VALIDATION_ERROR for invalid boat_flag", async () => {
+    const formData = new FormData();
+    formData.set("voyageId", mockVoyage.id);
+    formData.set("boat_name", "");
+    formData.set("boat_type", "");
+    formData.set("boat_length_m", "");
+    formData.set("boat_flag", "F");
+    formData.set("home_port", "");
+
+    const result = await updateBoatDetails(formData);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("should return VALIDATION_ERROR for non-alpha boat_flag", async () => {
+    const formData = new FormData();
+    formData.set("voyageId", mockVoyage.id);
+    formData.set("boat_name", "");
+    formData.set("boat_type", "");
+    formData.set("boat_length_m", "");
+    formData.set("boat_flag", "1!");
+    formData.set("home_port", "");
+
+    const result = await updateBoatDetails(formData);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("should return FORBIDDEN when voyage belongs to another user", async () => {
+    mockGetVoyageById.mockResolvedValue({
+      data: { ...mockVoyage, user_id: "other-user" },
+      error: null,
+    } as never);
+
+    const formData = new FormData();
+    formData.set("voyageId", mockVoyage.id);
+    formData.set("boat_name", "Laurine");
+    formData.set("boat_type", "");
+    formData.set("boat_length_m", "");
+    formData.set("boat_flag", "");
+    formData.set("home_port", "");
+
+    const result = await updateBoatDetails(formData);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("FORBIDDEN");
+  });
+
+  it("should return UNAUTHORIZED when not authenticated", async () => {
+    mockRequireAuth.mockResolvedValue({
+      data: null,
+      error: { code: "UNAUTHORIZED", message: "Not authenticated" },
+    });
+
+    const formData = new FormData();
+    formData.set("voyageId", mockVoyage.id);
+    formData.set("boat_name", "Laurine");
+    formData.set("boat_type", "");
+    formData.set("boat_length_m", "");
+    formData.set("boat_flag", "");
+    formData.set("home_port", "");
+
+    const result = await updateBoatDetails(formData);
+
+    expect(result.data).toBeNull();
+    expect(result.error?.code).toBe("UNAUTHORIZED");
+  });
+
+  it("should accept all optional fields partially filled", async () => {
+    const updated = {
+      ...mockVoyage,
+      boat_name: "Laurine",
+      boat_type: null,
+      boat_length_m: 12,
+      boat_flag: null,
+      home_port: null,
+    };
+    mockUpdateVoyageDb.mockResolvedValue({ data: updated, error: null } as never);
+
+    const formData = new FormData();
+    formData.set("voyageId", mockVoyage.id);
+    formData.set("boat_name", "Laurine");
+    formData.set("boat_type", "");
+    formData.set("boat_length_m", "12");
+    formData.set("boat_flag", "");
+    formData.set("home_port", "");
+
+    const result = await updateBoatDetails(formData);
+
+    expect(result.error).toBeNull();
+    expect(mockUpdateVoyageDb).toHaveBeenCalledWith(mockVoyage.id, {
+      boat_name: "Laurine",
+      boat_type: null,
+      boat_length_m: 12,
+      boat_flag: null,
+      home_port: null,
     });
   });
 });

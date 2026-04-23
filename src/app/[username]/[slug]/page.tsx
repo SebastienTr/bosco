@@ -120,6 +120,12 @@ export default async function PublicVoyagePage({ params }: Props) {
         portsCount={portsCount}
         countriesCount={countriesCount}
         boatName={profile.boat_name}
+        boatType={profile.boat_type}
+        voyageBoatName={voyage.boat_name}
+        voyageBoatType={voyage.boat_type}
+        voyageBoatLengthM={voyage.boat_length_m}
+        voyageBoatFlag={voyage.boat_flag}
+        voyageHomePort={voyage.home_port}
         username={profile.username ?? username}
         publicUrl={publicUrl}
         logEntries={logEntries ?? []}
