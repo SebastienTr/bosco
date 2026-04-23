@@ -58,7 +58,7 @@ export default async function PublicProfilePage({ params }: Props) {
   }
 
   const { data: voyages, error: voyagesError } = await getPublicVoyagesByUserId(
-    profile.id,
+    profile.id!,
   );
 
   if (voyagesError) {

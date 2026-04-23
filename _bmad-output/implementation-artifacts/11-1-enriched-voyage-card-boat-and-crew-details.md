@@ -269,3 +269,4 @@ None — clean implementation with no blockers.
 ### Change Log
 
 - 2026-04-22: Implemented Story 11.1 — Enriched Voyage Card with Boat Details. Added 5 new columns to voyages table, Server Action, settings form section, and public page display with BoatBadge enhancement.
+- 2026-04-23: Addressed code review findings — 3 items resolved: (1) boat_type Select now clearable via "None" option, (2) boat details line visible in public header without interaction, (3) boat_flag validated as ISO alpha-2 with server-side regex.

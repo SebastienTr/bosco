@@ -41,7 +41,7 @@ export default async function Image({
 
     let voyageCount = 0;
     try {
-      const { data: voyages } = await getPublicVoyagesByUserId(profile.id);
+      const { data: voyages } = await getPublicVoyagesByUserId(profile.id!);
       voyageCount = voyages?.length ?? 0;
     } catch {
       // Voyage count is non-critical for OG image
